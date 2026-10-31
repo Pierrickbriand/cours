@@ -1107,6 +1107,65 @@ body .suivi-fen .b.s{background:#EEEAFB;border-color:#EEEAFB;color:#2E2A6B}
 body .suivi-fen .code{background:#EEF0F4}
 /* v65 : couleur d'alerte du témoin d'état (« À envoyer ») */
 :root{--alerte:#A8425A}
+/* ===== v71 (31 octobre 2026) : pages de cours alignées sur l'Atelier du formateur, de façon définitive =====
+   Barre latérale bleu marine, bandeau rose en tête de chaque écran avec le dessin de l'Atelier,
+   corps à 15-17 px et titres à 32 px graisse 500, cartes et tableaux blancs aux coins arrondis, barre du bas blanche. */
+:root{--v71-band:#F4C9D2;--v71-band-ink:#3B3F63;--v71-card-line:#E6E8F0}
+/* 1. Tailles de l'Atelier (plus de texte qui grossit avec la largeur de l'écran) */
+body,body.side{font-size:clamp(15px,1.02vw,17px);line-height:1.5}
+h2,body.side h2{font-size:clamp(24px,2.1vw,32px);font-weight:500;line-height:1.2;letter-spacing:0}
+h3{font-size:1.08em;font-weight:600}
+@media (min-width:1100px){body.side input[type=text],body.side textarea,body.side select{font-size:15px}}
+.in{gap:clamp(12px,2.2vh,22px);padding-top:0}
+/* 2. Bandeau rose en tête de chaque écran (comme l'espace d'un cours dans l'Atelier) */
+.slide:not(.dark) .in>.kick:first-child{position:relative;z-index:2;margin-top:clamp(20px,4vh,34px)}
+.slide:not(.dark) .in>h2:first-of-type{position:relative;z-index:1;color:var(--v71-band-ink);background:var(--v71-band);box-shadow:0 0 0 100vmax var(--v71-band);clip-path:inset(-100vmax -100vmax 0 -100vmax);padding:clamp(20px,4vh,34px) 0 clamp(18px,3vh,26px);margin-bottom:clamp(6px,1.4vh,14px)}
+.slide:not(.dark) .in>.kick:first-child+h2{padding-top:6px}
+.slide:not(.dark) .in>.kick:first-child{color:#8A3149}/* rose assombri : contraste AA sur le bandeau */
+/* écrans d'activité : l'en-tête (surtitre, titre, rôles, minuteur) forme le bandeau */
+.slide:not(.dark) .in>header.exh:first-child{position:relative;background:var(--v71-band);box-shadow:0 0 0 100vmax var(--v71-band);clip-path:inset(-100vmax -100vmax 0 -100vmax);padding:clamp(20px,4vh,34px) 0 clamp(16px,2.6vh,22px);margin-bottom:clamp(6px,1.4vh,14px)}
+.slide:not(.dark) .in>header.exh:first-child h2{color:var(--v71-band-ink)}
+.slide:not(.dark) .in>header.exh:first-child .kick{color:#8A3149}
+@media (min-width:1200px){
+  .slide:not(.dark) .in>h2:first-of-type{padding-right:300px;min-height:84px}
+  .slide:not(.dark) .in>h2:first-of-type::after{content:"";position:absolute;right:0;bottom:0;width:198px;height:90px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='330' height='150' viewBox='0 0 330 150'%3E%3Cpath d='M20 150V82a62 62 0 0 1 124 0v68z' fill='%231F3D66'/%3E%3Cpath d='M228 96l84-6 18 60H222z' fill='%235BC2B4'/%3E%3Ccircle cx='178' cy='62' r='58' fill='%23fff'/%3E%3Crect x='144' y='54' width='68' height='16' rx='8' fill='%23A8425A'/%3E%3C/svg%3E") no-repeat right bottom/contain;pointer-events:none}
+}
+/* 3. Barre latérale bleu marine, élément en cours en blanc (comme la barre d'icônes de l'Atelier) */
+#side{background:#1F3D66;border-right:0;color:#fff}
+#side .lab,#side .kick{color:#F3BDBE}
+#side .sh .lnk,#side .lnk{color:#DCE6F3}
+#side .sh .lnk:hover,#side .lnk:hover{color:#fff}
+#sideQ{background:#fff;border-color:#fff;color:#1B2740}
+#sideGo{background:#fff;border-color:#fff;color:#1B2740}
+#sideGo .lab2{color:#A8425A}
+.sse{border-top-color:rgba(255,255,255,.18)}
+.sse .st,.sse .st b{color:#fff}
+.sse .st small{color:#BFD0E6}
+.sse .pc{color:#fff}
+.sbar{background:rgba(255,255,255,.18)}
+.sbar i{background:#5BC2B4}
+.ssec>summary{color:#fff}
+.ssec>summary::before{border-color:#BFD0E6}
+.ssec .cnt2{color:#BFD0E6}
+.ssec li button{color:#DCE6F3}
+.ssec li button:hover{background:rgba(255,255,255,.12);color:#fff}
+.ssec li.cur button{background:#fff;color:#1F3D66;box-shadow:none;font-weight:600}
+.ssec li .ic{border-color:rgba(255,255,255,.55)}
+.ssec li.act .ic{border-color:#DCE6F3}
+.ssec li.done .ic,.ssec li.th.done .ic{background:#5BC2B4;border-color:#5BC2B4}
+.ssec li.cur .ic{border-color:#1F3D66}
+#side li .here{background:#A8425A;color:#fff}
+#side .srt{color:#BFD0E6}
+#side .sfoot{border-top-color:rgba(255,255,255,.18)}
+#side .sfoot .btn,#side .sfoot .btn.sec{background:#EEEAFB;border-color:#EEEAFB;color:#2E2A6B}
+body.teach #side li.facult .tt::after{color:#F3BDBE}
+/* 4. Tableaux et encadrés : blancs, filet léger, coins arrondis, en-tête gris clair (cartes de l'Atelier) */
+.slide:not(.dark) table{background:#fff;border:1px solid var(--v71-card-line);border-radius:8px;border-collapse:separate;border-spacing:0;overflow:hidden;box-shadow:0 1px 2px rgba(30,43,69,.04)}
+.slide:not(.dark) table th{background:#F5F6FA;color:#1F3D66;font-weight:600}
+.slide:not(.dark) .tbl th,.slide:not(.dark) .tbl td,.slide:not(.dark) table th,.slide:not(.dark) table td{padding:10px 14px;border-bottom:1px solid var(--v71-card-line)}
+.slide:not(.dark) .tbl tr:last-child td,.slide:not(.dark) table tr:last-child td{border-bottom:0}
+/* 5. Barre de navigation du bas : blanche, comme une carte de l'Atelier */
+body:not(.dk) .nav{background:#fff;border-top:1px solid var(--v71-card-line);box-shadow:0 -1px 2px rgba(30,43,69,.04)}
 
 </style>
 <div id="boot" class="boot" hidden></div>
