@@ -892,10 +892,13 @@ details.aide .ab .lnk{min-height:44px;display:inline-flex;align-items:center}
 .chrono .ch-etapes li.fait{background:#DCEFEC;color:#1B2740}
 .chrono .actions{justify-content:center}
 /* v72 : le cours d'une séance occupe toute la hauteur libre de l'écran (avant : panneau limité à 36 % de la hauteur, contenu coupé) */
-@media (min-width:900px) and (max-height:860px){
+@media (min-width:900px){
   .slide:has(>.in>.iter.cours)>.in{height:100%;min-height:0}
   .in>.iter.cours{flex:1 1 auto;min-height:0}
   .cours .istep{max-height:none;flex:1 1 auto;min-height:0;overflow:auto}
+  /* contenu court : centré dans la place libre (marges automatiques, nulles dès que le contenu remplit le panneau) ; la frise reste en haut */
+  .cours .istep.cpan>:first-child:not(.fil),.cours .istep.cpan>.fil+*{margin-top:auto}
+  .cours .istep.cpan>:last-child{margin-bottom:auto}
 }
 @media (min-width:1200px){.cours .cpan{font-size:clamp(17px,1.2vw,20px)}}
 /* v72 : schémas du cours (moteur/schemas.py) : texte HTML aux couleurs du thème, repliés en liste sur téléphone */
@@ -935,13 +938,14 @@ details.aide .ab .lnk{min-height:44px;display:inline-flex;align-items:center}
 .sch-mx .sq{background:var(--sc);border:1.5px solid var(--sl);border-radius:8px;padding:12px 14px;min-height:5.2em}
 .sch-mx .sq2{background:var(--s1);color:#fff;border-color:var(--s1)}
 .sch-mx .sq2 small{color:rgba(255,255,255,.88)}
+.sans-accent .sch-mx .sq2{background:var(--sc);color:inherit;border-color:var(--sl)}.sans-accent .sch-mx .sq2 small{color:var(--ink2)}
 /* pyramide */
 .sch-pyramide ol{display:flex;flex-direction:column;align-items:center;gap:5px}
 .sch-pyramide li{width:var(--w);background:var(--sc);border:1.5px solid var(--sl);border-radius:8px;padding:9px 14px;text-align:center}
 .sch-pyramide li:first-child{background:var(--s1);color:#fff;border-color:var(--s1)}
 .sch-pyramide li:first-child small{color:rgba(255,255,255,.88)}
 /* ensembles qui se recoupent */
-.sch-vn{position:relative;width:min(100%,760px,85vh);aspect-ratio:2.5;margin:0 auto}
+.sch-vn{position:relative;width:min(100%,900px,85vh);aspect-ratio:2.5;margin:0 auto}
 .sch-vn li{position:absolute;top:0;width:40%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:0 9%;border:2px solid var(--s1);background:color-mix(in srgb,var(--s1) 9%,transparent)}
 .sch-vn li small{font-size:.76em}
 .sch-vn li.c2{border-color:var(--s2);background:color-mix(in srgb,var(--s2) 11%,transparent)}
