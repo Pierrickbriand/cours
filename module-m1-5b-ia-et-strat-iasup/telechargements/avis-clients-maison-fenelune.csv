@@ -1,0 +1,41 @@
+numero;date;canal;note sur 5;avis
+1;2027-01-08;site;5;Le parfum Figue d’automne tient toute la soirée, et la bougie a brûlé plus de 40 heures. Je recommande.
+2;2027-01-11;Google;4;Odeur très agréable, livraison en trois jours. Un peu cher pour la taille.
+3;2027-01-15;site;1;Colis arrivé avec le verre cassé. Le service client m’a remboursée en 48 heures, mais quelle déception pour un cadeau.
+4;2027-01-19;application;5;Abonnée depuis un an : chaque mois une surprise, jamais déçue.
+5;2027-01-24;Google;2;La mèche s’est noyée au bout de deux heures. J’ai dû la recouper trois fois.
+6;2027-01-28;réseaux sociaux;;Génial, ma bougie Brise marine sent exactement comme… rien. Bravo.
+7;2027-02-02;site;4;Bon produit, le diffuseur est joli. Le parfum est un peu faible dans une grande pièce.
+8;2027-02-05;Google;3;Ni bien ni mal. Une bougie, quoi.
+9;2027-02-09;site;5;Emballage soigné, petit mot écrit à la main, parfait pour offrir.
+10;2027-02-12;application;1;Impossible de résilier l’abonnement depuis l’application. J’ai dû appeler deux fois.
+11;2027-02-14;Google;5;Boutique accueillante, on a pris le temps de me faire sentir cinq parfums.
+12;2027-02-18;réseaux sociaux;;Trois semaines pour recevoir ma commande. Heureusement que je n’étais pas pressée, c’était seulement pour la Saint-Valentin.
+13;2027-02-21;site;4;Très bonne odeur. Dommage que le couvercle ferme mal.
+14;2027-02-25;site;2;Le parfum Vanille fumée ressemble plus à du plastique brûlé qu’à de la vanille.
+15;2027-03-01;Google;5;Rapport qualité-prix correct pendant les soldes, je reviendrai.
+16;2027-03-04;application;3;L’assistant en ligne a répondu vite, mais à côté de ma question. Un conseiller a ensuite réglé le problème.
+17;2027-03-07;site;5;Je rachète Figue d’automne pour la troisième fois. Toujours aussi bonne.
+18;2027-03-10;Google;1;Commande jamais reçue, aucune réponse à mes courriels.
+19;2027-03-13;site;4;Livraison rapide. Bougie conforme. Rien à redire, sauf le prix de la livraison.
+20;2027-03-16;réseaux sociaux;;J’adore payer 6 € de livraison pour une bougie à 24 €.
+21;2027-03-19;site;5;Le coffret découverte est une bonne idée : six petits formats pour choisir son parfum.
+22;2027-03-22;Google;2;Odeur trop forte, j’ai eu mal à la tête au bout d’une heure.
+23;2027-03-25;application;4;L’abonnement est pratique. J’aimerais pouvoir choisir mes parfums à l’avance.
+24;2027-03-28;site;3;Belle bougie, mais elle a coulé sur le meuble. À poser sur une soucoupe.
+25;2027-04-01;Google;5;Service client au top : bougie remplacée sans discussion.
+26;2027-04-04;site;1;Le diffuseur fuit. Deuxième fois que ça m’arrive.
+27;2027-04-07;réseaux sociaux;;Pas mal. Enfin, pour le prix, j’attendais mieux.
+28;2027-04-10;site;4;Parfait pour la salle de bains. Le parfum Thé vert est frais sans être chimique.
+29;2027-04-13;Google;3;Pas encore allumée, je donnerai mon avis plus tard.
+30;2027-04-16;application;5;Les suggestions de l’application ont visé juste : je n’aurais jamais testé Cuir et tabac.
+31;2027-04-19;site;2;Jolie boîte, bougie décevante. Le parfum disparaît après dix minutes.
+32;2027-04-22;Google;5;Meilleure bougie de ma vie. Mon chat est d’accord, il ne la quitte plus des yeux.
+33;2027-04-25;site;4;Bonne qualité, mais les bougies en promotion partent en deux heures.
+34;2027-04-28;réseaux sociaux;;Bravo pour le nouveau design. Dommage d’avoir supprimé mon parfum préféré.
+35;2027-05-01;Google;1;Accueil désagréable en boutique, on m’a fait sentir que je dérangeais.
+36;2027-05-04;site;5;Livrée en 24 heures, parfum fidèle à la description, rien à ajouter.
+37;2027-05-07;application;2;Trop de notifications de l’application. Une par jour, c’est trop.
+38;2027-05-10;site;3;Le parfum est bon, la mèche moins : elle fume noir au début.
+39;2027-05-13;Google;4;Cadeau offert à ma mère, elle a adoré. Moi, je trouve ça trop sucré.
+40;2027-05-16;site;5;Super, encore une bougie qui sent bon. Je vais finir par en avoir une dans chaque pièce.
