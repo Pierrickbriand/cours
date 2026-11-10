@@ -836,6 +836,8 @@ body.ed-eleve .slide[data-ex] .exh .exr:empty{display:none}
   body.ed-eleve .slide[data-ex] .econs>*{order:2}
   body.ed-eleve .slide[data-ex] .econs>.lab{order:0}
   body.ed-eleve .slide[data-ex] .econs>.actions{order:1}
+  /* v110 : compétence, l'aperçu du fichier SKILL.md passe après les champs, la première action reste visible */
+  body.ed-eleve .slide[data-ex] .exl>.econs:has(.skp){order:3}
 }
 /* Règle 3 : barre du téléphone, rien de coupé */
 @media (max-width:700px){
@@ -962,7 +964,7 @@ details.aide .ab .lnk{min-height:44px;display:inline-flex;align-items:center}
 .sch-entonnoir li{width:var(--w);min-width:min(100%,260px);background:var(--s1);color:#fff;border-radius:8px;padding:10px 16px;text-align:center;position:relative}
 .sch-entonnoir li:nth-child(even){background:var(--s2)}
 .sch-entonnoir li small{color:rgba(255,255,255,.88)}
-.sch-entonnoir li em{display:inline-block;margin-top:5px;font-style:normal;font-size:.78em;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 10px}
+.sch-entonnoir li em{display:inline-block;margin-top:5px;font-style:normal;font-size:.78em;background:rgba(0,0,0,.28);border-radius:999px;padding:2px 10px}/* v110 : pastille assombrie, contraste AA sur les deux couleurs de l'entonnoir */
 /* matrice 2 x 2 */
 .sch-mx{display:grid;grid-template-columns:auto 1fr;grid-template-rows:1fr auto;gap:8px}
 .sch-mx .ay{display:flex;flex-direction:column-reverse;justify-content:space-between;align-items:center;font-size:.8em;color:var(--ink2);padding-bottom:6px}
