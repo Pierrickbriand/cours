@@ -1,0 +1,10 @@
+{
+  "name": "cours",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  }
+}
