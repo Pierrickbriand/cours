@@ -1534,7 +1534,7 @@ body:not(.dk) .nav{background:#fff;border-top:1px solid var(--v71-card-line);box
 
 </style>
 <div id="boot" class="boot" hidden></div>
-<footer id="droits" class="droits" role="contentinfo">© <span id="droits-an">2026</span> Pierrick Briand. Tous droits réservés. Reproduction, diffusion et réutilisation interdites sans accord écrit.</footer>
+<footer id="droits" class="droits" role="contentinfo">© <span id="droits-an">2026-2027</span> Pierrick Briand. Tous droits réservés. Reproduction, diffusion et réutilisation interdites sans accord écrit.</footer>
 <script>
 /** @license
  *
@@ -1951,9 +1951,9 @@ window.MARQUES_ORDRE=["lsf", "veja", "faguo", "loom", "jules-jenn", "asphalte"];
   window.KIT_REPRISE=true;/* v105 : le moteur sait recevoir la copie de l'Atelier restaurée par suivi.js 4.5 sans recharger la page */
   window.KIT_TEMOIN=true;/* v104 : le moteur affiche son propre témoin et son bandeau « Mode test » (suivi.js 4.4 n'affiche pas le sien) */
   window.KIT_SFEVAL=1;/* v82 : le menu Parcours porte le bouton « Comment je serai évalué » (suivi.js 4.1 le lit avant même la fin du démarrage) */
-  /* v117 : pied de page « droits d'auteur » (droits.py) : année du navigateur ; --dh = hauteur de la bande, que les écrans et la barre du bas laissent libre */
+  /* v117 : pied de page « droits d'auteur » (droits.py) : années « 2026-2027 » (la seconde suit le navigateur, 2027 au plus bas) ; --dh = hauteur de la bande, que les écrans et la barre du bas laissent libre */
   (function(){var f=document.getElementById('droits');if(!f)return;
-    var a=document.getElementById('droits-an');if(a)a.textContent=String(new Date().getFullYear());
+    var a=document.getElementById('droits-an');if(a)a.textContent='2026-'+Math.max(new Date().getFullYear(),2027);
     function m(){document.documentElement.style.setProperty('--dh',f.offsetHeight+'px');}
     m();window.addEventListener('resize',m);
     if(document.fonts&&document.fonts.ready)document.fonts.ready.then(m);
