@@ -1,8 +1,110 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cours de Pierrick Briand</title>
-<style>body{font-family:Poppins,Arial,sans-serif;background:#EEF0F4;color:#1B2740;margin:0}main{max-width:720px;margin:0 auto;padding:40px 16px;line-height:1.6}h1{color:#1F3D66}a{color:#1D6F69}</style></head>
-<body><main>
-<h1>Cours de Pierrick Briand</h1>
-<p>Chaque cours a sa propre adresse, transmise par votre formateur. Cette page ne contient aucune donnée d’étudiant.</p>
-<p><a href="https://pierrickbriand.github.io/outils-ia-pedagogie/atelier/confidentialite.html">Vos données</a></p>
-</main></body></html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><meta name="referrer" content="no-referrer">
+<title>Cours de Pierrick Briand</title>
+<style>
+:root{--marine:#1F3D66;--turq:#1D6F69;--rose:#A8425A;--encre:#1B2740;--ardoise:#3F4C66;--gris:#56627A;--filet:#D8DCE6;--fond:#EEF0F4;--ciel:#C9E2F7;--lav:#EEEAFB;--lavtxt:#2E2A6B;--attention:#F7E1E2}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fond);color:var(--encre);font-family:Poppins,'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.5}
+.bandeau{background:var(--ciel);padding:40px 16px 0}
+.bandeau .in{max-width:720px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.bandeau .txt{padding-bottom:32px}
+.sur{margin:0 0 6px;color:var(--rose);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+h1{margin:0 0 8px;color:var(--marine);font-size:30px;font-weight:500;line-height:1.2}
+.sous{margin:0;color:var(--ardoise)}
+.deco{flex:none;display:block;max-width:40%;height:auto}
+main{max-width:720px;margin:0 auto;padding:24px 16px 40px}
+.carte{background:#fff;border:1px solid var(--filet);border-radius:12px;padding:24px}
+label{display:block;margin:0 0 4px;font-weight:500;color:var(--marine)}
+.aide{margin:0 0 16px;color:var(--gris);font-size:14px}
+input[type=text],input[type=email]{width:100%;font:inherit;padding:10px 12px;border:1px solid #9AA3B5;border-radius:6px;background:#fff;color:var(--encre)}
+#code{letter-spacing:.12em;text-transform:uppercase}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--turq);outline-offset:2px}
+.champ{margin:0 0 16px}
+.champ .aide{margin:4px 0 0}
+button{font:inherit;border:0;border-radius:6px;padding:10px 20px;cursor:pointer;font-weight:500}
+.prim{background:var(--marine);color:#fff}
+.prim[aria-busy=true]{opacity:.7;cursor:progress}
+.sec{background:var(--lav);color:var(--lavtxt)}
+#etat{margin:16px 0 0;min-height:1.5em;font-size:15px}
+#etat.err{background:var(--attention);border-left:4px solid var(--rose);padding:10px 12px;color:var(--encre)}
+.oubli{margin:16px 0 0;color:var(--gris);font-size:14px}
+#mes{margin:24px 0 0}
+#mes[hidden]{display:none}
+#mes h2{margin:0 0 12px;color:var(--marine);font-size:20px;font-weight:500}
+.liste{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:0 0 16px;padding:0;list-style:none}
+.liste a{display:block;background:#fff;border:1px solid var(--filet);border-left:4px solid var(--turq);border-radius:6px;padding:14px 16px;color:var(--marine);text-decoration:none;font-weight:500}
+.liste a:hover{background:#F5F6FA}
+footer{max-width:720px;margin:0 auto;padding:0 16px 32px;color:var(--gris);font-size:13px}
+footer a{color:var(--turq)}
+@media (max-width:560px){.deco{display:none}h1{font-size:26px}}
+</style></head>
+<body>
+<header class="bandeau"><div class="in">
+<div class="txt"><p class="sur">Cours interactifs</p><h1>Cours de Pierrick Briand</h1><p class="sous">Saisissez votre code pour ouvrir vos cours.</p></div>
+<svg class="deco" width="330" height="150" viewBox="0 0 330 150" aria-hidden="true"><path d="M20 150V82a62 62 0 0 1 124 0v68z" fill="#1F3D66"/><path d="M228 96l84-6 18 60H222z" fill="#5BC2B4"/><circle cx="178" cy="62" r="58" fill="#fff"/><rect x="144" y="54" width="68" height="16" rx="8" fill="#A8425A"/></svg>
+</div></header>
+<main>
+<section class="carte" aria-labelledby="titre-form">
+<form id="f" novalidate autocomplete="off">
+<div class="champ"><label for="email">Adresse e-mail (facultative)</label>
+<input id="email" type="email" inputmode="email" autocomplete="email" spellcheck="false">
+<p class="aide">Laissez ce champ vide si votre école ne vous a pas demandé votre adresse.</p></div>
+<div class="champ"><label for="code">Code</label>
+<input id="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="14" aria-describedby="aide-code" required>
+<p class="aide" id="aide-code">Votre code personnel, ou le code de classe écrit au tableau.</p></div>
+<button class="prim" id="ok" type="submit">Ouvrir mes cours</button>
+<p id="etat" role="status" aria-live="polite"></p>
+</form>
+<p class="oubli">Code oublié&nbsp;? Demandez-le à votre formateur.</p>
+</section>
+<section id="mes" hidden aria-labelledby="titre-mes"><h2 id="titre-mes">Mes cours</h2><ul class="liste" id="liste"></ul>
+<form id="quitter" method="post" action="/deconnexion"><button class="sec" type="submit">Me déconnecter</button></form></section>
+</main>
+<footer><p>© 2026 Pierrick Briand. Tous droits réservés. <a href="https://pierrickbriand.github.io/outils-ia-pedagogie/atelier/confidentialite.html">Vos données</a></p></footer>
+<script>
+(function(){
+var HUB='https://script.google.com/macros/s/AKfycbwvyFm2CsUrDzXGqqItVq8fx3NA-278M4jG9HVcFYgRQ1jg354T2alXY7QHUWAz2VDk/exec';
+var SLUG=/^[a-z0-9-]{1,80}$/i, CLE='cours-autorises';
+var f=document.getElementById('f'), etat=document.getElementById('etat'), ok=document.getElementById('ok');
+function msg(t,err){etat.textContent=t;etat.className=err?'err':'';}
+function lire(){try{var v=JSON.parse(sessionStorage.getItem(CLE)||'[]');return Array.isArray(v)?v.filter(function(c){return c&&SLUG.test(String(c.slug||''));}):[];}catch(e){return[];}}
+function montrer(){
+  var l=lire(), ul=document.getElementById('liste'), bloc=document.getElementById('mes');
+  ul.textContent='';
+  l.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);li.appendChild(a);ul.appendChild(li);});
+  bloc.hidden=!l.length;
+}
+document.getElementById('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(CLE);}catch(e){}});
+montrer();
+if(/(^|[?&])acces=requis(&|$)/.test(location.search)) msg('Votre accès a expiré ou ne couvre pas ce cours. Saisissez à nouveau votre code.',true);
+var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
+function ouvrir(token,cours){
+  try{sessionStorage.setItem(CLE,JSON.stringify(cours));}catch(e){}
+  var g=document.createElement('form');g.method='post';g.action='/auth';g.style.display='none';
+  var a=document.createElement('input');a.type='hidden';a.name='t';a.value=token;g.appendChild(a);
+  var b=document.createElement('input');b.type='hidden';b.name='next';b.value=cours.length===1?'/'+cours[0].slug+'/':'/';g.appendChild(b);
+  document.body.appendChild(g);g.submit();
+}
+function envoyer(essai){
+  var mail=document.getElementById('email').value.trim().toLowerCase(), code=document.getElementById('code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  return fetch(HUB,{method:'POST',body:JSON.stringify({action:'connexion',email:mail,code:code})}).then(function(r){return r.json();}).then(function(r){
+    if(r&&r.retry&&essai<2) return new Promise(function(ok2){setTimeout(ok2,1500);}).then(function(){return envoyer(essai+1);});
+    return r;
+  });
+}
+f.addEventListener('submit',function(e){
+  e.preventDefault();
+  var mail=document.getElementById('email').value.trim(), code=document.getElementById('code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(mail&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)){msg(ERR['e-mail invalide'],true);return;}
+  if(code.length<6){msg('Saisissez votre code, de 6 à 8 caractères.',true);return;}
+  ok.setAttribute('aria-busy','true');msg('Vérification en cours…',false);
+  envoyer(0).then(function(r){
+    ok.removeAttribute('aria-busy');
+    if(r&&r.ok&&r.token&&Array.isArray(r.cours)&&r.cours.length){ouvrir(String(r.token),r.cours.filter(function(c){return c&&SLUG.test(String(c.slug||''));}));return;}
+    msg((r&&ERR[r.err])||'La connexion a échoué. Réessayez dans un instant.',true);
+  }).catch(function(){ok.removeAttribute('aria-busy');msg('Le service ne répond pas. Réessayez dans un instant.',true);});
+});
+})();
+</script>
+</body></html>
