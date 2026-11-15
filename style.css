@@ -261,6 +261,7 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .devis-carte .erreur{color:var(--rose-clair)}
 .devis-carte .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .devis-carte .confirmation{color:#9BE3D8}
+.devis-carte .bouton-rdv{margin-top:4px}
 
 /* barre de devis fixe */
 .barre-devis{position:fixed;left:50%;bottom:16px;z-index:40;display:flex;align-items:center;gap:16px;padding:8px 8px 8px 24px;border-radius:999px;background:rgba(20,33,59,.72);color:#fff;font-size:.9375rem;transform:translateX(-50%);transition:opacity .3s,transform .3s}

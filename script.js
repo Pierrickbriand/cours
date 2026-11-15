@@ -9,7 +9,7 @@
      l'adresse du service : le formulaire enverra alors les données en
      JSON (méthode POST).
      ------------------------------------------------------------------ */
-  const CONFIG = { email: 'pierrick.briand@gmail.com', endpoint: 'https://script.google.com/macros/s/AKfycbwvyFm2CsUrDzXGqqItVq8fx3NA-278M4jG9HVcFYgRQ1jg354T2alXY7QHUWAz2VDk/exec' };
+  const CONFIG = { email: 'pierrick.briand@gmail.com', rdv: 'https://calendar.app.google/65meyYWGSbjqdfsQA', endpoint: 'https://script.google.com/macros/s/AKfycbwvyFm2CsUrDzXGqqItVq8fx3NA-278M4jG9HVcFYgRQ1jg354T2alXY7QHUWAz2VDk/exec' };
 
   const NB = ' ';
   const EURO = NB + '€';
@@ -125,7 +125,8 @@
       carte.append(
         el('h3', { text: 'Merci.' }),
         el('p', { class: 'confirmation', text: messageFinal }),
-        el('p', { class: 'recap', text: recap() })
+        el('p', { class: 'recap', text: recap() }),
+        el('a', { class: 'bouton bouton-clair bouton-rdv', href: CONFIG.rdv, target: '_blank', rel: 'noopener', text: 'Choisir un créneau de 30 minutes' })
       );
       return;
     }
