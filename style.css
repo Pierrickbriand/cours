@@ -1,0 +1,357 @@
+/* ==========================================================================
+   pierrickbriand.fr : feuille de style commune (accueil et mentions légales)
+   Poppins 400 (texte) et 500 (titres, boutons). Grille de 8 px.
+   ========================================================================== */
+
+@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url("assets/fonts/poppins-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:500;font-display:swap;src:url("assets/fonts/poppins-latin-500-normal.woff2") format("woff2")}
+
+:root{
+  --marine:#1F3D66;
+  --turquoise:#1D6F69;
+  --rose:#A8425A;
+  --encre:#1B2740;
+  --nuit:#14213B;
+  --accent:#2E2A6B;
+  --rose-clair:#F6B8C6;
+  --fond:#EEF0F4;
+  --fond-bas:#D7DFEB;
+  --texte:#3F4C66;
+  --trait:rgba(31,61,102,.14);
+  --gouttiere:24px;
+  --largeur:1184px; /* 1 120 px de contenu + 2 x 32 px de marge */
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:104px;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Poppins","Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:1rem;line-height:1.5;color:var(--encre);background:var(--fond);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:var(--turquoise)}
+a:hover{color:var(--marine)}
+p{margin:0}
+h1,h2,h3{margin:0;font-weight:500;color:var(--marine)}
+h1,h2{line-height:1.1}
+h1{font-size:clamp(2rem,1.2rem + 3vw,2.75rem)}
+h2{font-size:clamp(1.5rem,1.1rem + 1.6vw,1.875rem)}
+h3{font-size:1.1875rem;line-height:1.3}
+:focus-visible{outline:3px solid var(--marine);outline-offset:3px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lien-evitement{position:absolute;left:16px;top:-64px;z-index:100;background:#fff;color:var(--marine);padding:8px 16px;border-radius:999px;text-decoration:none}
+.lien-evitement:focus{top:16px}
+
+.conteneur{width:100%;max-width:var(--largeur);margin-inline:auto;padding-inline:32px}
+.section{padding-top:56px}
+.etiquette{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--rose);margin-bottom:8px}
+.chapeau{color:var(--texte);max-width:680px;margin-top:12px}
+.entete-section{margin-bottom:32px}
+
+/* ---------- Boutons ---------- */
+.bouton{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:999px;padding:12px 24px;font-family:inherit;font-weight:500;font-size:.9375rem;line-height:1.2;text-align:center;text-decoration:none;cursor:pointer;transition:transform .15s ease-out,filter .15s ease-out}
+.bouton:active{transform:scale(.96);filter:brightness(.92);transition:none}
+.bouton-clair{background:#fff;color:var(--marine)}
+.bouton-clair:hover{color:var(--marine)}
+.bouton-marine{background:var(--marine);color:#fff}
+.bouton-marine:hover{color:#fff}
+.bouton-fantome{background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4)}
+.bouton-fantome:hover{color:#fff}
+.bouton-doux{background:#EEEAFB;color:var(--accent)}
+.bouton-turquoise{background:var(--turquoise);color:#fff}
+.bouton-turquoise:hover{color:#fff}
+.bouton-grand{padding:14px 28px;font-size:1rem}
+
+/* ---------- Verre dépoli ---------- */
+.verre{position:relative;background:rgba(255,255,255,.08);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-radius:24px;box-shadow:0 8px 32px rgba(27,39,64,.18),inset 0 1px 0 rgba(255,255,255,.35)}
+.verre::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.2) 40%,rgba(255,255,255,0) 75%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.verre-clair{background:rgba(255,255,255,.5);box-shadow:0 8px 32px rgba(31,61,102,.1),inset 0 1px 0 rgba(255,255,255,.95)}
+.verre-clair::before{background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.3) 45%,rgba(255,255,255,0) 80%)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .verre{background:rgba(31,61,102,.85)}
+  .verre-clair{background:rgba(255,255,255,.92)}
+}
+.inclinable{transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.inclinable:hover{transform:perspective(900px) rotateX(1.5deg) rotateY(-1.5deg) scale(1.01)}
+@media (hover:none){.inclinable:hover{transform:none}}
+
+/* ---------- En-tête fixe ---------- */
+.entete{position:fixed;top:24px;left:50%;z-index:50;width:calc(100% - 64px);max-width:1120px;transform:translateX(-50%);border-radius:999px;background:rgba(20,33,59,.6);color:#fff}
+.entete-interieur{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px}
+.marque{white-space:nowrap;display:flex;align-items:center;gap:12px;color:#fff;font-weight:500;font-size:1.125rem;text-decoration:none}
+.marque:hover{color:#fff}
+.nav{display:flex;align-items:center;gap:24px;font-size:.9375rem}
+.nav a:not(.bouton){color:rgba(255,255,255,.88);text-decoration:none}
+.nav a:not(.bouton):hover{color:#fff}
+.nav .bouton{padding:11px 20px}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;z-index:2;overflow:hidden;background:var(--nuit);border-radius:0 0 40px 40px;padding-top:96px;color:#fff}
+.hero-fond{position:absolute;inset:0;overflow:hidden;background:var(--nuit)}
+.hero-fond img,.devis-fond img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:75% 50%;transform-origin:70% 45%;will-change:transform;animation:respire 40s ease-in-out infinite alternate}
+.hero-fond::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,33,59,.55) 0%,rgba(20,33,59,.15) 55%,rgba(20,33,59,0) 100%)}
+@keyframes respire{from{transform:scale(1)}to{transform:scale(1.08)}}
+.hero-grille{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:48px;align-items:center;padding-block:72px}
+.hero .etiquette{color:var(--rose-clair);margin-bottom:16px}
+.hero h1{color:#fff;max-width:560px;text-wrap:balance}
+.hero h1 span{color:var(--rose-clair)}
+.hero-intro{margin-top:16px;max-width:500px;font-size:1.125rem;color:rgba(255,255,255,.88)}
+.hero-actions{margin-top:32px}
+.hero-chiffres{display:flex;flex-wrap:wrap;gap:16px 40px;margin-top:40px}
+.hero-chiffres strong{display:block;font-size:1.75rem;line-height:1.2;font-weight:500}
+.hero-chiffres span{font-size:.875rem;color:rgba(255,255,255,.75)}
+
+/* démo à trois curseurs */
+.demo{padding:24px;border-radius:24px}
+.demo-tete{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+.demo-tete span:last-child{background:rgba(91,194,180,.25);border-radius:999px;padding:4px 12px;letter-spacing:.02em;text-transform:none}
+.curseur{padding:16px 0;border-top:1px solid rgba(255,255,255,.18)}
+.curseur:first-of-type{border-top:0;padding-top:0}
+.curseur-ligne{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:8px}
+.curseur label{font-size:1rem}
+.curseur label small{font-size:.8125rem;color:rgba(255,255,255,.7)}
+.curseur output{font-weight:500;font-size:1.0625rem;white-space:nowrap}
+.curseur input[type=range]{width:100%;margin:0;accent-color:#7FD6CB;cursor:pointer}
+.demo-mesures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.demo-mesures div{background:rgba(255,255,255,.1);border-radius:12px;padding:12px}
+.demo-mesures dt{font-size:.8125rem;color:rgba(255,255,255,.75)}
+.demo-mesures dd{margin:0;font-size:1.375rem;line-height:1.3;font-weight:500}
+.demo-note{margin-top:8px;font-size:.8125rem;color:rgba(255,255,255,.75)}
+.demo-message{margin-top:16px;background:rgba(255,255,255,.1);border-radius:16px;padding:16px}
+.demo-message p{font-size:.9375rem;color:#fff}
+.demo-message .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.demo-message .bouton{padding:10px 18px;font-size:.875rem}
+
+/* ---------- Fond de page et taches animées ---------- */
+.fond-page{position:relative;overflow:hidden;margin-top:-40px;padding-top:40px;padding-bottom:0;background:linear-gradient(180deg,var(--fond) 0,var(--fond-bas) 100%)}
+.taches{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.tache{position:absolute;width:440px;height:440px;border-radius:50%;filter:blur(70px);opacity:.45;animation:flotte 36s ease-in-out infinite alternate;will-change:transform}
+.tache:nth-child(1){right:-100px;top:1%;background:#AEB9E6}
+.tache:nth-child(2){left:-140px;top:12%;background:#7FC1C2;animation-duration:32s;animation-direction:alternate-reverse}
+.tache:nth-child(3){right:-120px;top:26%;background:#D9A0B0;animation-duration:40s}
+.tache:nth-child(4){left:-140px;top:42%;background:#9FB6D6;animation-duration:34s;animation-direction:alternate-reverse}
+.tache:nth-child(5){right:-100px;top:58%;background:#AEB9E6;animation-duration:38s}
+.tache:nth-child(6){left:-120px;top:76%;background:#D9A0B0;animation-duration:35s;animation-direction:alternate-reverse}
+@keyframes flotte{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(36px,-28px,0) scale(1.1)}}
+.fond-page>*:not(.taches){position:relative;z-index:1}
+
+/* ---------- Apparition au défilement ---------- */
+.js-reveal .reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease-out,transform .8s ease-out}
+.js-reveal .reveal.vu{opacity:1;transform:none}
+
+/* ---------- Sélecteur de profil ---------- */
+.profil{padding:20px 28px;display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px}
+.profil-label{font-weight:500;color:var(--marine)}
+.profil-choix{display:flex;flex-wrap:wrap;gap:8px}
+.profil-choix button{border:1px solid #AEB9CF;border-radius:999px;padding:8px 16px;background:transparent;color:var(--marine);font-family:inherit;font-size:.9375rem;cursor:pointer;transition:transform .15s ease-out}
+.profil-choix button:active{transform:scale(.96)}
+.profil-choix button[aria-pressed=true]{background:var(--marine);border-color:var(--marine);color:#fff}
+.profil-message{flex:1 1 280px;color:var(--texte);font-size:.9375rem}
+
+/* ---------- Grilles bento ---------- */
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--gouttiere)}
+.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}
+
+/* miroir */
+.miroir{padding:24px}
+.miroir-trait{width:40px;height:4px;border-radius:2px;margin-bottom:16px}
+.miroir h3{margin-bottom:8px}
+.miroir p{font-size:.9375rem;color:var(--texte)}
+.miroir .resultat{margin-top:16px;font-size:.875rem;color:#14524D}
+.miroir .resultat strong{font-weight:500}
+
+/* dispositif */
+.etapes{display:flex;flex-direction:column}
+.etape{position:sticky;top:112px;display:flex;flex-wrap:wrap;align-items:center;gap:16px 32px;margin-bottom:24px;padding:24px 32px;background:rgba(255,255,255,.95)}
+.etape-numero{min-width:84px;font-size:3.5rem;line-height:1;font-weight:500;color:var(--rose)}
+.etape div:last-child{flex:1 1 320px}
+.etape h3{font-size:1.375rem;margin-bottom:8px}
+.etape p{color:var(--texte)}
+.plateforme{display:flex;flex-wrap:wrap;align-items:center;gap:16px 32px;padding:24px 32px}
+.plateforme>div:first-child{flex:1 1 320px}
+.plateforme h3{margin-bottom:8px}
+.plateforme p:last-child{font-size:.9375rem;color:var(--texte)}
+.puces{flex:1 1 340px;display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
+.puces li{display:flex;align-items:center;gap:16px;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,.7);font-size:.9375rem}
+.puces li::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:var(--turquoise)}
+.puces li:nth-child(2)::before{background:var(--marine)}
+.puces li:nth-child(3)::before{background:var(--rose)}
+
+/* catalogue */
+.tuile{display:flex;flex-direction:column;gap:16px;padding:24px}
+.tuile-visuel{position:relative;height:150px;overflow:hidden;border-radius:16px;background:var(--nuit)}
+.tuile-visuel img{width:100%;height:100%;object-fit:cover}
+.badge{position:absolute;top:8px;right:8px;border-radius:999px;padding:4px 12px;font-size:.75rem;font-weight:500;background:rgba(221,241,238,.95);color:#14524D}
+.badge-bientot{background:rgba(238,234,251,.96);color:var(--accent)}
+.tuile h3{font-size:1.25rem}
+.tuile>p{font-size:.9375rem;color:var(--texte)}
+.tuile-detail{flex:1;border-top:1px solid var(--trait);padding-top:16px;font-size:.875rem;color:var(--texte)}
+.tuile-detail strong{display:block;font-size:.9375rem;font-weight:500;color:var(--marine)}
+.tuile-lien{font-weight:500;color:var(--turquoise);text-decoration:none}
+.tuile-lien.bientot{color:var(--rose)}
+.tuile-large{display:grid;grid-template-columns:150px minmax(0,1fr);column-gap:24px;row-gap:16px;align-items:start;align-content:start}
+.tuile-large .tuile-visuel{grid-row:1/span 4;width:150px}
+.coach{position:relative;overflow:hidden;margin-top:var(--gouttiere);padding:32px;border-radius:24px;background:var(--nuit);color:#fff;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
+.coach>div{flex:1 1 420px}
+.coach .etiquette{color:var(--rose-clair);margin:0 0 8px}
+.coach h3{color:#fff;font-size:1.375rem;margin-bottom:8px}
+.coach p{font-size:.9375rem;color:rgba(255,255,255,.88)}
+.coach img{flex:none;width:132px;height:132px;border-radius:18px;object-fit:cover}
+.secteur{margin-top:var(--gouttiere);padding:24px 32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.secteur>div{flex:1 1 400px}
+.secteur h3{margin-bottom:8px}
+.secteur p{font-size:.9375rem;color:var(--texte)}
+
+/* qui suis-je */
+.portrait{display:flex;flex-wrap:wrap;align-items:flex-start;gap:32px}
+.portrait img{flex:none;width:160px;height:160px;border-radius:50%;object-fit:cover;box-shadow:0 8px 32px rgba(27,39,64,.25)}
+.portrait-texte{flex:1 1 360px;display:flex;flex-direction:column;gap:16px;color:var(--texte)}
+.confiance{margin-top:32px;padding:24px 32px}
+.confiance-liste{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px 32px;margin:0;padding:0;list-style:none}
+.confiance img{height:44px;width:auto;margin-bottom:8px;border-radius:6px;background:#fff}
+.confiance strong{display:block;font-weight:500;color:var(--marine)}
+.confiance li div{font-size:.875rem;color:var(--texte)}
+
+/* séance pilote */
+.pilote{padding:32px 40px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px 32px}
+.pilote>div{flex:1 1 440px}
+.pilote h2{font-size:clamp(1.5rem,1.1rem + 1.4vw,1.875rem);margin-bottom:8px}
+.pilote p:last-child{color:var(--texte)}
+
+/* faq */
+.faq{padding:8px 32px}
+.faq details{border-top:1px solid var(--trait);padding:16px 0}
+.faq details:first-child{border-top:0}
+.faq summary{display:flex;justify-content:space-between;align-items:center;gap:16px;list-style:none;cursor:pointer;font-weight:500;font-size:1.0625rem;color:var(--marine)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:1.5rem;line-height:1;color:var(--rose)}
+.faq details[open] summary::after{content:"\2013"}
+.faq summary:focus-visible{border-radius:999px;outline-offset:4px}
+.faq details p{margin-top:8px;max-width:760px;color:var(--texte)}
+
+/* guide gratuit */
+.guide{padding:32px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px 40px;align-items:center}
+.guide h3{font-size:1.25rem;margin-bottom:8px}
+.guide p{color:var(--texte)}
+.guide-formulaire{display:flex;flex-direction:column;gap:8px}
+.champ-ligne{display:flex;flex-wrap:wrap;gap:8px}
+.champ-ligne input{flex:1 1 220px}
+input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;padding:12px 20px;background:#fff;font-family:inherit;font-size:.9375rem;color:var(--encre)}
+.mention{font-size:.8125rem;color:var(--texte)}
+.erreur{min-height:1.5em;font-size:.875rem;color:var(--rose)}
+.confirmation{font-weight:500;color:#14524D}
+
+/* devis */
+.devis{position:relative;overflow:hidden;isolation:isolate;border-radius:32px;background:var(--nuit);color:#fff}
+.devis-fond{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.devis-fond img{object-position:70% 50%}
+.devis-fond::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,33,59,.7),rgba(20,33,59,.2))}
+.devis-grille{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,480px);gap:48px;align-items:center;padding:56px}
+.devis .etiquette{color:var(--rose-clair)}
+.devis h2{color:#fff;margin-bottom:12px}
+.devis-texte p:not(.etiquette){color:rgba(255,255,255,.88)}
+.devis-conditions{margin-top:16px;font-size:.8125rem;color:rgba(255,255,255,.75)}
+.devis-carte{padding:32px;border-radius:24px;min-height:320px}
+.devis-carte .progression{font-size:.8125rem;color:rgba(255,255,255,.75)}
+.devis-carte h3{margin:8px 0 16px;color:#fff;font-size:1.25rem}
+.choix{display:flex;flex-direction:column;gap:8px}
+.choix button{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:12px 20px;background:rgba(255,255,255,.12);color:#fff;font-family:inherit;font-size:.9375rem;text-align:left;cursor:pointer;transition:transform .15s ease-out,background .2s}
+.choix button:hover{background:rgba(255,255,255,.22)}
+.choix button:active{transform:scale(.96)}
+.devis-carte label{display:block;margin-bottom:8px;font-size:.9375rem}
+.devis-carte input[type=email]{width:100%}
+.devis-carte .recap{margin-bottom:16px;font-size:.9375rem;color:rgba(255,255,255,.88)}
+.devis-carte .erreur{color:var(--rose-clair)}
+.devis-carte .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.devis-carte .confirmation{color:#9BE3D8}
+
+/* barre de devis fixe */
+.barre-devis{position:fixed;left:50%;bottom:16px;z-index:40;display:flex;align-items:center;gap:16px;padding:8px 8px 8px 24px;border-radius:999px;background:rgba(20,33,59,.72);color:#fff;font-size:.9375rem;transform:translateX(-50%);transition:opacity .3s,transform .3s}
+.barre-devis.cachee{opacity:0;pointer-events:none;transform:translate(-50%,16px)}
+
+/* pied de page */
+.pied{margin-top:56px;border-top:1px solid #D8DCE6;background:rgba(255,255,255,.75);font-size:.875rem;color:var(--texte)}
+.pied .conteneur{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;padding-block:24px 96px}
+.pied nav{display:flex;flex-wrap:wrap;gap:8px 24px}
+.pied a{color:var(--marine)}
+
+/* ---------- Page mentions légales ---------- */
+.page-legale .entete{position:sticky;top:24px;left:auto;transform:none;margin:24px auto 0}
+.page-legale .entete-interieur{padding:12px 28px}
+.legal{max-width:880px;margin-inline:auto;padding:56px 32px 0}
+.legal h1{margin-bottom:8px}
+.legal .maj{color:var(--texte);margin-bottom:32px}
+.legal section{margin-bottom:24px;padding:32px}
+.legal h2{font-size:1.5rem;margin-bottom:16px}
+.legal section p+p{margin-top:16px}
+.legal section p{color:var(--texte)}
+.page-legale{background:linear-gradient(180deg,var(--fond) 0,var(--fond-bas) 100%) fixed}
+.page-legale .pied{margin-top:32px}
+.page-legale .pied .conteneur{padding-bottom:24px}
+
+/* ---------- Mouvement réduit ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+  .js-reveal .reveal{opacity:1;transform:none}
+}
+
+/* ---------- Adaptation aux petits écrans ---------- */
+@media (max-width:1040px){
+  .hero-fond::after{background:linear-gradient(180deg,rgba(20,33,59,.72) 0%,rgba(20,33,59,.4) 100%)}
+  .hero-grille{grid-template-columns:minmax(0,1fr);gap:40px}
+  .demo{max-width:560px}
+  .devis-grille{grid-template-columns:minmax(0,1fr);gap:32px;padding:40px 32px}
+  .c4{grid-column:span 6}
+  .tuile-large,.c6.tuile{grid-column:span 12}
+  .c5,.c7{grid-column:span 12}
+}
+@media (max-width:900px){
+  .guide{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .entete{width:calc(100% - 32px);top:16px}
+  .entete-interieur{padding:8px 8px 8px 20px}
+  .nav a.lien-nav{display:none}
+  .nav{gap:8px}
+}
+@media (max-width:640px){
+  .conteneur{padding-inline:16px}
+  .section{padding-top:48px}
+  .hero-grille{padding-block:48px}
+  .c4,.c6,.c5,.c7{grid-column:span 12}
+  .profil,.pilote,.guide,.secteur,.plateforme,.confiance{padding:24px}
+  .faq{padding:8px 24px}
+  .etape{padding:24px;top:96px}
+  .devis{border-radius:24px}
+  .devis-grille{padding:32px 24px}
+  .devis-carte{padding:24px}
+  .barre-devis span{display:none}
+  .barre-devis{padding:8px}
+  .coach img{display:none}
+  .pied .conteneur{padding-bottom:96px}
+}
+@media (max-width:520px){
+  .nav .bouton-fantome{display:none}
+  .marque{font-size:1rem}
+  .nav .bouton{padding:10px 16px;font-size:.875rem}
+  .tuile-large{grid-template-columns:minmax(0,1fr)}
+  .tuile-large .tuile-visuel{grid-row:auto;width:100%}
+  .demo{padding:16px}
+  .demo-mesures dd{font-size:1.125rem}
+}
+@media (max-width:420px){
+  .marque svg{display:none}
+  .entete-interieur{padding-left:16px}
+}
+
+/* Connexion */
+.connexion .champ-form{margin:0 0 24px}
+.connexion label{display:block;margin-bottom:8px;font-weight:500;color:var(--marine)}
+.connexion input[type=text],.connexion input[type=email]{width:100%;border:1px solid #AEB9CF;border-radius:16px;padding:12px 20px;background:#fff;font-family:inherit;font-size:1rem;color:var(--encre)}
+.connexion #code{letter-spacing:.12em;text-transform:uppercase}
+.connexion input:focus-visible,.connexion button:focus-visible,.connexion a:focus-visible{outline:3px solid var(--turquoise);outline-offset:2px}
+.connexion .aide{margin:8px 0 0;font-size:.875rem;color:var(--texte)}
+.connexion #etat{margin:16px 0 0;min-height:1.5em}
+.connexion #etat.err{background:#F7E1E2;border-left:4px solid var(--rose);border-radius:8px;padding:8px 16px;color:var(--encre)}
+.connexion #ok[aria-busy=true]{opacity:.7;cursor:progress}
+.connexion #mes[hidden]{display:none}
+.connexion .liste-cours{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:0 0 24px;padding:0;list-style:none}
+.connexion .liste-cours a{display:block;background:#fff;border-left:4px solid var(--turquoise);border-radius:16px;padding:16px;color:var(--marine);font-weight:500;text-decoration:none}
+.connexion .liste-cours a:hover{background:#F5F6FA}

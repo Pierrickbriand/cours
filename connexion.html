@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connexion | Pierrick Briand</title>
+<meta name="description" content="Connexion à vos cours interactifs et simulations.">
+<meta name="theme-color" content="#14213B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231F3D66'/%3E%3Ccircle cx='32' cy='26' r='12' fill='%23C9E2F7'/%3E%3Cpath d='M12 56v-8a20 20 0 0 1 40 0v8z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page-legale page-connexion">
+<header class="entete verre" style="background:rgba(20,33,59,.85);max-width:1120px;width:calc(100% - 32px)">
+  <div class="entete-interieur">
+    <a class="marque" href="/">
+      <svg width="40" height="28" viewBox="0 0 120 80" aria-hidden="true"><path d="M6 80V44a28 28 0 0 1 56 0v36z" fill="#fff"/><circle cx="64" cy="30" r="26" fill="#C9E2F7"/><rect x="48" y="26" width="32" height="8" rx="4" fill="#A8425A"/><path d="M82 50l30-3 8 33H80z" fill="#5BC2B4"/></svg>
+      <span>Pierrick Briand</span>
+    </a>
+    <nav class="nav" aria-label="Navigation">
+      <a class="bouton bouton-clair" href="/">Retour à l'accueil</a>
+    </nav>
+  </div>
+</header>
+
+<main class="legal connexion">
+  <p class="etiquette">Cours interactifs</p>
+  <h1>Connexion</h1>
+  <p class="maj">Saisissez votre code pour ouvrir vos cours et vos simulations.</p>
+
+  <section class="verre verre-clair" id="bloc-connexion" aria-labelledby="t-connexion">
+    <h2 id="t-connexion">Votre accès</h2>
+    <form id="f" novalidate autocomplete="off">
+      <div class="champ-form">
+        <label for="email">Adresse e-mail (facultative)</label>
+        <input id="email" type="email" inputmode="email" autocomplete="email" spellcheck="false">
+        <p class="aide">Laissez ce champ vide si votre école ne vous a pas demandé votre adresse.</p>
+      </div>
+      <div class="champ-form">
+        <label for="code">Code</label>
+        <input id="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="14" aria-describedby="aide-code" required>
+        <p class="aide" id="aide-code">Votre code personnel, ou le code de classe écrit au tableau.</p>
+      </div>
+      <button class="bouton bouton-marine bouton-grand" id="ok" type="submit">Ouvrir mes cours</button>
+      <p id="etat" role="status" aria-live="polite"></p>
+    </form>
+    <p class="aide" style="margin-top:16px">Code oublié&nbsp;? Demandez-le à votre formateur.</p>
+  </section>
+
+  <section class="verre verre-clair" id="mes" hidden aria-labelledby="titre-mes">
+    <h2 id="titre-mes">Mes cours</h2>
+    <ul class="liste-cours" id="liste"></ul>
+    <form id="quitter" method="post" action="/deconnexion"><button class="bouton bouton-doux" type="submit">Me déconnecter</button></form>
+  </section>
+</main>
+
+<footer class="pied">
+  <div class="conteneur">
+    <span>© 2026 Pierrick Briand. Tous droits réservés.</span>
+    <nav aria-label="Informations"><a href="/mentions.html#donnees">Vos données</a><a href="/">Retour à l'accueil</a></nav>
+  </div>
+</footer>
+<script src="/connexion.js"></script>
+</body>
+</html>

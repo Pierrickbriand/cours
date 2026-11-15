@@ -5,7 +5,13 @@
 const COOKIE = "__Host-session";
 const MAX_LIFETIME = 24 * 3600; // un jeton plus long que 24 h est refusé, même signé
 const CLOCK_SKEW = 60;
-const PUBLIC_PATHS = new Set(["/", "/index.html"]);
+const PUBLIC_PATHS = new Set([
+  "/", "/index.html", "/connexion", "/connexion.html", "/connexion.js",
+  "/mentions", "/mentions.html", "/style.css", "/script.js",
+]);
+// Ressources du site public (images, polices) : un seul dossier, jamais un cours.
+const PUBLIC_PREFIXES = ["/assets/"];
+const isPublic = (path) => PUBLIC_PATHS.has(path) || PUBLIC_PREFIXES.some((p) => path.startsWith(p));
 const SLUG = /^[a-z0-9-]{1,80}$/i;
 const encoder = new TextEncoder();
 
@@ -64,7 +70,7 @@ function cleanPath(url) {
 function denied(request, status, text) {
   const wantsPage = (request.headers.get("Accept") || "").includes("text/html");
   if (wantsPage && request.method === "GET" && status === 401) {
-    return new Response(null, { status: 302, headers: { Location: "/?acces=requis", "Cache-Control": "no-store" } });
+    return new Response(null, { status: 302, headers: { Location: "/connexion?acces=requis", "Cache-Control": "no-store" } });
   }
   return new Response(text, {
     status,
@@ -86,7 +92,7 @@ function safeNext(next, session) {
     const slug = next.split("/")[1].toLowerCase();
     if (session.scope.includes("*") || session.scope.includes(slug)) return next;
   }
-  return "/";
+  return "/connexion";
 }
 
 async function handleLogin(request, env) {
@@ -113,7 +119,7 @@ function handleLogout(request) {
   return new Response(null, {
     status: 303,
     headers: {
-      Location: "/",
+      Location: "/connexion",
       "Set-Cookie": `${COOKIE}=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0`,
       "Cache-Control": "no-store",
     },
@@ -133,7 +139,7 @@ export default {
       return denied(request, 405, "Méthode non autorisée");
     }
 
-    if (PUBLIC_PATHS.has(path)) return env.ASSETS.fetch(request);
+    if (isPublic(path)) return env.ASSETS.fetch(request);
 
     const slug = path.split("/")[1] || "";
     if (!SLUG.test(slug)) return denied(request, 404, "Introuvable");
@@ -150,4 +156,4 @@ export default {
   },
 };
 
-export { verifyToken, cleanPath };
+export { verifyToken, cleanPath, isPublic };

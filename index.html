@@ -1,110 +1,358 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex, nofollow"><meta name="referrer" content="no-referrer">
-<title>Cours de Pierrick Briand</title>
-<style>
-:root{--marine:#1F3D66;--turq:#1D6F69;--rose:#A8425A;--encre:#1B2740;--ardoise:#3F4C66;--gris:#56627A;--filet:#D8DCE6;--fond:#EEF0F4;--ciel:#C9E2F7;--lav:#EEEAFB;--lavtxt:#2E2A6B;--attention:#F7E1E2}
-*{box-sizing:border-box}
-body{margin:0;background:var(--fond);color:var(--encre);font-family:Poppins,'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:1.5}
-.bandeau{background:var(--ciel);padding:40px 16px 0}
-.bandeau .in{max-width:720px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
-.bandeau .txt{padding-bottom:32px}
-.sur{margin:0 0 6px;color:var(--rose);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-h1{margin:0 0 8px;color:var(--marine);font-size:30px;font-weight:500;line-height:1.2}
-.sous{margin:0;color:var(--ardoise)}
-.deco{flex:none;display:block;max-width:40%;height:auto}
-main{max-width:720px;margin:0 auto;padding:24px 16px 40px}
-.carte{background:#fff;border:1px solid var(--filet);border-radius:12px;padding:24px}
-label{display:block;margin:0 0 4px;font-weight:500;color:var(--marine)}
-.aide{margin:0 0 16px;color:var(--gris);font-size:14px}
-input[type=text],input[type=email]{width:100%;font:inherit;padding:10px 12px;border:1px solid #9AA3B5;border-radius:6px;background:#fff;color:var(--encre)}
-#code{letter-spacing:.12em;text-transform:uppercase}
-input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--turq);outline-offset:2px}
-.champ{margin:0 0 16px}
-.champ .aide{margin:4px 0 0}
-button{font:inherit;border:0;border-radius:6px;padding:10px 20px;cursor:pointer;font-weight:500}
-.prim{background:var(--marine);color:#fff}
-.prim[aria-busy=true]{opacity:.7;cursor:progress}
-.sec{background:var(--lav);color:var(--lavtxt)}
-#etat{margin:16px 0 0;min-height:1.5em;font-size:15px}
-#etat.err{background:var(--attention);border-left:4px solid var(--rose);padding:10px 12px;color:var(--encre)}
-.oubli{margin:16px 0 0;color:var(--gris);font-size:14px}
-#mes{margin:24px 0 0}
-#mes[hidden]{display:none}
-#mes h2{margin:0 0 12px;color:var(--marine);font-size:20px;font-weight:500}
-.liste{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:0 0 16px;padding:0;list-style:none}
-.liste a{display:block;background:#fff;border:1px solid var(--filet);border-left:4px solid var(--turq);border-radius:6px;padding:14px 16px;color:var(--marine);text-decoration:none;font-weight:500}
-.liste a:hover{background:#F5F6FA}
-footer{max-width:720px;margin:0 auto;padding:0 16px 32px;color:var(--gris);font-size:13px}
-footer a{color:var(--turq)}
-@media (max-width:560px){.deco{display:none}h1{font-size:26px}}
-</style></head>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulations de gestion clés en main | Pierrick Briand</title>
+<meta name="description" content="Des simulations de gestion en ligne, clés en main ou sur mesure, guidées par un coach IA, pour les organismes de formation, l'enseignement supérieur, les CFA, les entreprises et le secteur public.">
+<meta name="theme-color" content="#14213B">
+<meta property="og:title" content="Faites décider vos apprenants">
+<meta property="og:description" content="Simulations de gestion en ligne, clés en main ou sur mesure, guidées par un coach IA.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231F3D66'/%3E%3Ccircle cx='32' cy='26' r='12' fill='%23C9E2F7'/%3E%3Cpath d='M12 56v-8a20 20 0 0 1 40 0v8z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/fonts/poppins-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/poppins-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
 <body>
-<header class="bandeau"><div class="in">
-<div class="txt"><p class="sur">Cours interactifs</p><h1>Cours de Pierrick Briand</h1><p class="sous">Saisissez votre code pour ouvrir vos cours.</p></div>
-<svg class="deco" width="330" height="150" viewBox="0 0 330 150" aria-hidden="true"><path d="M20 150V82a62 62 0 0 1 124 0v68z" fill="#1F3D66"/><path d="M228 96l84-6 18 60H222z" fill="#5BC2B4"/><circle cx="178" cy="62" r="58" fill="#fff"/><rect x="144" y="54" width="68" height="16" rx="8" fill="#A8425A"/></svg>
-</div></header>
-<main>
-<section class="carte" aria-labelledby="titre-form">
-<form id="f" novalidate autocomplete="off">
-<div class="champ"><label for="email">Adresse e-mail (facultative)</label>
-<input id="email" type="email" inputmode="email" autocomplete="email" spellcheck="false">
-<p class="aide">Laissez ce champ vide si votre école ne vous a pas demandé votre adresse.</p></div>
-<div class="champ"><label for="code">Code</label>
-<input id="code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="14" aria-describedby="aide-code" required>
-<p class="aide" id="aide-code">Votre code personnel, ou le code de classe écrit au tableau.</p></div>
-<button class="prim" id="ok" type="submit">Ouvrir mes cours</button>
-<p id="etat" role="status" aria-live="polite"></p>
-</form>
-<p class="oubli">Code oublié&nbsp;? Demandez-le à votre formateur.</p>
-</section>
-<section id="mes" hidden aria-labelledby="titre-mes"><h2 id="titre-mes">Mes cours</h2><ul class="liste" id="liste"></ul>
-<form id="quitter" method="post" action="/deconnexion"><button class="sec" type="submit">Me déconnecter</button></form></section>
+<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+<header class="entete verre">
+  <div class="entete-interieur">
+    <a class="marque" href="#top" aria-label="Pierrick Briand, accueil">
+      <svg width="40" height="28" viewBox="0 0 120 80" aria-hidden="true"><path d="M6 80V44a28 28 0 0 1 56 0v36z" fill="#fff"/><circle cx="64" cy="30" r="26" fill="#C9E2F7"/><rect x="48" y="26" width="32" height="8" rx="4" fill="#A8425A"/><path d="M82 50l30-3 8 33H80z" fill="#5BC2B4"/></svg>
+      <span>Pierrick Briand</span>
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a class="lien-nav" href="#simulations">Simulations</a>
+      <a class="lien-nav" href="#dispositif">Notre dispositif</a>
+      <a class="lien-nav" href="#qui">Qui suis-je</a>
+      <a class="bouton bouton-fantome" href="/connexion">S'identifier</a>
+      <a class="bouton bouton-clair" href="#devis">Demander un devis</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <!-- Accroche -->
+  <div class="hero" id="top">
+    <div class="hero-fond"><img src="assets/accueil-bulles.webp" alt="" width="2400" height="1339" fetchpriority="high"></div>
+    <div class="conteneur hero-grille">
+      <div>
+        <p class="etiquette">Simulations de gestion clés en main</p>
+        <h1>Faites <span>décider</span> vos apprenants</h1>
+        <p class="hero-intro">Des simulations de gestion en ligne, clés en main ou sur mesure, guidées par un coach IA. Vos apprenants appliquent les notions, mesurent les conséquences de leurs choix et progressent en une séance.</p>
+        <div class="hero-actions"><a class="bouton bouton-clair bouton-grand" href="#devis">Demander un devis</a></div>
+        <div class="hero-chiffres">
+          <div><strong>20&nbsp;ans</strong><span>d'expérience professionnelle</span></div>
+          <div><strong>Du BTS au Mastère</strong><span>des publics variés</span></div>
+        </div>
+      </div>
+
+      <!-- Démo à trois curseurs (calcul dans script.js) -->
+      <section class="demo verre inclinable" aria-labelledby="demo-titre">
+        <div class="demo-tete"><span id="demo-titre">Décisions · Équipe 3</span><span>À vous de jouer</span></div>
+        <div class="curseur">
+          <div class="curseur-ligne"><label for="d-tarif">Tarif de la chambre <small>par nuit</small></label><output id="o-tarif" for="d-tarif"></output></div>
+          <input id="d-tarif" type="range" min="80" max="250" step="1" value="129">
+        </div>
+        <div class="curseur">
+          <div class="curseur-ligne"><label for="d-equipe">Équipe en salle <small>par service</small></label><output id="o-equipe" for="d-equipe"></output></div>
+          <input id="d-equipe" type="range" min="2" max="12" step="1" value="6">
+        </div>
+        <div class="curseur">
+          <div class="curseur-ligne"><label for="d-budget">Budget de communication <small>trimestre</small></label><output id="o-budget" for="d-budget"></output></div>
+          <input id="d-budget" type="range" min="0" max="5000" step="100" value="2000">
+        </div>
+        <dl class="demo-mesures">
+          <div><dt>Taux d'occupation</dt><dd id="m-occ"></dd></div>
+          <div><dt>Satisfaction des clients</dt><dd id="m-sat"></dd></div>
+          <div><dt>Chiffre d'affaires</dt><dd id="m-ca"></dd></div>
+          <div><dt>Résultat du trimestre</dt><dd id="m-res"></dd></div>
+        </dl>
+        <p class="demo-note">Modèle simplifié, donné à titre d'exemple. Bougez un curseur&nbsp;: tout se recalcule.</p>
+        <div class="demo-message">
+          <p id="demo-message" aria-live="polite"></p>
+          <div class="actions">
+            <a class="bouton bouton-clair" href="#simulations">Voir la simulation complète</a>
+            <a class="bouton bouton-fantome" href="#devis">Demander un devis</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="fond-page">
+    <div class="taches" aria-hidden="true"><div class="tache"></div><div class="tache"></div><div class="tache"></div><div class="tache"></div><div class="tache"></div><div class="tache"></div></div>
+
+    <!-- Sélecteur d'audience -->
+    <section class="conteneur section reveal" id="profil" style="padding-top:40px">
+      <div class="profil verre verre-clair">
+        <span class="profil-label" id="profil-label">Je suis&nbsp;:</span>
+        <div class="profil-choix" role="group" aria-labelledby="profil-label">
+          <button type="button" aria-pressed="false" data-profil="0">Organisme de formation</button>
+          <button type="button" aria-pressed="false" data-profil="1">Enseignement supérieur ou CFA</button>
+          <button type="button" aria-pressed="false" data-profil="2">Entreprise</button>
+          <button type="button" aria-pressed="false" data-profil="3">Secteur public</button>
+        </div>
+        <p class="profil-message" id="profil-message" aria-live="polite"></p>
+        <a class="bouton bouton-marine" id="profil-cta" href="#devis">Demander un devis</a>
+      </div>
+    </section>
+
+    <!-- Miroir -->
+    <section class="conteneur section reveal" aria-labelledby="t-miroir">
+      <div class="entete-section">
+        <p class="etiquette">Ce que vous vivez</p>
+        <h2 id="t-miroir">Ils connaissent le cours. Savent-ils décider&nbsp;?</h2>
+        <p class="chapeau">Vous expliquez la théorie, les apprenants hochent la tête. Mais décideront-ils seuls, le moment venu&nbsp;? Il leur manque l'occasion d'essayer, de voir les conséquences et d'ajuster.</p>
+      </div>
+      <div class="bento">
+        <article class="miroir c5 verre verre-clair inclinable">
+          <div class="miroir-trait" style="background:var(--turquoise)"></div>
+          <h3>Organismes de formation</h3>
+          <p>Vos clients veulent plus de pratique. Refaire tout votre catalogue prendrait des mois.</p>
+          <p class="resultat"><strong>Le résultat&nbsp;:</strong> des séances plus actives, une progression suivie par session.</p>
+        </article>
+        <article class="miroir c7 verre verre-clair inclinable">
+          <div class="miroir-trait" style="background:var(--marine)"></div>
+          <h3>Enseignement supérieur et CFA</h3>
+          <p>Vos étudiants retiennent les notions, mais peinent à les relier à l'entreprise, surtout en alternance.</p>
+          <p class="resultat"><strong>Le résultat&nbsp;:</strong> une classe qui participe, des situations concrètes, une progression visible par le formateur.</p>
+        </article>
+        <article class="miroir c7 verre verre-clair inclinable">
+          <div class="miroir-trait" style="background:var(--rose)"></div>
+          <h3>Entreprises</h3>
+          <p>Vos équipes comprennent vite en salle, puis retrouvent leurs habitudes dès leur retour au poste.</p>
+          <p class="resultat"><strong>Le résultat&nbsp;:</strong> une vision globale de l'activité, des réflexes ancrés par la pratique.</p>
+        </article>
+        <article class="miroir c5 verre verre-clair inclinable">
+          <div class="miroir-trait" style="background:var(--accent)"></div>
+          <h3>Secteur public</h3>
+          <p>Vos agents arbitrent chaque jour entre budget, priorités et règles. Il est rare de pouvoir s'y entraîner sans risque.</p>
+          <p class="resultat"><strong>Le résultat&nbsp;:</strong> des décisions pesées en équipe, des réflexes partagés entre services.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Dispositif -->
+    <section class="conteneur section reveal" id="dispositif" aria-labelledby="t-dispositif">
+      <div class="entete-section">
+        <p class="etiquette">Notre dispositif</p>
+        <h2 id="t-dispositif">Un dispositif complet, pas un simple outil</h2>
+        <p class="chapeau">Le dispositif s'adapte à votre public, à votre niveau et au temps dont vous disposez. Clé en main avec une simulation du catalogue, ou sur mesure&nbsp;: votre secteur, vos données, votre vocabulaire.</p>
+      </div>
+      <div class="etapes">
+        <article class="etape verre verre-clair"><div class="etape-numero" aria-hidden="true">01</div><div><h3>Cadrage et conseil</h3><p>Nous fixons ensemble vos objectifs pédagogiques, votre public et la durée de la séance.</p></div></article>
+        <article class="etape verre verre-clair"><div class="etape-numero" aria-hidden="true">02</div><div><h3>La simulation</h3><p>Les participants pilotent une activité en ligne. Chaque décision a des conséquences sur les résultats.</p></div></article>
+        <article class="etape verre verre-clair"><div class="etape-numero" aria-hidden="true">03</div><div><h3>L'animation</h3><p>Vous animez seul, avec mon guide d'animation, ou je conduis la séance pour vous.</p></div></article>
+      </div>
+      <div class="plateforme verre verre-clair">
+        <div>
+          <p class="etiquette">La plateforme</p>
+          <h3>Animer et suivre depuis un seul endroit</h3>
+          <p>Le formateur ouvre l'accès, suit la progression et récupère les travaux à évaluer. Les participants entrent avec leur code.</p>
+        </div>
+        <ul class="puces">
+          <li>Un code de classe à écrire au tableau</li>
+          <li>La progression de chaque participant</li>
+          <li>Un accès réservé aux groupes inscrits</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Catalogue -->
+    <section class="conteneur section reveal" id="simulations" aria-labelledby="t-catalogue">
+      <div class="entete-section">
+        <p class="etiquette">Le catalogue</p>
+        <h2 id="t-catalogue">Une simulation pour chaque fonction de l'entreprise</h2>
+        <p class="chapeau">Le catalogue est visible de tous. L'accès aux simulations est réservé aux groupes inscrits, avec un code. Les catégories «&nbsp;Bientôt&nbsp;» se construisent sur mesure.</p>
+      </div>
+      <div class="bento">
+        <article class="tuile c4 verre verre-clair inclinable">
+          <div class="tuile-visuel"><img src="assets/cat-management.webp" alt="" width="800" height="800" loading="lazy"><span class="badge">Disponible</span></div>
+          <h3>Management</h3>
+          <p>Piloter une organisation et arbitrer.</p>
+          <div class="tuile-detail"><strong>Pilotage d'un établissement hôtelier</strong>Tarifs, équipe, satisfaction, résultats.</div>
+          <a class="tuile-lien" href="#devis">Découvrir</a>
+        </article>
+        <article class="tuile c4 verre verre-clair inclinable">
+          <div class="tuile-visuel"><img src="assets/cat-marketing.webp" alt="" width="800" height="800" loading="lazy"><span class="badge">Disponible</span></div>
+          <h3>Marketing</h3>
+          <p>Positionner, fixer un prix, communiquer.</p>
+          <div class="tuile-detail"><strong>Simulation marketing</strong>Prix, budget de communication, positionnement.</div>
+          <a class="tuile-lien" href="#devis">Découvrir</a>
+        </article>
+        <article class="tuile c4 verre verre-clair inclinable">
+          <div class="tuile-visuel"><img src="assets/cat-commercial.webp" alt="" width="800" height="800" loading="lazy"><span class="badge badge-bientot">Bientôt</span></div>
+          <h3>Commercial</h3>
+          <p>Vendre, négocier, fidéliser.</p>
+          <div class="tuile-detail">En préparation. Sur mesure pour votre groupe.</div>
+          <a class="tuile-lien bientot" href="#devis">Me le proposer</a>
+        </article>
+        <article class="tuile c4 verre verre-clair inclinable">
+          <div class="tuile-visuel"><img src="assets/cat-production.webp" alt="" width="800" height="800" loading="lazy"><span class="badge badge-bientot">Bientôt</span></div>
+          <h3>Production</h3>
+          <p>Organiser, planifier, livrer.</p>
+          <div class="tuile-detail">En préparation. Sur mesure pour votre groupe.</div>
+          <a class="tuile-lien bientot" href="#devis">Me le proposer</a>
+        </article>
+        <article class="tuile c4 verre verre-clair inclinable">
+          <div class="tuile-visuel"><img src="assets/cat-approvisionnement.webp" alt="" width="800" height="800" loading="lazy"><span class="badge badge-bientot">Bientôt</span></div>
+          <h3>Approvisionnement</h3>
+          <p>Acheter, stocker, négocier.</p>
+          <div class="tuile-detail">En préparation. Sur mesure pour votre groupe.</div>
+          <a class="tuile-lien bientot" href="#devis">Me le proposer</a>
+        </article>
+        <article class="tuile c4 verre verre-clair inclinable">
+          <div class="tuile-visuel"><img src="assets/cat-rh.webp" alt="" width="800" height="800" loading="lazy"><span class="badge badge-bientot">Bientôt</span></div>
+          <h3>Ressources humaines</h3>
+          <p>Recruter, former, animer une équipe.</p>
+          <div class="tuile-detail">En préparation. Sur mesure pour votre groupe.</div>
+          <a class="tuile-lien bientot" href="#devis">Me le proposer</a>
+        </article>
+        <article class="tuile tuile-large c6 verre verre-clair inclinable">
+          <div class="tuile-visuel"><img src="assets/cat-finance.webp" alt="" width="800" height="800" loading="lazy"><span class="badge badge-bientot">Bientôt</span></div>
+          <h3>Gestion financière</h3>
+          <p>Budgéter, piloter la trésorerie.</p>
+          <div class="tuile-detail">En préparation. Sur mesure pour votre groupe.</div>
+          <a class="tuile-lien bientot" href="#devis">Me le proposer</a>
+        </article>
+        <article class="tuile tuile-large c6 verre verre-clair inclinable">
+          <div class="tuile-visuel"><img src="assets/cat-si-ia.webp" alt="" width="800" height="800" loading="lazy"><span class="badge">Disponible</span></div>
+          <h3>Systèmes d'information et IA</h3>
+          <p>Choisir, déployer et encadrer les outils numériques.</p>
+          <div class="tuile-detail"><strong>Gouvernance de l'IA</strong>Risques, conformité et usages.</div>
+          <a class="tuile-lien" href="#devis">Découvrir</a>
+        </article>
+      </div>
+
+      <div class="coach">
+        <div>
+          <p class="etiquette">Pour toutes les catégories</p>
+          <h3>Coach IA</h3>
+          <p>Il guide l'apprenant sans faire le travail à sa place, dans chaque simulation.</p>
+        </div>
+        <img src="assets/cat-coach-ia.webp" alt="" width="132" height="132" loading="lazy">
+        <a class="bouton bouton-clair" href="#devis">Découvrir le coach</a>
+      </div>
+
+      <div class="secteur verre verre-clair">
+        <div>
+          <h3>Votre secteur n'est pas dans la liste&nbsp;?</h3>
+          <p>Banque, commerce, industrie, santé&nbsp;: je construis une simulation à votre image.</p>
+        </div>
+        <a class="bouton bouton-doux" href="#devis">Parler de mon projet</a>
+      </div>
+    </section>
+
+    <!-- Qui suis-je -->
+    <section class="conteneur section reveal" id="qui" aria-labelledby="t-qui">
+      <p class="etiquette">Qui suis-je</p>
+      <h2 id="t-qui" style="margin-bottom:24px">Un ingénieur pédagogique qui construit ses propres outils</h2>
+      <div class="portrait">
+        <img src="assets/portrait.webp" alt="Portrait de Pierrick Briand" width="160" height="160" loading="lazy">
+        <div class="portrait-texte">
+          <p>Je suis Pierrick Briand, ingénieur pédagogique depuis 2016, formateur indépendant en intelligence artificielle et en marketing. J'ai passé onze ans comme responsable de formation à l'IUT de Saint-Nazaire. J'interviens aujourd'hui dans une dizaine d'établissements, du BTS au Mastère.</p>
+          <p>Mon approche&nbsp;: faire décider d'abord, expliquer ensuite. J'ai conçu ces simulations pour mes propres cours, et je les propose maintenant à d'autres formateurs et organismes.</p>
+        </div>
+      </div>
+      <div class="confiance verre verre-clair">
+        <p class="etiquette">Ils m'ont fait confiance</p>
+        <ul class="confiance-liste">
+          <li><img src="assets/logo-audencia.png" alt="Audencia" loading="lazy"><strong>Hervé Duffay</strong><div>Responsable développements académiques, direction des programmes, Audencia</div></li>
+          <li><img src="assets/logo-enc.png" alt="École nantaise de commerce" loading="lazy"><strong>Laetitia Kervarec</strong><div>Responsable pédagogique et formatrice en marketing</div></li>
+          <li><img src="assets/logo-esct.png" alt="ESCT, École supérieure de conduite de travaux" loading="lazy"><strong>Lucile Legal</strong><div>Directrice. Simulation créée pour un groupe d'étudiants de MP2.</div></li>
+          <li><img src="assets/logo-iso.png" alt="ISO, Institut supérieur d'optique" loading="lazy"><strong>Clément Kerleau</strong><div>Étudiant en marketing stratégique. A travaillé en groupe avec l'un des simulateurs.</div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Séance pilote -->
+    <section class="conteneur section reveal" id="pilote">
+      <div class="pilote verre verre-clair">
+        <div>
+          <p class="etiquette">Pour décider sans risque</p>
+          <h2>Testez avec un petit groupe avant de vous engager</h2>
+          <p>Une séance pilote avec quatre apprenants montre l'effet de la simulation sur votre public. Elle est gratuite.</p>
+        </div>
+        <a class="bouton bouton-marine bouton-grand" href="#devis">Réserver un appel de 20&nbsp;minutes</a>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="conteneur section reveal" id="faq" aria-labelledby="t-faq">
+      <div class="entete-section">
+        <p class="etiquette">Questions fréquentes</p>
+        <h2 id="t-faq">Ce que les responsables pédagogiques demandent</h2>
+        <p class="chapeau">Durée, matériel, données, animation&nbsp;: les réponses aux questions qui précèdent une décision.</p>
+      </div>
+      <div class="faq verre verre-clair">
+        <details open><summary>Combien de temps dure une séance&nbsp;?</summary><p>Nous fixons la durée ensemble au moment du cadrage, selon votre emploi du temps. Une séance dure en général de 2 à 4&nbsp;heures. La séance pilote dure environ 2&nbsp;heures.</p></details>
+        <details><summary>Faut-il installer un logiciel&nbsp;?</summary><p>Non. Les simulations s'ouvrent dans un navigateur web, avec un simple lien.</p></details>
+        <details><summary>Mes étudiants doivent-ils donner leur adresse e-mail&nbsp;?</summary><p>Non, ce n'est pas obligatoire. Un code de classe, écrit au tableau, ouvre le cours pour toute la classe. Chaque étudiant peut aussi avoir un code personnel.</p></details>
+        <details><summary>Que devient le travail des étudiants&nbsp;?</summary><p>Le formateur suit la progression et récupère les travaux à évaluer. Les données des étudiants (noms, e-mails, avancement, travaux, notes) sont stockées dans Google Drive et Google Sheets. Elles sont conservées jusqu'à la clôture du cours en fin d'année, qui les efface. Le détail est sur la page <a href="mentions.html#donnees">Vos données</a>.</p></details>
+        <details><summary>Puis-je animer la séance moi-même&nbsp;?</summary><p>Oui, avec mon guide d'animation. Je peux aussi conduire la séance pour vous.</p></details>
+        <details><summary>Peut-on adapter une simulation à notre secteur&nbsp;?</summary><p>Oui, c'est l'offre sur mesure&nbsp;: votre secteur, vos données, votre vocabulaire.</p></details>
+        <details><summary>Comment obtenir un devis, et sous quel délai&nbsp;?</summary><p>Décrivez votre public, votre niveau et le temps disponible. Réponse sous 48&nbsp;heures ouvrées.</p></details>
+      </div>
+    </section>
+
+    <!-- Guide gratuit -->
+    <section class="conteneur section reveal" id="guide">
+      <div class="guide verre verre-clair">
+        <div>
+          <h3>Guide gratuit&nbsp;: stratégies de positionnement</h3>
+          <p>Comprendre et comparer les grandes stratégies de positionnement, avant de lancer une simulation. Recevez-le par e-mail, en PDF.</p>
+        </div>
+        <form class="guide-formulaire" id="form-guide" novalidate>
+          <div class="champ-ligne">
+            <label class="sr-only" for="g-mail">Votre adresse e-mail</label>
+            <input id="g-mail" name="email" type="email" autocomplete="email" placeholder="Votre adresse e-mail" required>
+            <button class="bouton bouton-turquoise" type="submit">Recevoir le guide</button>
+          </div>
+          <input id="g-piege" name="site" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <p class="erreur" id="g-erreur" role="alert"></p>
+          <p class="confirmation" id="g-merci" hidden></p>
+          <p class="mention">Votre adresse sert uniquement à vous envoyer ce guide. Elle est conservée 12&nbsp;mois au plus et effacée sur simple demande, par e-mail. <a href="mentions.html#donnees">Vos données</a>.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- Devis en trois questions -->
+    <section class="conteneur section reveal" id="devis" aria-labelledby="t-devis" style="padding-bottom:56px">
+      <div class="devis">
+        <div class="devis-fond"><img src="assets/connexion-masse.webp" alt="" width="2400" height="1339" loading="lazy"></div>
+        <div class="devis-grille">
+          <div class="devis-texte">
+            <p class="etiquette">Prêt à passer à l'action&nbsp;?</p>
+            <h2 id="t-devis">Créez la simulation de votre formation</h2>
+            <p>Trois questions, trois clics. Je vous réponds avec une proposition adaptée.</p>
+            <p class="devis-conditions">Réponse sous 48&nbsp;heures ouvrées · Devis valable 30&nbsp;jours, règlement à 30&nbsp;jours, TVA non applicable (art.&nbsp;293&nbsp;B du CGI)</p>
+          </div>
+          <div class="devis-carte verre" id="devis-carte" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+  </div>
 </main>
-<footer><p>© 2026 Pierrick Briand. Tous droits réservés. <a href="https://pierrickbriand.github.io/outils-ia-pedagogie/atelier/confidentialite.html">Vos données</a></p></footer>
-<script>
-(function(){
-var HUB='https://script.google.com/macros/s/AKfycbwvyFm2CsUrDzXGqqItVq8fx3NA-278M4jG9HVcFYgRQ1jg354T2alXY7QHUWAz2VDk/exec';
-var SLUG=/^[a-z0-9-]{1,80}$/i, CLE='cours-autorises';
-var f=document.getElementById('f'), etat=document.getElementById('etat'), ok=document.getElementById('ok');
-function msg(t,err){etat.textContent=t;etat.className=err?'err':'';}
-function lire(){try{var v=JSON.parse(sessionStorage.getItem(CLE)||'[]');return Array.isArray(v)?v.filter(function(c){return c&&SLUG.test(String(c.slug||''));}):[];}catch(e){return[];}}
-function montrer(){
-  var l=lire(), ul=document.getElementById('liste'), bloc=document.getElementById('mes');
-  ul.textContent='';
-  l.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);li.appendChild(a);ul.appendChild(li);});
-  bloc.hidden=!l.length;
-}
-document.getElementById('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(CLE);}catch(e){}});
-montrer();
-if(/(^|[?&])acces=requis(&|$)/.test(location.search)) msg('Votre accès a expiré ou ne couvre pas ce cours. Saisissez à nouveau votre code.',true);
-var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
-function ouvrir(token,cours){
-  try{sessionStorage.setItem(CLE,JSON.stringify(cours));}catch(e){}
-  var g=document.createElement('form');g.method='post';g.action='/auth';g.style.display='none';
-  var a=document.createElement('input');a.type='hidden';a.name='t';a.value=token;g.appendChild(a);
-  var b=document.createElement('input');b.type='hidden';b.name='next';b.value=cours.length===1?'/'+cours[0].slug+'/':'/';g.appendChild(b);
-  document.body.appendChild(g);g.submit();
-}
-function envoyer(essai){
-  var mail=document.getElementById('email').value.trim().toLowerCase(), code=document.getElementById('code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
-  return fetch(HUB,{method:'POST',body:JSON.stringify({action:'connexion',email:mail,code:code})}).then(function(r){return r.json();}).then(function(r){
-    if(r&&r.retry&&essai<2) return new Promise(function(ok2){setTimeout(ok2,1500);}).then(function(){return envoyer(essai+1);});
-    return r;
-  });
-}
-f.addEventListener('submit',function(e){
-  e.preventDefault();
-  var mail=document.getElementById('email').value.trim(), code=document.getElementById('code').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
-  if(mail&&!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)){msg(ERR['e-mail invalide'],true);return;}
-  if(code.length<6){msg('Saisissez votre code, de 6 à 8 caractères.',true);return;}
-  ok.setAttribute('aria-busy','true');msg('Vérification en cours…',false);
-  envoyer(0).then(function(r){
-    ok.removeAttribute('aria-busy');
-    if(r&&r.ok&&r.token&&Array.isArray(r.cours)&&r.cours.length){ouvrir(String(r.token),r.cours.filter(function(c){return c&&SLUG.test(String(c.slug||''));}));return;}
-    msg((r&&ERR[r.err])||'La connexion a échoué. Réessayez dans un instant.',true);
-  }).catch(function(){ok.removeAttribute('aria-busy');msg('Le service ne répond pas. Réessayez dans un instant.',true);});
-});
-})();
-</script>
-</body></html>
+
+<div class="barre-devis verre cachee" id="barre-devis">
+  <span>Un projet de simulation&nbsp;?</span>
+  <a class="bouton bouton-clair" href="#devis">Demander un devis</a>
+</div>
+
+<footer class="pied">
+  <div class="conteneur">
+    <span>© 2026 Pierrick Briand. Tous droits réservés.</span>
+    <nav aria-label="Liens du pied de page">
+      <a href="/connexion">Vous suivez l'un de mes cours&nbsp;? S'identifier</a>
+      <a href="mentions.html#donnees">Vos données</a>
+      <a href="mentions.html#mentions">Mentions légales</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="script.js" defer></script>
+</body>
+</html>
