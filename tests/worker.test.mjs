@@ -36,6 +36,18 @@ test("la page d'accueil publique reste accessible sans jeton", async () => {
   assert.equal(res.status, 200);
 });
 
+test("pages et ressources du site public : accessibles sans jeton", async () => {
+  for (const p of ["/connexion", "/connexion.html", "/mentions.html", "/style.css", "/script.js", "/connexion.js", "/assets/portrait.webp"]) {
+    assert.equal((await get(p)).status, 200, p);
+  }
+});
+
+test("page HTML d'un cours sans jeton : renvoi vers la connexion", async () => {
+  const res = await worker.fetch(new Request(ORIGIN + "/cours-test/", { headers: { Accept: "text/html" } }), env);
+  assert.equal(res.status, 302);
+  assert.equal(res.headers.get("Location"), "/connexion?acces=requis");
+});
+
 test("1. sans jeton : refusé", async () => {
   for (const p of ["/cours-test/", "/cours-test/index.html", "/iag-vatel/telechargements/fiche.pdf"]) {
     const res = await get(p);
@@ -163,7 +175,7 @@ test("connexion : redirection ouverte et autre cours neutralisées", async () =>
       new Request(ORIGIN + "/auth", { method: "POST", body: new URLSearchParams({ t: token, next }) }),
       env
     );
-    assert.equal(res.headers.get("Location"), "/", next);
+    assert.equal(res.headers.get("Location"), "/connexion", next);
   }
 });
 
