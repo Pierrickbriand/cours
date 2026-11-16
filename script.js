@@ -211,6 +211,49 @@
     });
   }
 
+  /* ------------------ Démonstration : accès envoyé par e-mail ------------------ */
+  function demonstration() {
+    const form = $('#form-demo');
+    if (!form) return;
+    const erreur = $('#dm-erreur');
+    const merci = $('#dm-merci');
+    const bouton = $('button[type="submit"]', form);
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const prenom = $('#dm-prenom').value.trim(), nom = $('#dm-nom').value.trim(), orga = $('#dm-orga').value.trim(), mail = $('#dm-mail').value.trim();
+      erreur.textContent = '';
+      if (!prenom || !nom) { erreur.textContent = 'Indiquez votre prénom et votre nom.'; return; }
+      if (!emailValide(mail)) { erreur.textContent = 'Indiquez une adresse e-mail valide.'; $('#dm-mail').focus(); return; }
+      if (!$('#dm-accord').checked) { erreur.textContent = 'Cochez la case pour recevoir votre accès.'; return; }
+      bouton.disabled = true;
+      let rep = null;
+      try {
+        const r = await fetch(CONFIG.endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'collecte', type: 'demo', consentement: true, prenom: prenom, nom: nom, organisme: orga, email: mail, piege: ($('#dm-piege') || {}).value || '' })
+        });
+        rep = await r.json();
+      } catch (e) { rep = null; }
+      bouton.disabled = false;
+      if (rep && rep.ok) {
+        merci.textContent = 'Merci. Votre accès arrive par e-mail dans quelques minutes. Pensez à regarder vos courriers indésirables.';
+        merci.hidden = false;
+        return;
+      }
+      const err = rep && rep.err;
+      if (err === 'démonstration indisponible') erreur.textContent = 'La démonstration n’est pas ouverte pour le moment. Réservez un échange de 30 minutes ou demandez un devis : je vous réponds sous 48 heures ouvrées.';
+      else if (err === 'patienter') erreur.textContent = 'Beaucoup de demandes aujourd’hui. Réessayez demain, ou réservez un échange de 30 minutes.';
+      else if (err === 'e-mail invalide') erreur.textContent = 'Cette adresse e-mail n’est pas valide.';
+      else {
+        // Le service ne répond pas : repli sur la messagerie, avec un message prêt à envoyer.
+        window.location.href = 'mailto:' + CONFIG.email + '?subject=' + encodeURIComponent('Accès à la démonstration') + '&body=' + encodeURIComponent(['Bonjour,', '', 'Je souhaite accéder à la démonstration.', 'Nom : ' + prenom + ' ' + nom, 'Organisme : ' + orga, 'Mon adresse : ' + mail].join('\n'));
+        merci.textContent = 'Votre messagerie s’ouvre avec le message prêt. Il ne part qu’après votre clic sur « Envoyer ».';
+        merci.hidden = false;
+      }
+    });
+  }
+
   /* ------------------ Apparition au défilement et barre de devis ------------------ */
   function mouvement() {
     const sections = $$('.reveal');
@@ -241,6 +284,7 @@
   demo();
   profils();
   guide();
+  demonstration();
   rendreDevis();
   mouvement();
 })();

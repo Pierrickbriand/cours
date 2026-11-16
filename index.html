@@ -26,6 +26,7 @@
     <nav class="nav" aria-label="Navigation principale">
       <a class="lien-nav" href="#simulations">Simulations</a>
       <a class="lien-nav" href="#dispositif">Notre dispositif</a>
+      <a class="lien-nav" href="#demonstration">Démonstration</a>
       <a class="lien-nav" href="#qui">Qui suis-je</a>
       <a class="bouton bouton-fantome" href="/connexion">S'identifier</a>
       <a class="bouton bouton-clair" href="#devis">Demander un devis</a>
@@ -42,7 +43,7 @@
         <p class="etiquette">Simulations de gestion clés en main</p>
         <h1>Faites <span>décider</span> vos apprenants</h1>
         <p class="hero-intro">Des simulations de gestion en ligne, clés en main ou sur mesure, guidées par un coach IA. Vos apprenants appliquent les notions, mesurent les conséquences de leurs choix et progressent en une séance.</p>
-        <div class="hero-actions"><a class="bouton bouton-clair bouton-grand" href="#devis">Demander un devis</a></div>
+        <div class="hero-actions"><a class="bouton bouton-clair bouton-grand" href="#devis">Demander un devis</a><a class="bouton bouton-fantome bouton-grand" href="#demonstration">Voir la démonstration</a></div>
         <div class="hero-chiffres">
           <div><strong>20&nbsp;ans</strong><span>d'expérience professionnelle</span></div>
           <div><strong>Du BTS au Mastère</strong><span>des publics variés</span></div>
@@ -293,7 +294,7 @@
       <div class="faq verre verre-clair">
         <details open><summary>Combien de temps dure une séance&nbsp;?</summary><p>Nous fixons la durée ensemble au moment du cadrage, selon votre emploi du temps. Une séance dure en général de 2 à 4&nbsp;heures. La séance pilote dure environ 2&nbsp;heures.</p></details>
         <details><summary>Faut-il installer un logiciel&nbsp;?</summary><p>Non. Les simulations s'ouvrent dans un navigateur web, avec un simple lien.</p></details>
-        <details><summary>Mes étudiants doivent-ils donner leur adresse e-mail&nbsp;?</summary><p>Non, ce n'est pas obligatoire. Un code de classe, écrit au tableau, ouvre le cours pour toute la classe. Chaque étudiant peut aussi avoir un code personnel.</p></details>
+        <details><summary>Mes étudiants doivent-ils donner leur adresse e-mail&nbsp;?</summary><p>Pour une simulation, oui&nbsp;: l'adresse de chaque étudiant est nécessaire, elle sert à son accès personnel et au dépannage. Pour un cours interactif, ce n'est pas obligatoire&nbsp;: un code de classe, écrit au tableau, ouvre le cours pour toute la classe.</p></details>
         <details><summary>Que devient le travail des étudiants&nbsp;?</summary><p>Le formateur suit la progression et récupère les travaux à évaluer. Les données des étudiants (noms, e-mails, avancement, travaux, notes) sont stockées dans Google Drive et Google Sheets. Elles sont conservées jusqu'à la clôture du cours en fin d'année, qui les efface. Le détail est sur la page <a href="mentions.html#donnees">Vos données</a>.</p></details>
         <details><summary>Puis-je animer la séance moi-même&nbsp;?</summary><p>Oui, avec mon guide d'animation. Je peux aussi conduire la séance pour vous.</p></details>
         <details><summary>Peut-on adapter une simulation à notre secteur&nbsp;?</summary><p>Oui, c'est l'offre sur mesure&nbsp;: votre secteur, vos données, votre vocabulaire.</p></details>
@@ -323,6 +324,38 @@
       </div>
     </section>
     MASQUE-FIN -->
+
+    <!-- Démonstration : accès par e-mail (Atelier 5.173.0) -->
+    <section class="conteneur section reveal" id="demonstration" aria-labelledby="t-demo">
+      <div class="guide verre verre-clair">
+        <div>
+          <p class="etiquette">Voir pour décider</p>
+          <h2 id="t-demo" style="font-size:1.625rem;margin-bottom:8px">Essayez la simulation avant de décider</h2>
+          <p>Recevez par e-mail un accès de 14&nbsp;jours à une démonstration jouable. Vous voyez ce que vivent vos apprenants&nbsp;: les décisions, les résultats, les conseils du coach. La démonstration ne contient aucune donnée réelle.</p>
+          <p>Elle porte sur un magasin de commerce de détail. Les autres secteurs se font sur mesure.</p>
+        </div>
+        <form class="guide-formulaire" id="form-demo" novalidate>
+          <div class="champ-ligne">
+            <label class="sr-only" for="dm-prenom">Votre prénom</label>
+            <input id="dm-prenom" name="prenom" type="text" autocomplete="given-name" placeholder="Votre prénom" required>
+            <label class="sr-only" for="dm-nom">Votre nom</label>
+            <input id="dm-nom" name="nom" type="text" autocomplete="family-name" placeholder="Votre nom" required>
+          </div>
+          <div class="champ-ligne">
+            <label class="sr-only" for="dm-orga">Votre organisme</label>
+            <input id="dm-orga" name="organisme" type="text" autocomplete="organization" placeholder="Votre organisme (facultatif)">
+            <label class="sr-only" for="dm-mail">Votre adresse e-mail</label>
+            <input id="dm-mail" name="email" type="email" autocomplete="email" placeholder="Votre adresse e-mail" required>
+          </div>
+          <input id="dm-piege" name="site" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+          <label class="mention" style="display:flex;gap:8px;align-items:flex-start"><input id="dm-accord" type="checkbox" style="margin-top:3px"><span>J'accepte de recevoir mon accès par e-mail et d'être recontacté au sujet de la démonstration.</span></label>
+          <button class="bouton bouton-turquoise" type="submit">Recevoir mon accès</button>
+          <p class="erreur" id="dm-erreur" role="alert"></p>
+          <p class="confirmation" id="dm-merci" hidden></p>
+          <p class="mention">Vos données servent à vous envoyer l'accès et à vous recontacter au sujet de la démonstration. Elles sont conservées 12&nbsp;mois au plus et effacées sur simple demande, par e-mail. <a href="mentions.html#donnees">Vos données</a>.</p>
+        </form>
+      </div>
+    </section>
 
     <!-- Devis en trois questions -->
     <section class="conteneur section reveal" id="devis" aria-labelledby="t-devis" style="padding-bottom:56px">
