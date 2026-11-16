@@ -1,50 +1,67 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-jeu="public">
 <head>
-<meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coach IA ISO – Simulation retail</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Coach IA · Démonstration</title>
+<meta name="robots" content="noindex, nofollow">
 <style>
-/* Plan : barre latérale de navigation à gauche, espace de travail à droite, coach en tiroir accessible partout. */
+/* Plan : bandeau d'en-tête (marque, navigation, rôle), contenu centré sur 1 120 px, coach en tiroir accessible partout. */
+/* Thème de la charte pierrickbriand.fr pour un simulateur (à coller au début de la feuille de style).
+   Polices Poppins 400 et 500 intégrées : aucune requête vers un service externe. Grille de 8 px.
+   Pour une école : ne changer que les variables « --client-… » et le logo, jamais la police. */
+@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:500;font-display:swap;src:url(data:font/woff2;base64,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) format("woff2")}
 :root{
-  --paper:#f6f2ee; --card:#ffffff; --ink:#2b1a26; --muted:#6e5f68; --line:#e6ddd5; --soft:#f2ece6;
-  --accent:#d04a2c; --accent-soft:#fde9e2; --amber:#7a2e63; --amber-soft:#f4e8f0;
-  --good:#2e7d4f; --good-soft:#e3f1e8; --bad:#a3231b; --side:#3b0f30; --side-ink:#f1dfe9;
-  --font-display:"Sora","Segoe UI",system-ui,sans-serif; --font-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  /* charte commune */
+  --marine:#1F3D66; --turquoise:#1D6F69; --rose:#A8425A; --encre:#1B2740; --nuit:#14213B; --accent:#2E2A6B;
+  --rose-clair:#F6B8C6; --fond:#EEF0F4; --fond-bas:#D7DFEB; --texte:#3F4C66; --trait:rgba(31,61,102,.14);
+  --police:"Poppins","Helvetica Neue",Arial,sans-serif;
+  --rayon-carte:24px; --rayon-champ:16px; --rayon-bouton:999px; --largeur:1120px;
+  /* personnalisation par école (valeurs de la démonstration publique) */
+  --client-nom:"Démonstration"; --client-accent:var(--turquoise);
+}
+body{font-family:var(--police);font-weight:400;line-height:1.5;color:var(--encre);background:linear-gradient(180deg,var(--fond-bas),var(--fond) 480px) var(--fond)}
+h1,h2,h3,button,.bouton{font-weight:500}
+h1,h2,h3{color:var(--marine)}
+
+/* =====================================================================
+   THÈME : le seul bloc à modifier pour une école (couleurs, police, nom, logo).
+   L'interrupteur unique est l'attribut data-jeu de la balise <html> :
+   « public » (démonstration du site) ou « iso » (démonstration pour ISO).
+   Pour le logo : --client-logo:url("data:image/svg+xml;...") ; « none » = pas de logo.
+   ===================================================================== */
+html[data-jeu="public"]{ --client-nom:"Démonstration"; --client-logo:none; }
+html[data-jeu="iso"]{ --client-nom:"ISO"; --client-logo:none; --client-accent:var(--marine); }
+
+/* Correspondance entre le thème et les variables des écrans (ne pas modifier) */
+:root{
+  --paper:var(--fond); --card:#ffffff; --ink:var(--encre); --muted:var(--texte); --line:var(--trait); --soft:#E6EAF1;
+  --action:var(--marine); --action-soft:#E3E9F2; --amber:var(--accent); --amber-soft:#E8E7F3;
+  --good:var(--turquoise); --good-soft:#DCEEEC; --bad:var(--rose); --side:var(--nuit); --side-ink:#E6EAF1;
+  --font-aff:var(--police); --font-txt:var(--police);
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --paper:#1a1117; --card:#241820; --ink:#f0e6ec; --muted:#b4a3ad; --line:#3a2a35; --soft:#2e1f29;
-  --accent:#ff8a6b; --accent-soft:#3d2119; --amber:#d58cc0; --amber-soft:#3a2232; --good:#6cc28f; --good-soft:#1d3327; --bad:#f08075;
-  --side:#120a10; --side-ink:#ead7e2; color-scheme:dark;}}
-:root[data-theme="dark"]{
-  --paper:#1a1117; --card:#241820; --ink:#f0e6ec; --muted:#b4a3ad; --line:#3a2a35; --soft:#2e1f29;
-  --accent:#ff8a6b; --accent-soft:#3d2119; --amber:#d58cc0; --amber-soft:#3a2232; --good:#6cc28f; --good-soft:#1d3327; --bad:#f08075;
-  --side:#120a10; --side-ink:#ead7e2; color-scheme:dark;}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15.5px;line-height:1.45}
-h1,h2,h3{font-family:var(--font-display);margin:0;text-wrap:balance}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-txt);font-size:15.5px;line-height:1.45}
+h1,h2,h3{font-family:var(--font-aff);margin:0;text-wrap:balance}
 button{font:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 .app{display:grid;grid-template-columns:232px 1fr;min-height:100%}
 /* Barre latérale */
 .side{background:var(--side);color:var(--side-ink);padding:18px 12px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh}
-.brand small{display:block;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;opacity:.7;font-weight:700}
-.brand b{font-family:var(--font-display);font-size:1.12rem;display:block}
+.brand small{display:block;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;opacity:.7;font-weight:500}
+.brand b{font-family:var(--font-aff);font-size:1.12rem;display:block}
 .brand span{font-size:.85rem;opacity:.8}
 .nav{display:flex;flex-direction:column;gap:4px}
-.nav button{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;font-weight:600;color:var(--side-ink)}
+.nav button{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;font-weight:500;color:var(--side-ink)}
 .nav button:hover{background:rgba(255,255,255,.07)}
 .nav button.on{background:rgba(255,255,255,.14);color:#fff}
 .nav button:focus-visible{outline:3px solid var(--amber)}
 .nav svg{width:18px;height:18px;flex:none}
 .side .period{margin-top:auto;background:rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;font-size:.85rem}
-.side .period b{font-family:var(--font-display);font-size:1rem;display:block;color:#fff}
+.side .period b{font-family:var(--font-aff);font-size:1rem;display:block;color:#fff}
 .dots{display:flex;gap:5px;margin-top:8px}
 .dots i{width:100%;height:5px;border-radius:3px;background:rgba(255,255,255,.18)}
 .dots i.done{background:#f3a08a} .dots i.now{background:var(--amber)}
@@ -54,8 +71,8 @@ main{padding:22px 24px 90px;display:flex;flex-direction:column;gap:16px;min-widt
 .top h1{font-size:1.45rem}
 .top p{margin:2px 0 0;color:var(--muted)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px}
-.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600}
-.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:500}
+.tabs button.on{background:var(--action);border-color:var(--action);color:#fff}
 .tabs button .ok{color:var(--good);margin-left:4px}
 .tabs button.on .ok{color:#fff}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -66,33 +83,33 @@ main{padding:22px 24px 90px;display:flex;flex-direction:column;gap:16px;min-widt
 .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;align-items:start}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 13px;display:flex;flex-direction:column;gap:2px}
-.kpi > span{color:var(--muted);font-size:.8rem;font-weight:600}
-.kpi strong{font-family:var(--font-display);font-size:1.22rem;font-variant-numeric:tabular-nums}
+.kpi > span{color:var(--muted);font-size:.8rem;font-weight:500}
+.kpi strong{font-family:var(--font-aff);font-size:1.22rem;font-variant-numeric:tabular-nums}
 .kpi em{font-style:normal;font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--muted)}
 .up{color:var(--good)!important} .down{color:var(--bad)!important}
 .tablebox{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
 th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left;white-space:normal}
-thead th{color:var(--muted);font-weight:700;font-size:.78rem;background:var(--soft)}
-tr.total td{font-weight:700;border-top:2px solid var(--ink)}
-tr.sub td{font-weight:700;background:var(--soft)}
-tr.me td{background:var(--accent-soft);font-weight:700}
+thead th{color:var(--muted);font-weight:500;font-size:.78rem;background:var(--soft)}
+tr.total td{font-weight:500;border-top:2px solid var(--ink)}
+tr.sub td{font-weight:500;background:var(--soft)}
+tr.me td{background:var(--action-soft);font-weight:500}
 td input{width:96px;text-align:right;font:inherit;padding:5px 7px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font-variant-numeric:tabular-nums}
-td input:focus{border-color:var(--accent)}
+td input:focus{border-color:var(--action)}
 .field{display:flex;flex-direction:column;gap:4px}
-.field label{display:flex;justify-content:space-between;gap:8px;font-weight:600;font-size:.94rem}
-.field output{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
-.field input[type=range]{width:100%;accent-color:var(--accent)}
+.field label{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.94rem}
+.field output{color:var(--action);font-weight:500;font-variant-numeric:tabular-nums}
+.field input[type=range]{width:100%;accent-color:var(--action)}
 .field .sub{font-size:.8rem;color:var(--muted)}
-.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:700;font-family:var(--font-display);font-size:.92rem}
+.btn{background:var(--action);color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:500;font-family:var(--font-aff);font-size:.92rem}
 .btn:hover{filter:brightness(1.07)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-.btn.amber{background:var(--accent)}
+.btn.ghost{background:transparent;color:var(--action);border:1px solid var(--action)}
+.btn.amber{background:var(--action)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .nbadge{margin-left:auto;background:var(--amber);color:#fff;border-radius:999px;font-size:.72rem;padding:1px 7px}
-.newmsg{all:unset;cursor:pointer;display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:10px 14px}
+.newmsg{all:unset;cursor:pointer;display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--action);border-radius:8px;padding:10px 14px}
 .newmsg:hover{background:var(--soft)}
 .newmsg:focus-visible{outline:3px solid var(--amber)}
 .msglist,.carnet{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
@@ -103,26 +120,26 @@ td input:focus{border-color:var(--accent)}
 .login form{width:min(460px,100%)}
 .demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 .demo-grid button{all:unset;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 9px;display:flex;flex-direction:column;font-size:.8rem}
-.demo-grid button:hover{border-color:var(--accent)}
+.demo-grid button:hover{border-color:var(--action)}
 .demo-grid button:focus-visible{outline:3px solid var(--amber)}
 .demo-grid b{color:var(--ink);font-size:.86rem}
 body:not([data-role="etudiant"]) .coach-fab,body:not([data-role="etudiant"]) .drawer{display:none}
-.logout{all:unset;cursor:pointer;display:block;margin-top:10px;font-size:.82rem;font-weight:700;color:#f3a08a}
+.logout{all:unset;cursor:pointer;display:block;margin-top:10px;font-size:.82rem;font-weight:500;color:#f3a08a}
 .logout:focus-visible{outline:3px solid var(--amber)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--side);color:#fff;padding:11px 16px;border-radius:10px;font-size:.92rem;max-width:min(560px,92vw);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .toast.show{opacity:1;transform:translateX(-50%)}
 .checklist,.tasklist,.mini,.tpl-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .checklist li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
 .checklist li span:nth-child(2){flex:1}
-.checklist .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+.checklist .ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:500}
 .checklist li.ok .ck{background:var(--good);border-color:var(--good);color:#fff}
 .tasklist li{border-bottom:1px solid var(--line);padding:9px 0}
-.tasklist label{display:flex;gap:10px;align-items:flex-start;font-weight:600}
-.tasklist input,.radio input{accent-color:var(--accent);width:17px;height:17px;flex:none;margin-top:2px}
+.tasklist label{display:flex;gap:10px;align-items:flex-start;font-weight:500}
+.tasklist input,.radio input{accent-color:var(--action);width:17px;height:17px;flex:none;margin-top:2px}
 .radio{display:flex;gap:8px;align-items:flex-start}
 .mini li{font-size:.88rem;color:var(--muted)}
 .meter{height:9px;border-radius:5px;background:var(--soft);overflow:hidden}
-.meter i{display:block;height:100%;background:var(--accent)}
+.meter i{display:block;height:100%;background:var(--action)}
 .steps-list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px}
 .steps-list .row{margin-top:6px}
 .heads code,code{background:var(--soft);border-radius:5px;padding:1px 6px;font-size:.86rem}
@@ -130,32 +147,32 @@ body:not([data-role="etudiant"]) .coach-fab,body:not([data-role="etudiant"]) .dr
 .import-res{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
 .import-res.bad{border-color:var(--bad);color:var(--bad)}
 .formgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-.formgrid label,.field{display:flex;flex-direction:column;gap:4px;font-size:.9rem;font-weight:600}
+.formgrid label,.field{display:flex;flex-direction:column;gap:4px;font-size:.9rem;font-weight:500}
 .formgrid input,.field input:not([type=range]),.field textarea,.field select{font:inherit;font-weight:400;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
 .cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .case{border:2px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
-.case.on{border-color:var(--accent);background:var(--accent-soft)}
+.case.on{border-color:var(--action);background:var(--action-soft)}
 .case input{position:absolute;opacity:0}
 .case:focus-within{outline:3px solid var(--amber)}
-.case .tag{font-size:.86rem;font-weight:600;color:var(--accent)}
+.case .tag{font-size:.86rem;font-weight:500;color:var(--action)}
 .grp{border:1px solid var(--line);border-radius:10px;padding:9px 11px;display:flex;flex-direction:column;gap:4px}
 .chipbox{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:.88rem}
 .tplbtn{all:unset;box-sizing:border-box;cursor:pointer;width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;display:flex;flex-direction:column;gap:2px}
 .tplbtn span{font-size:.84rem;color:var(--muted)}
-.tplbtn.on{border-color:var(--accent);background:var(--accent-soft)}
+.tplbtn.on{border-color:var(--action);background:var(--action-soft)}
 .tplbtn:focus-visible{outline:3px solid var(--amber)}
 a.btn{text-decoration:none;display:inline-block}
 .demo-note{border-left:3px solid var(--amber);padding-left:8px}
 .guide{display:flex;flex-direction:column;gap:14px}
 .guide p{margin:0}
 .ghead{display:flex;gap:12px;align-items:center}
-.gnum{flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--font-display);font-weight:700;display:flex;align-items:center;justify-content:center}
+.gnum{flex:none;width:34px;height:34px;border-radius:50%;background:var(--action);color:#fff;font-family:var(--font-aff);font-weight:500;display:flex;align-items:center;justify-content:center}
 .gtip{background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:6px;padding:8px 12px}
 @media print{.side,.coach-fab,.drawer,.toast,.credit,[data-act="print-guide"]{display:none!important}.app{display:block}main{padding:0}.guide .card{break-inside:avoid;border-color:#ccc}body{background:#fff}}
 .side{overflow-y:auto}
 @media (min-width:861px){main{padding-top:58px!important}}
 .role-chip{position:absolute;top:12px;right:16px;z-index:30;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 4px 4px 12px;font-size:.82rem;color:var(--muted);box-shadow:0 4px 14px rgba(59,15,48,.08)}
-.role-chip button{all:unset;cursor:pointer;background:var(--accent);color:#fff;font-weight:700;border-radius:999px;padding:5px 11px}
+.role-chip button{all:unset;cursor:pointer;background:var(--action);color:#fff;font-weight:500;border-radius:999px;padding:5px 11px}
 .role-chip button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 .login:not(.hide)~* .role-chip{display:none}
 textarea.invalid{border-color:var(--bad)!important;outline:2px solid var(--bad)}
@@ -163,52 +180,52 @@ textarea.invalid{border-color:var(--bad)!important;outline:2px solid var(--bad)}
 @media (max-width:860px){.role-chip{position:static;justify-content:space-between;margin-bottom:10px}}
 @media print{.role-chip{display:none}}
 .reset{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-.reset button{all:unset;cursor:pointer;font-size:.84rem;font-weight:700;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.reset button{all:unset;cursor:pointer;font-size:.84rem;font-weight:500;color:var(--action);text-decoration:underline;text-underline-offset:3px}
 .reset button[data-confirm="1"]{color:#fff;background:var(--bad);text-decoration:none;border-radius:6px;padding:5px 10px}
 .reset button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 .reset p{margin:0;font-size:.82rem;color:var(--muted)}
 .takeover{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--good);border-radius:8px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
 .takeover span{flex:1 1 420px;color:var(--muted)}
 .takeover b{flex-basis:100%}
-.tip{text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--accent);cursor:help}
-.tip:hover,.tip:focus-visible{background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:3px;outline:none}
-#tip{position:fixed;z-index:70;background:var(--card);color:var(--ink);border:1px solid var(--accent);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:12px 14px;font-size:.92rem;line-height:1.45;display:flex;flex-direction:column;gap:8px;align-items:flex-start;font-weight:400;text-transform:none;letter-spacing:0}
+.tip{text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:var(--action);cursor:help}
+.tip:hover,.tip:focus-visible{background:color-mix(in srgb,var(--action) 12%,transparent);border-radius:3px;outline:none}
+#tip{position:fixed;z-index:70;background:var(--card);color:var(--ink);border:1px solid var(--action);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:12px 14px;font-size:.92rem;line-height:1.45;display:flex;flex-direction:column;gap:8px;align-items:flex-start;font-weight:400;text-transform:none;letter-spacing:0}
 #tip[hidden]{display:none}
 #tip .tip-t{margin:0}
-#tip .tip-more{all:unset;cursor:pointer;color:var(--accent);font-weight:700;text-decoration:underline;padding:2px 0}
+#tip .tip-more{all:unset;cursor:pointer;color:var(--action);font-weight:500;text-decoration:underline;padding:2px 0}
 #tip .tip-more:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 #tip .tip-more[hidden]{display:none}
 #tipwin{border:0;border-radius:14px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 32px);box-shadow:0 20px 60px rgba(0,0,0,.35);color:var(--ink);background:var(--card)}
 #tipwin::backdrop{background:rgba(40,10,30,.55)}
 #tipwin .tipwin-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
 #tipwin h2{margin:0;font-size:1.05rem}
-#tipwin .tipwin-x{font:inherit;font-weight:700;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:7px 14px;cursor:pointer;color:var(--ink)}
+#tipwin .tipwin-x{font:inherit;font-weight:500;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:7px 14px;cursor:pointer;color:var(--ink)}
 #tipwin .tipwin-b{padding:14px 18px 20px;font-size:1rem;line-height:1.55;overflow:auto;max-height:calc(100vh - 130px)}
 #tipwin .tipwin-b p{margin:0 0 12px}
 #tipwin .tipwin-b p:last-child{margin-bottom:0}
 @media print{.tip{text-decoration:none}#tip,#tipwin{display:none}}
-.pill{display:inline-block;font-size:.75rem;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.pill{display:inline-block;font-size:.75rem;font-weight:500;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--muted)}
 .pill.ok{background:var(--good-soft);color:var(--good)}
 .pill.warn{background:var(--amber-soft);color:var(--amber)}
 .pill.bad{background:#f7e1df;color:var(--bad)}
 .event{display:flex;gap:12px;align-items:flex-start;background:var(--amber-soft);border-left:4px solid var(--amber);border-radius:8px;padding:12px 14px}
-.event b{font-family:var(--font-display);font-size:.92rem;white-space:nowrap}
+.event b{font-family:var(--font-aff);font-size:.92rem;white-space:nowrap}
 .alerts{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
 .alerts li{padding:8px 11px;border-radius:8px;font-size:.92rem}
 .alerts li.warn{background:var(--amber-soft)} .alerts li.bad{background:#f7e1df;color:#5c1611} .alerts li.ok{background:var(--good-soft)}
 .checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .checklist li{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
-.checklist button{all:unset;cursor:pointer;color:var(--accent);font-weight:600;font-size:.88rem}
+.checklist button{all:unset;cursor:pointer;color:var(--action);font-weight:500;font-size:.88rem}
 .final{background:var(--side);color:#fff;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px}
 .final h2{font-size:1.1rem}
 .prose{max-width:72ch}
 .prose p,.prose li{margin:.3em 0}
 dl.lex{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:6px 14px;margin:0}
-dl.lex dt{font-weight:700} dl.lex dd{margin:0;color:var(--muted)}
-svg text{fill:var(--muted);font-family:var(--font-body);font-size:11px}
+dl.lex dt{font-weight:500} dl.lex dd{margin:0;color:var(--muted)}
+svg text{fill:var(--muted);font-family:var(--font-txt);font-size:11px}
 select{font:inherit;padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 /* Coach */
-.coach-fab{position:fixed;right:20px;bottom:20px;z-index:20;display:flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:11px 16px;font-family:var(--font-display);font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.coach-fab{position:fixed;right:20px;bottom:20px;z-index:20;display:flex;align-items:center;gap:8px;background:var(--action);color:#fff;border:0;border-radius:999px;padding:11px 16px;font-family:var(--font-aff);font-weight:500;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 .coach-fab .badge{background:var(--amber);border-radius:999px;font-size:.72rem;padding:1px 7px;display:none}
 .coach-fab .badge.show{display:inline-block}
 .drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:var(--card);border-left:1px solid var(--line);z-index:30;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .22s ease;box-shadow:-8px 0 24px rgba(0,0,0,.12)}
@@ -220,11 +237,11 @@ select{font:inherit;padding:6px 9px;border-radius:8px;border:1px solid var(--lin
 .msg{border-radius:10px;padding:10px 12px;font-size:.94rem;white-space:pre-wrap}
 .msg.coach{background:var(--amber-soft);border-top-left-radius:2px}
 .msg.me{background:var(--paper);border:1px solid var(--line);align-self:flex-end;max-width:88%;border-top-right-radius:2px}
-.msg .who{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px}
+.msg .who{display:block;font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px}
 .drawer footer{border-top:1px solid var(--line);padding:12px 16px;display:flex;flex-direction:column;gap:8px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{border:1px solid var(--accent);color:var(--accent);background:transparent;border-radius:999px;padding:4px 10px;font-size:.84rem}
-.chip:hover{background:var(--accent-soft)}
+.chip{border:1px solid var(--action);color:var(--action);background:transparent;border-radius:999px;padding:4px 10px;font-size:.84rem}
+.chip:hover{background:var(--action-soft)}
 .ask{display:flex;gap:8px}
 .ask input{flex:1;min-width:0;font:inherit;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
 .sr{position:absolute;left:-9999px}
@@ -247,29 +264,29 @@ select{font:inherit;padding:6px 9px;border-radius:8px;border:1px solid var(--lin
 .login.hide{display:none}
 .login form{background:var(--card);border-radius:14px;padding:26px;width:min(400px,100%);display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
 .login h1{font-size:1.3rem}
-.login small{color:var(--accent);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.72rem}
+.login small{color:var(--action);font-weight:500;letter-spacing:.06em;text-transform:uppercase;font-size:.72rem}
 .login input{font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
 .login .err{color:var(--bad);font-size:.88rem;min-height:1.2em;margin:0}
 .login .demo{background:var(--soft);border-radius:8px;padding:9px 11px;font-size:.86rem;color:var(--muted)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
 .tile{all:unset;box-sizing:border-box;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px;min-height:150px;transition:border-color .15s,box-shadow .15s,transform .15s}
-.tile:hover{border-color:var(--accent);box-shadow:0 8px 22px rgba(59,15,48,.10);transform:translateY(-2px)}
+.tile:hover{border-color:var(--action);box-shadow:0 8px 22px rgba(59,15,48,.10);transform:translateY(-2px)}
 .tile:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
 .tile-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-.tile-ico{width:40px;height:40px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.tile-ico{width:40px;height:40px;border-radius:11px;background:var(--action-soft);color:var(--action);display:flex;align-items:center;justify-content:center}
 .tile-ico svg{width:21px;height:21px}
-.tile-step{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.tile-title{font-family:var(--font-display);font-weight:600;font-size:1.02rem}
-.tile-big{font-family:var(--font-display);font-weight:700;font-size:1.25rem;font-variant-numeric:tabular-nums;margin-top:4px}
+.tile-step{font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile-title{font-family:var(--font-aff);font-weight:500;font-size:1.02rem}
+.tile-big{font-family:var(--font-aff);font-weight:500;font-size:1.25rem;font-variant-numeric:tabular-nums;margin-top:4px}
 .tile-sub{font-size:.85rem;color:var(--muted)}
 .stack{display:flex;flex-direction:column;gap:10px}
 .btn.sm{padding:5px 10px;font-size:.78rem;border-radius:999px;white-space:nowrap;box-shadow:0 0 0 3px var(--amber-soft)}
 .btn.sm2{padding:6px 11px;font-size:.8rem}
 .seg{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;font-size:.85rem}
-.seg label{display:flex;gap:4px;align-items:center;white-space:nowrap;font-weight:600}
+.seg label{display:flex;gap:4px;align-items:center;white-space:nowrap;font-weight:500}
 .seg input{width:auto!important;margin:0}
 .evsum{display:flex;gap:14px;align-items:center;margin:12px 0;padding:10px 14px;background:var(--soft);border-radius:10px}
-.evsum b{font-family:var(--font-display);font-size:1.4rem}
+.evsum b{font-family:var(--font-aff);font-size:1.4rem}
 .feedback{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-left:4px solid var(--good);border-radius:10px}
 .feedback p{margin:6px 0}.feedback ul{margin:6px 0 0;padding-left:18px;font-size:.9rem}
 .feedback li.ok::marker{color:var(--good)}.feedback li.bad::marker{color:var(--bad)}
@@ -280,48 +297,148 @@ select{font:inherit;padding:6px 9px;border-radius:8px;border:1px solid var(--lin
 .kpi .jbar b{display:block;height:100%;background:var(--good)}
 .kpi.jauge.over{border-color:var(--bad)}.kpi.jauge.over .jbar b{background:var(--bad)}.kpi.jauge.over em{color:var(--bad)}
 .countdown{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 16px}
-.cd{flex:1 1 260px;display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;padding:10px 14px}
-.cd strong{font-family:var(--font-display);font-size:1.5rem;color:var(--accent);min-width:3.2em;text-align:center}
+.cd{flex:1 1 260px;display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--action);border-radius:12px;padding:10px 14px}
+.cd strong{font-family:var(--font-aff);font-size:1.5rem;color:var(--action);min-width:3.2em;text-align:center}
 .cd div{display:flex;flex-direction:column}
 .cd .cd-k{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 .cd em{font-style:normal;font-size:.85rem;color:var(--muted)}
 .cd.soon{border-left-color:var(--amber)}.cd.soon strong{color:var(--amber)}
 .cd.urgent{border-left-color:var(--bad)}.cd.urgent strong{color:var(--bad)}
-.back{all:unset;cursor:pointer;color:var(--accent);font-weight:700;font-size:.9rem}
+.back{all:unset;cursor:pointer;color:var(--action);font-weight:500;font-size:.9rem}
 .back:focus-visible{outline:3px solid var(--amber)}
-.guide-dl{display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border:1px solid var(--accent);border-radius:8px;color:var(--accent);font-weight:700;text-decoration:none;font-size:.92rem}
-.guide-dl:hover{background:var(--accent-soft)}
+.guide-dl{display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border:1px solid var(--action);border-radius:8px;color:var(--action);font-weight:500;text-decoration:none;font-size:.92rem}
+.guide-dl:hover{background:var(--action-soft)}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+/* ===== Habillage charte pierrickbriand.fr (surcharge des écrans par les variables du thème) ===== */
+html,body{min-height:100%}
+body{background:linear-gradient(180deg,var(--fond-bas),var(--fond) 480px) no-repeat var(--fond);color:var(--encre);font-family:var(--police);font-weight:400}
+b,strong,th,dt{font-weight:500}
+h1,h2,h3,.btn,button{font-family:var(--police)}
+:focus-visible{outline:3px solid var(--turquoise);outline-offset:2px}
+.side :focus-visible,.entry :focus-visible,.drawer header :focus-visible{outline-color:#fff}
+.label,.brand small,.tile-step,.cd .cd-k,.msg .who,.entry small{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--rose);font-weight:500}
+/* Bandeau d'en-tête */
+.app{display:block}
+.side{position:static;height:auto;overflow:visible;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 24px;background:var(--nuit);color:var(--side-ink);padding:14px max(24px,calc((100% - var(--largeur)) / 2)) 12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{display:none;width:36px;height:36px;background:var(--client-logo) center/contain no-repeat;flex:none}
+html.avec-logo .brand .logo{display:block}
+.brand small{color:var(--rose-clair);margin-bottom:2px}
+.brand b{color:#fff;font-size:1.1rem}
+.brand span{color:var(--side-ink)}
+.nav{order:3;flex:1 1 100%;flex-direction:row;flex-wrap:wrap;gap:6px}
+.nav button{border-radius:var(--rayon-bouton);padding:7px 14px;font-weight:500;font-size:.88rem;background:rgba(255,255,255,.08);color:var(--side-ink)}
+.nav button:hover{background:rgba(255,255,255,.18)}
+.nav button.on{background:#fff;color:var(--marine)}
+.side .period{margin:0 0 0 auto;background:rgba(255,255,255,.08);border-radius:var(--rayon-champ);padding:8px 14px;color:var(--side-ink)}
+.dots i.done{background:var(--rose-clair)}
+.dots i.now{background:#fff}
+.role-chip{position:static;background:rgba(255,255,255,.1);border:0;color:var(--side-ink);padding:4px 4px 4px 14px;margin-left:auto;order:2}
+.role-chip button{background:#fff;color:var(--marine);font-weight:500}
+.role-chip + .period{margin-left:0}
+@media (min-width:861px){main{padding-top:24px!important}}
+main{width:100%;max-width:var(--largeur);margin:0 auto}
+/* Cartes en verre dépoli */
+.card,.kpi,.tile,.cd,.newmsg,.takeover,.grp,.final,.event,.feedback,.import-res,.case,.tplbtn,.checklist li,.msglist li,.carnet-item,.chipbox{
+  background:rgba(255,255,255,.68);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 28px rgba(20,33,59,.07)}
+.card,.tile,.final,.cd,.takeover,.event,.newmsg,.feedback,.import-res{border-radius:var(--rayon-carte)}
+.kpi,.grp,.case,.tplbtn,.checklist li,.msglist li,.carnet-item{border-radius:var(--rayon-champ)}
+.final{background:var(--nuit);color:#fff}
+.final h2,.final h3{color:#fff}
+h1,h2,h3{color:var(--marine)}
+.drawer h2,.top h1{color:var(--marine)}
+.tile:hover{border-color:var(--turquoise);box-shadow:0 12px 30px rgba(20,33,59,.14)}
+.tile-ico{background:var(--action-soft);color:var(--marine)}
+.case.on,.tplbtn.on{border-color:var(--turquoise);background:rgba(220,238,236,.7)}
+.case .tag{color:var(--turquoise)}
+.cd{border-left:5px solid var(--marine)}
+.cd strong{color:var(--marine)}
+.cd.soon{border-left-color:var(--accent)}.cd.soon strong{color:var(--accent)}
+/* Boutons en pilule, champs arrondis */
+.btn,.coach-fab{border-radius:var(--rayon-bouton);background:var(--marine);color:#fff;font-weight:500;padding:10px 20px;box-shadow:none}
+.btn:hover{filter:none;background:var(--turquoise)}
+.btn.ghost{background:transparent;color:var(--marine);border:1px solid var(--marine)}
+.btn.ghost:hover{background:var(--marine);color:#fff}
+.btn.sm{box-shadow:0 0 0 3px var(--action-soft)}
+.btn.amber{background:var(--turquoise)}
+.tabs button{border-radius:var(--rayon-bouton);font-weight:500}
+.tabs button.on{background:var(--marine);border-color:var(--marine)}
+.chip{border-color:var(--marine);color:var(--marine)}
+.chip:hover{background:var(--action-soft)}
+.pill.bad{background:#F3E1E6;color:var(--rose)}
+.pill.warn{background:var(--amber-soft);color:var(--accent)}
+.alerts li.bad{background:#F3E1E6;color:#5B1F2E}
+input,select,textarea,td input,.note textarea,.carnet textarea,.ask input,.formgrid input,.field input:not([type=range]),.field textarea,.field select{border-radius:var(--rayon-champ);border:1px solid rgba(31,61,102,.28);background:#fff;font-family:var(--police)}
+input,select{min-height:40px}
+.field input[type=range],td input,input[type=checkbox],input[type=radio]{min-height:0}
+input:focus,select:focus,textarea:focus{border-color:var(--turquoise)}
+table th{background:#E6EAF1;color:var(--encre)}
+tr.total td{border-top:2px solid var(--marine)}
+.drawer,#tip,#tipwin{background:#fff}
+.drawer header{background:var(--nuit);color:#fff}
+.drawer header h2{color:#fff}
+.drawer .close{color:#fff}
+#tipwin::backdrop{background:rgba(20,33,59,.55)}
+.toast{background:var(--nuit)}
+.meter i,.kpi .jbar b{background:var(--turquoise)}
+.credit{border-top:1px solid var(--trait)}
+/* Écran d'entrée : choix du rôle */
+.entry{position:fixed;inset:0;z-index:50;overflow:auto;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(180deg,var(--nuit),var(--marine))}
+.entry.hide{display:none}
+.entry-box{width:min(960px,100%);display:flex;flex-direction:column;gap:14px;color:#fff}
+.entry small{color:var(--rose-clair)}
+.entry h1{color:#fff;font-size:1.9rem}
+.entry p{margin:0;color:var(--side-ink);max-width:62ch}
+.role-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:6px}
+.role-card{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:22px;border-radius:var(--rayon-carte);background:rgba(255,255,255,.92);color:var(--encre);min-height:170px;transition:transform .15s,box-shadow .15s}
+.role-card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(0,0,0,.28)}
+.role-card:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.role-card b{font-size:1.2rem;color:var(--marine)}
+.role-card span.t{color:var(--texte);font-size:.95rem}
+.role-card .label{color:var(--rose)}
+.entry .reset{margin-top:10px;align-items:flex-start}
+.entry .reset button{color:var(--side-ink);font-weight:400;font-size:.82rem}
+.entry .reset button[data-confirm="1"]{background:var(--rose);color:#fff}
+.entry .reset p{color:var(--side-ink);font-size:.82rem}
+.entry .foot{font-size:.8rem;color:var(--side-ink)}
+@media (max-width:860px){
+  .side{padding:12px 16px}
+  .nav{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .nav button{white-space:nowrap}
+  .role-chip{margin-left:0}
+  main{padding:16px 16px 90px}
+  .entry h1{font-size:1.5rem}
+}
+[hidden]{display:none!important}
+.side button:focus-visible,.side a:focus-visible,.entry button:focus-visible{outline:3px solid #fff!important;outline-offset:2px}
+@media (max-width:860px){.event{flex-direction:column;gap:4px}.event b{white-space:normal}}
+@media (prefers-reduced-motion: reduce){.role-card{transition:none}}
 </style>
 </head>
 <body>
-<div class="login" id="login">
-  <form id="loginForm" autocomplete="off">
-    <small>Version d'essai · ISO</small>
-    <h1>Coach IA · simulation de gestion</h1>
-    <p class="hint">Un seul écran de connexion : chaque compte ouvre l'espace de son rôle (étudiant, formateur, administration ISO, administration technique).</p>
-    <label for="lgUser" class="field"><span style="font-weight:600">Identifiant</span><input id="lgUser" required></label>
-    <label for="lgPass" class="field"><span style="font-weight:600">Mot de passe</span><input id="lgPass" type="password" required></label>
-    <p class="err" id="lgErr" role="alert"></p>
-    <button class="btn" type="submit">Se connecter</button>
-    <div class="demo"><b>Accès de démonstration</b> · clique sur un rôle pour remplir le formulaire :
-      <div class="demo-grid">
-        <button type="button" data-demo="iso-demo|Optique2026"><b>Étudiant</b><span>iso-demo · Optique2026</span></button>
-        <button type="button" data-demo="formateur-demo|Formateur2026"><b>Formateur</b><span>formateur-demo · Formateur2026</span></button>
-        <button type="button" data-demo="iso-admin|Admin2026"><b>Administration ISO</b><span>iso-admin · Admin2026</span></button>
-        <button type="button" data-demo="pierrick|Support2026"><b>Administration technique</b><span>pierrick · Support2026</span></button>
-      </div></div>
+<div class="entry" id="login">
+  <div class="entry-box">
+    <small id="entryOrg">Démonstration</small>
+    <h1>Coach IA : simulation de gestion</h1>
+    <p>Choisissez le rôle que vous voulez découvrir. Vous pouvez en changer à tout moment, depuis l'en-tête.</p>
+    <div class="role-cards">
+      <button type="button" class="role-card" data-enter="etudiant"><span class="label">Rôle 1</span><b>Étudiant</b><span class="t">Reprendre un magasin et décider trimestre après trimestre, avec un coach qui pose des questions.</span></button>
+      <button type="button" class="role-card" data-enter="formateur"><span class="label">Rôle 2</span><b>Formateur</b><span class="t">Suivre les groupes, évaluer les livrables et préparer le débriefing.</span></button>
+      <button type="button" class="role-card" data-enter="admin"><span class="label">Rôle 3</span><b>Administrateur de votre école</b><span class="t">Poser le cadre : magasin, calendrier, grille d'évaluation, cohortes.</span></button>
+    </div>
     <div class="reset"><button type="button" id="resetBtn" data-confirm="">Remettre la démonstration à zéro</button><p id="resetMsg" role="status"></p></div>
-    <p class="hint" style="font-size:.78rem">Conçu et développé par Pierrick Briand, ingénieur pédagogique</p>
-  </form>
+    <p class="foot">© 2026 Pierrick Briand. Tous droits réservés.</p>
+  </div>
 </div>
 <div class="app">
   <aside class="side">
-    <div class="brand"><small>Coach IA · simulation</small><b id="storeName">Lumière Optique</b><span id="brandSub">Maquette de démonstration · ISO</span></div>
-    <nav class="nav" id="nav" aria-label="Navigation principale"></nav>
+    <div class="brand"><span class="logo" aria-hidden="true"></span><div><small id="brandOrg">Coach IA · simulation</small><b id="storeName">Lumière Optique</b><span id="brandSub">Démonstration</span></div></div>
+    <div class="role-chip" id="roleChip"></div>
     <div class="period" id="periodBox"></div>
+    <nav class="nav" id="nav" aria-label="Navigation principale"></nav>
   </aside>
-  <div class="role-chip" id="roleChip"></div>
   <main id="main" aria-live="polite"></main>
 </div>
 
@@ -755,10 +872,11 @@ const GUIDES = {
         "Ton équipe reprend un magasin et le dirige pendant six trimestres, face à quatre concurrents simulés. À chaque trimestre, vous prenez vos décisions, vous les validez, puis vous analysez les résultats.",
         "L'objectif : le meilleur résultat cumulé à la fin du sixième trimestre, sans mettre la trésorerie dans le rouge.",
         "Le coach IA t'aide à lire tes chiffres et à justifier tes choix. Il ne te dit jamais quoi saisir."]},
-      {t:"Se connecter", sub:"Ton compte et ton mot de passe", shot:"e-login", steps:[
-        "<b>Ouvre l'adresse</b> donnée par ton formateur.",
-        "<b>Identifiant</b> : ton adresse e-mail de l'école. Le mot de passe provisoire t'arrive par e-mail ; tu le changes à ta première connexion.",
-        "<b>Mot de passe oublié</b> : demande à ton formateur. Il t'en envoie un nouveau par e-mail.", "<b>Changer d'espace ou se déconnecter</b> : bouton en haut à droite de l'écran."],
+      {t:"Se connecter", sub:"Ton adresse e-mail et ton code", shot:"e-login", steps:[
+        "<b>Ouvre la page de connexion</b> du site, donnée par ton formateur.",
+        "<b>Adresse e-mail</b> : celle que ton école a transmise.",
+        "<b>Code</b> : ton code personnel, reçu par e-mail, ou le code de classe écrit au tableau. Avec le code de classe, tu écris aussi ton adresse e-mail.",
+        "<b>Code refusé ou oublié</b> : demande à ton formateur. Il t'en envoie un nouveau par e-mail.", "<b>Changer de rôle</b> : bouton en haut de l'écran (démonstration)."],
         tip:"Ton accès reste ouvert jusqu'à la date de clôture de ta cohorte. Ensuite, il se ferme automatiquement."},
       {t:"Le tableau de bord", sub:"Le point de départ de chaque séance", shot:"e-dash", p:[
         "En haut : l'événement du trimestre à préparer. Lis-le toujours en premier, il change la donne.",
@@ -804,10 +922,10 @@ const GUIDES = {
         "<b>Écrire au groupe</b> ouvre un message déjà adressé.",
         "<b>Le suivi individuel</b> montre la dernière connexion, les questions posées au coach et les bilans rédigés."]},
       {t:"Constituer vos groupes", sub:"Dans la limite fixée par ISO", shot:"f-groups", steps:[
-        "<b>Choisissez la cohorte</b> en haut à droite. Une cohorte de votre campus encore sans formateur peut être ajoutée en un clic, en bas de page.",
+        "<b>Choisissez la cohorte</b> en haut à droite. Une cohorte de votre site encore sans formateur peut être ajoutée en un clic, en bas de page.",
         "<b>Répartir automatiquement</b> crée les groupes en respectant la limite nationale. Vous pouvez ensuite déplacer chaque étudiant.",
         "<b>Ou créez les groupes un par un</b>, puis affectez chaque étudiant avec la liste de droite."],
-        tip:"Un groupe complet refuse un étudiant de plus : la règle nationale s'applique à tous les campus."},
+        tip:"Un groupe complet refuse un étudiant de plus : la règle nationale s'applique à tous les sites."},
       {t:"Mes étudiants", sub:"Les comptes et les mots de passe", shot:"f-students", p:[
         "Vous voyez la liste de chaque cohorte, avec l'adresse e-mail, le groupe et la date de fin d'accès.",
         "<b>Nouveau mot de passe</b> : vous seul réinitialisez les mots de passe de vos étudiants. L'application leur envoie un mot de passe provisoire par e-mail."]},
@@ -837,42 +955,32 @@ const GUIDES = {
     sections: [
       {t:"Mise en route de l'année", sub:"Cinq étapes, dans l'ordre", shot:"a-home", steps:[
         "<b>Inscrire les formateurs.</b>",
-        "<b>Importer les étudiants</b>, campus par campus.",
+        "<b>Importer les étudiants</b>, site par site.",
         "<b>Choisir l'étude de cas.</b>",
         "<b>Fixer le calendrier</b> et les dates de dépôt des livrables.",
         "<b>Attribuer chaque cohorte</b> à un formateur."],
         p:["L'accueil coche chaque étape quand elle est faite. Il affiche aussi la consommation du coach IA et les dernières interventions du support."]},
       {t:"Inscrire les formateurs", sub:"Un par un ou par fichier", shot:"a-trainers", p:[
-        "Pour un formateur, remplissez NOM, Prénom, Campus et e-mail : il reçoit ses identifiants par e-mail.",
-        "Pour plusieurs, importez un fichier CSV dont la première ligne contient : NOM ; Prénom ; Campus ; e-mail. Le modèle Excel est téléchargeable sur la page."]},
+        "Pour un formateur, remplissez NOM, Prénom, Site et e-mail : il reçoit ses identifiants par e-mail.",
+        "Pour plusieurs, importez un fichier CSV dont la première ligne contient : NOM ; Prénom ; Site ; e-mail. Le modèle Excel est téléchargeable sur la page."]},
       {t:"Importer les étudiants", sub:"Le modèle, le CSV, le contrôle", shot:"a-students", steps:[
         "<b>Téléchargez le modèle Excel</b> et complétez une ligne par étudiant.",
         "<b>Gardez les en-têtes</b> : NOM ; Prénom ; Classe ; e-mail ; date de clôture (au format JJ/MM/AAAA).",
         "<b>Enregistrez en CSV</b> : « Fichier », « Enregistrer sous », « CSV UTF-8 (délimité par des points-virgules) ».",
-        "<b>Choisissez le campus et importez</b> le fichier. L'application affiche les lignes et les erreurs (e-mail invalide, date mal écrite, doublon) avant toute confirmation."],
-        tip:"Une classe inconnue crée une nouvelle cohorte. Un formateur du campus peut la prendre lui-même, ou vous l'attribuez dans le tableau des cohortes."},
-      {t:"Étude de cas et calendrier", sub:"Le cadre commun à tous les campus", shot:"a-case", p:[
+        "<b>Choisissez le site et importez</b> le fichier. L'application affiche les lignes et les erreurs (e-mail invalide, date mal écrite, doublon) avant toute confirmation."],
+        tip:"Une classe inconnue crée une nouvelle cohorte. Un formateur du site peut la prendre lui-même, ou vous l'attribuez dans le tableau des cohortes."},
+      {t:"Étude de cas et calendrier", sub:"Le cadre commun à tous les sites", shot:"a-case", p:[
         "Choisissez l'étude de cas dans le catalogue : magasin d'optique, supérette de proximité, boutique de prêt-à-porter, hôtel-restaurant.",
         "Fixez le mode de travail (groupes ou individuel) et le nombre maximal d'étudiants par groupe : les formateurs ne pourront pas le dépasser.",
         "Renseignez les dates limites des décisions et des livrables. Les décisions sont verrouillées et calculées à 17 h le jour indiqué ; les relances partent la veille."]},
       {t:"Challenge national", sub:"Une proposition à construire", shot:"a-challenge", p:[
-        "Les six campus jouent le même cas au même rythme : classement par campus, puis classement national et finale.",
-        "Activez le challenge, choisissez les campus, le critère de classement (résultat cumulé ou score mixte) et la date de la finale."]},
+        "Les six sites jouent le même cas au même rythme : classement par site, puis classement national et finale.",
+        "Activez le challenge, choisissez les sites, le critère de classement (résultat cumulé ou score mixte) et la date de la finale."]},
       {t:"Données et archives", sub:"Vous fixez les règles, l'application les applique", shot:"a-data", p:[
         "À la date de clôture de chaque cohorte, les accès des étudiants se ferment et la cohorte passe en archive, en lecture seule. En septembre, vous repartez d'une base neuve, sans rien supprimer à la main.",
         "Choisissez la durée de conservation des archives et le sort des messages, bilans et échanges avec le coach. Vous pouvez exporter les données de l'année en CSV.",
         "Le journal du support liste chaque intervention technique sur un compte, avec sa raison : c'est la contrepartie de l'accès prévu au contrat de traitement des données."],
         tip:"Pour signaler un problème au support, indiquez l'identifiant du compte concerné (par exemple E-0007) et ce qui ne fonctionne pas."}
-    ]
-  },
-  tech: {
-    title: "Mémo de l'administration technique",
-    sub: "Les gestes de support, réservés au prestataire.",
-    sections: [
-      {t:"Rappels", sub:"Usage interne", p:[
-        "Chaque action sur un compte (mot de passe, déblocage, prolongation, recalcul) est inscrite dans le journal visible par l'administration ISO, avec sa raison.",
-        "La clé d'API reste côté serveur. À 80 % du budget mensuel, une alerte part ; à 100 %, le coach passe sur ses analyses préprogrammées.",
-        "Avant tout recalcul, l'état précédent est sauvegardé : un geste peut toujours être annulé."]}
     ]
   }
 };
@@ -1117,17 +1225,31 @@ function applyHelp(root){
   window.hideHelp = hide;
 })();
 
-/* ===== Espaces d'administration : technique (Pierrick), ISO (Élodie), formateur ; compléments étudiant ===== */
+/* ===== Espaces d'administration (école, formateur) ; compléments étudiant ===== */
 /* Toutes les données sont fictives et restent dans l'onglet du navigateur (sessionStorage). */
 
-const ACCOUNTS = {
-  "iso-demo":       {pass:"Optique2026",   role:"etudiant",  who:"Léa Dupont, étudiante (TP REM A, Nantes)"},
-  "formateur-demo": {pass:"Formateur2026", role:"formateur", who:"Claire Martin, formatrice (Nantes)"},
-  "iso-admin":      {pass:"Admin2026",     role:"admin",     who:"Administration ISO"},
-  "pierrick":       {pass:"Support2026",   role:"tech",      who:"Pierrick Briand, administrateur technique"},
-  "ancien-etudiant":{pass:"Optique2025",   role:"clos",      who:""}
-};
-const ROLE_LABEL = {etudiant:"Espace étudiant", formateur:"Espace formateur", admin:"Administration ISO", tech:"Administration technique"};
+/* Interrupteur unique : l'attribut data-jeu de la balise <html> (« public » ou « iso »). */
+const JEU = document.documentElement.dataset.jeu === "iso" ? "iso" : "public";
+const ORG = JEU === "iso"
+  ? {nom:"ISO", app:"Coach IA ISO", admin:"Administration ISO", siteDefaut:"Nantes"}
+  : {nom:"Démonstration", app:"Coach IA", admin:"Administration de l'école", siteDefaut:"Site Ouest"};
+const BLOCS = JEU === "iso" ? ["BC01", "BC02", "BC03", "Transversal"] : ["Bloc 1", "Bloc 2", "Bloc 3", "Transversal"];
+/* Jeu public : mots propres à ISO remplacés (données, textes, modèles). Le jeu « iso » garde les textes d'origine. */
+const NEUTRE = [
+  [/NAN-REM-A/g,"OUE-PRO-A"],[/NAN-REM-B/g,"OUE-PRO-B"],[/NAN-MCM-1/g,"OUE-PRO-C"],[/LYO-MCM-2/g,"EST-PRO-D"],[/LIL-REM-A/g,"NOR-PRO-A"],[/TLS-REM-A/g,"SUD-PRO-A"],
+  [/TP REM A/g,"Promotion A"],[/TP REM B/g,"Promotion B"],[/MCM 1/g,"Promotion C"],[/MCM 2/g,"Promotion D"],
+  [/Paris Sud/g,"Site Capitale"],[/\bNantes\b/g,"Site Ouest"],[/\bLyon\b/g,"Site Est"],[/\bLille\b/g,"Site Nord"],[/\bToulouse\b/g,"Site Sud"],[/\bNancy\b/g,"Site Centre"],
+  [/\(TP REM : blocs BC01, BC02, BC03\)/g,"(blocs de compétences)"],
+  [/BC01/g,"Bloc 1"],[/BC02/g,"Bloc 2"],[/BC03/g,"Bloc 3"],
+  [/l'administration ISO/g,"l'administration de l'école"],[/Administration ISO/g,"Administration de l'école"],[/administration ISO/g,"administration de l'école"],
+  [/(visible |signalé |inscrite? au journal visible )par ISO/g,"$1par l'administration"],[/pour ISO/g,"pour l'école"],[/par ISO/g,"par l'école"],
+  [/iso\.exemple/g,"ecole.exemple"],
+  [/Challenge national/g,"Challenge inter-sites"],[/challenge national/g,"challenge inter-sites"],[/classement national/g,"classement général"],[/Règle nationale/g,"Règle commune"],[/règle nationale/g,"règle commune"],[/cadre national/g,"cadre commun"],[/rang national/g,"rang général"]
+];
+/* Vocabulaire commun aux deux jeux : la connexion du site utilise un code personnel. */
+const VOCAB = [[/Nouveau mot de passe/g,"Nouveau code personnel"],[/nouveau mot de passe/g,"nouveau code personnel"],[/Mot de passe provisoire/g,"Code personnel provisoire"],[/mot de passe provisoire/g,"code personnel provisoire"],[/mots de passe/g,"codes personnels"],[/Mot de passe/g,"Code personnel"],[/mot de passe/g,"code personnel"]];
+const neutre = t => typeof t !== "string" ? t : (JEU === "iso" ? VOCAB : VOCAB.concat(NEUTRE)).reduce((a, [r, v]) => a.replace(r, v), t);
+const ROLE_LABEL = {etudiant:"Espace étudiant", formateur:"Espace formateur", admin:ORG.admin};
 const ME_TRAINER = "F-01", ME_STUDENT = "E-0001";
 let ROLE = "etudiant";
 
@@ -1150,16 +1272,9 @@ const ADMIN_NAV = {
     {id:"f-emails", label:"Modèles d'e-mails", icon:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'},
     {id:"f-tasks", label:"Tâches automatiques", icon:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'}
   ],
-  tech:[
-    {id:"t-home", label:"Supervision", icon:'<path d="M3 12h4l3-8 4 16 3-8h4"/>'},
-    {id:"t-accounts", label:"Comptes", icon:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'},
-    {id:"t-api", label:"Clé d'API et plafonds", icon:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/>'},
-    {id:"t-sim", label:"Simulations", icon:'<path d="M4 4h16v12H4z"/><path d="M8 20h8M12 16v4"/>'},
-    {id:"t-log", label:"Journal", icon:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/>'}
-  ]
 };
 const GUIDE_NAV = {id:"guide", label:"Mode d'emploi", icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M9 7h7M9 11h5"/>'};
-["admin", "formateur", "tech"].forEach(r => ADMIN_NAV[r].push(GUIDE_NAV));
+["admin", "formateur"].forEach(r => ADMIN_NAV[r].push(GUIDE_NAV));
 const STUDENT_EXTRA_NAV = {id:"prog", label:"Mon avancement", icon:'<path d="M4 20V10M10 20V4M16 20v-7"/><path d="M2 20h20"/>'};
 
 /* ----- Données de démonstration ----- */
@@ -1249,7 +1364,7 @@ function defaultDB(){
     archives:[{year:"2025-2026", cohorts:5, students:118, closed:"30/06/2026"}],
     challenge:{on:false, campuses:["Lille", "Lyon", "Nancy", "Nantes", "Paris Sud", "Toulouse"], final:"2027-06-04", rule:"resultat"},
     capacity:100,
-    api:{masked:"sk-ant-…F2a9", capStudent:30, capMonth:40, usedMonth:12.4, questionsMonth:1834},
+    api:{capStudent:30, capMonth:40, usedMonth:12.4, questionsMonth:1834},
     support:[{t:"05/11/2026 10:12", who:"Pierrick Briand", act:"Mot de passe réinitialisé", target:"F-03 · Sonia PETIT", why:"Demande de l'administration ISO"}],
     log:[
       {t:"12/11/2026 03:00", lvl:"ok", msg:"Sauvegarde hebdomadaire du classeur effectuée (8 copies conservées)."},
@@ -1261,7 +1376,8 @@ function defaultDB(){
   };
 }
 let DB;
-function loadDB(){ try{ const x = JSON.parse(sessionStorage.getItem("coachia-db") || "null"); if (x && x.v === 5){ DB = x; return; } }catch(e){} DB = defaultDB(); }
+function loadDB(){ try{ const x = JSON.parse(sessionStorage.getItem("coachia-db") || "null"); if (x && x.v === 5){ DB = x; return; } }catch(e){} DB = neutreDB(defaultDB()); }
+function neutreDB(d){ return JSON.parse(neutre(JSON.stringify(d))); }
 function saveDB(){ try{ sessionStorage.setItem("coachia-db", JSON.stringify(DB)); }catch(e){} }
 loadDB();
 applyScenario(DB.settings.caseId);
@@ -1280,7 +1396,7 @@ const DELIVS = () => DB.deadlines.filter(d => d.deliv);
 function toast(t){
   let el = document.getElementById("toast");
   if (!el){ el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
-  el.textContent = t; el.classList.add("show");
+  el.textContent = neutre(t); el.classList.add("show");
   clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 4200);
 }
 function stepPill(s){
@@ -1294,16 +1410,12 @@ function download(name, content, type){
   a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
-function logSupport(act, target, why){
-  const d = new Date(); const t = d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR", {hour:"2-digit", minute:"2-digit"});
-  DB.support.unshift({t, who:"Pierrick Briand", act, target, why:why || "Demande de l'administration ISO"}); saveDB();
-}
 const tempPass = () => "Coach-" + Math.random().toString(36).slice(2, 6).toUpperCase() + Math.floor(10 + Math.random() * 89);
 
 /* ----- Import CSV ----- */
 const norm = t => String(t).trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[\s\-_]/g, "");
 const HEAD_STUDENTS = ["NOM", "Prénom", "Classe", "e-mail", "date de clôture"];
-const HEAD_TRAINERS = ["NOM", "Prénom", "Campus", "e-mail"];
+const HEAD_TRAINERS = ["NOM", "Prénom", "Site", "e-mail"];
 function parseCSV(text){
   text = text.replace(/^﻿/, "");
   const first = text.split(/\r?\n/)[0] || "";
@@ -1341,7 +1453,7 @@ function checkImport(rows, kind){
     if (kind === "students"){
       if (!v.Classe) pb.push("Classe vide");
       if (!DATE_RE.test(v["date de clôture"])) pb.push("date de clôture au format JJ/MM/AAAA");
-    } else if (!DB.campuses.some(c => norm(c) === norm(v.Campus))) pb.push("campus inconnu");
+    } else if (!DB.campuses.some(c => norm(c) === norm((v.Site ?? v.Campus)))) pb.push("site inconnu");
     if (pb.length) out.errors.push({line, v, pb}); else { out.ok.push(v); seen.add(v["e-mail"].toLowerCase()); }
   });
   return out;
@@ -1370,28 +1482,28 @@ function confirmImport(kind){
     toast(`${p.res.ok.length} étudiants importés${created ? `, ${created} cohorte${created > 1 ? "s" : ""} créée${created > 1 ? "s" : ""}` : ""}. Les e-mails de bienvenue partiront quand un formateur prendra la cohorte.`);
   } else {
     let n = DB.trainers.length + 1;
-    p.res.ok.forEach(v => DB.trainers.push({id:"F-" + String(n++).padStart(2, "0"), nom:v.NOM.toUpperCase(), prenom:v["Prénom"], campus:DB.campuses.find(c => norm(c) === norm(v.Campus)), email:v["e-mail"]}));
+    p.res.ok.forEach(v => DB.trainers.push({id:"F-" + String(n++).padStart(2, "0"), nom:v.NOM.toUpperCase(), prenom:v["Prénom"], campus:DB.campuses.find(c => norm(c) === norm((v.Site ?? v.Campus))), email:v["e-mail"]}));
     toast(`${p.res.ok.length} formateurs inscrits. Chacun reçoit ses identifiants par e-mail.`);
   }
   PENDING_IMPORT = null; saveDB(); render();
 }
 function csvTemplate(kind){
   const rows = kind === "students"
-    ? [HEAD_STUDENTS, ["DUPONT", "Léa", "TP REM A", "lea.dupont@exemple.fr", "30/06/2027"], ["MARTIN", "Yanis", "TP REM A", "yanis.martin@exemple.fr", "30/06/2027"]]
-    : [HEAD_TRAINERS, ["MARTIN", "Claire", "Nantes", "claire.martin@exemple.fr"]];
+    ? [HEAD_STUDENTS, ["DUPONT", "Léa", "Promotion A", "lea.dupont@exemple.fr", "30/06/2027"], ["MARTIN", "Yanis", "Promotion A", "yanis.martin@exemple.fr", "30/06/2027"]]
+    : [HEAD_TRAINERS, ["MARTIN", "Claire", ORG.siteDefaut, "claire.martin@exemple.fr"]];
   download(kind === "students" ? "modele-import-etudiants.csv" : "modele-import-formateurs.csv", "﻿" + rows.map(r => r.join(";")).join("\r\n"), "text/csv;charset=utf-8");
 }
 function importBlock(kind){
   const cols = kind === "students" ? HEAD_STUDENTS : HEAD_TRAINERS;
   const xlsx = kind === "students" ? "modele-import-etudiants.xlsx" : "modele-import-formateurs.xlsx";
   return `<ol class="steps-list">
-    <li><b>Télécharge le modèle</b> et complète une ligne par ${kind === "students" ? "étudiant" : "formateur"}.
+    <li><b>Téléchargez le modèle</b> et complétez une ligne par ${kind === "students" ? "étudiant" : "formateur"}.
       <div class="row"><a class="btn ghost" href="${(window.XLSX_DATA || {})[xlsx] || xlsx}" download="${xlsx}">Modèle Excel (.xlsx)</a><button class="btn ghost" data-act="tpl-csv" data-kind="${kind}">Modèle CSV</button></div></li>
-    <li><b>Garde les en-têtes de la première ligne</b>, dans cet ordre : <span class="heads">${cols.map(c => `<code>${c}</code>`).join(" ; ")}</span>${kind === "students" ? " La date de clôture s'écrit JJ/MM/AAAA : à cette date, l'accès de l'étudiant se ferme et la cohorte passe en archive." : ""}</li>
-    <li><b>Enregistre en CSV</b> : dans Excel, « Fichier », « Enregistrer sous », puis « CSV UTF-8 (délimité par des points-virgules) ».</li>
-    <li><b>Importe le fichier</b>${kind === "students" ? ` pour le campus <select id="impCampus">${DB.campuses.map(c => `<option ${c === "Nantes" ? "selected" : ""}>${c}</option>`).join("")}</select>` : ""} :
+    <li><b>Gardez les en-têtes de la première ligne</b>, dans cet ordre : <span class="heads">${cols.map(c => `<code>${c}</code>`).join(" ; ")}</span>${kind === "students" ? " La date de clôture s'écrit JJ/MM/AAAA : à cette date, l'accès de l'étudiant se ferme et la cohorte passe en archive." : ""}</li>
+    <li><b>Enregistrez en CSV</b> : dans Excel, « Fichier », « Enregistrer sous », puis « CSV UTF-8 (délimité par des points-virgules) ».</li>
+    <li><b>Importez le fichier</b>${kind === "students" ? ` pour le site <select id="impCampus">${DB.campuses.map(c => `<option ${c === ORG.siteDefaut ? "selected" : ""}>${c}</option>`).join("")}</select>` : ""} :
       <label class="filebtn btn">Choisir le fichier CSV<input type="file" accept=".csv,text/csv" data-import="${kind}" hidden></label>
-      <span class="hint">Rien n'est enregistré avant ta confirmation : tu vois d'abord les lignes et les erreurs éventuelles.</span></li></ol>
+      <span class="hint">Rien n'est enregistré avant votre confirmation : vous voyez d'abord les lignes et les erreurs éventuelles.</span></li></ol>
     ${importPreview(kind)}`;
 }
 
@@ -1420,7 +1532,7 @@ function vAHome(){
   ];
   return head("Administration ISO", `Année ${DB.year} · cadre national de la simulation`) + `
   <div class="kpis">
-    <div class="kpi"><span>Campus actifs</span><strong>${camp}</strong><em>sur ${DB.campuses.length}</em></div>
+    <div class="kpi"><span>Sites actifs</span><strong>${camp}</strong><em>sur ${DB.campuses.length}</em></div>
     <div class="kpi"><span>Formateurs</span><strong>${DB.trainers.length}</strong><em>inscrits</em></div>
     <div class="kpi"><span>Cohortes</span><strong>${DB.cohorts.length}</strong><em>${free.length ? `${free.length} sans formateur` : "toutes attribuées"}</em></div>
     <div class="kpi"><span>Étudiants inscrits</span><strong>${nbS}</strong><em>sur ${DB.cohorts.length} cohortes</em></div>
@@ -1438,27 +1550,27 @@ function vAHome(){
     <button class="back" data-go="a-data">Voir tout le journal du support</button></section></div>`;
 }
 function vATrainers(){
-  return head("Formateurs", "Tu inscris les formateurs ; chacun reçoit ses identifiants par e-mail et choisit ensuite ses cohortes.") + `
-  <section class="card"><h2>Formateurs inscrits</h2><div class="tablebox"><table><thead><tr><th>Identifiant</th><th style="text-align:left">Nom</th><th>Campus</th><th style="text-align:left">E-mail</th><th style="text-align:left">Cohortes</th><th></th></tr></thead><tbody>
+  return head("Formateurs", "Vous inscrivez les formateurs ; chacun reçoit ses identifiants par e-mail et choisit ensuite ses cohortes.") + `
+  <section class="card"><h2>Formateurs inscrits</h2><div class="tablebox"><table><thead><tr><th>Identifiant</th><th style="text-align:left">Nom</th><th>Site</th><th style="text-align:left">E-mail</th><th style="text-align:left">Cohortes</th><th></th></tr></thead><tbody>
   ${DB.trainers.map(t => `<tr><td>${t.id}</td><td style="text-align:left">${esc(fullName(t))}</td><td>${t.campus}</td><td style="text-align:left">${esc(t.email)}</td><td style="text-align:left;white-space:normal">${DB.cohorts.filter(c => c.trainer === t.id).map(c => c.classe).join(", ") || "<em>aucune</em>"}</td><td><button class="back" data-act="resend" data-id="${t.id}">Renvoyer les identifiants</button></td></tr>`).join("")}
   </tbody></table></div></section>
   <div class="grid2">
   <section class="card"><h2>Ajouter un formateur</h2>
-    <div class="formgrid"><label>NOM<input id="tNom"></label><label>Prénom<input id="tPre"></label><label>Campus<select id="tCamp">${DB.campuses.map(c => `<option>${c}</option>`).join("")}</select></label><label>E-mail<input id="tMail" type="email"></label></div>
+    <div class="formgrid"><label>NOM<input id="tNom"></label><label>Prénom<input id="tPre"></label><label>Site<select id="tCamp">${DB.campuses.map(c => `<option>${c}</option>`).join("")}</select></label><label>E-mail<input id="tMail" type="email"></label></div>
     <div class="row"><button class="btn" data-act="add-trainer">Inscrire et envoyer les identifiants</button></div></section>
   <section class="card"><h2>Importer plusieurs formateurs</h2>${importBlock("trainers")}</section></div>`;
 }
 function vAStudents(){
   const byCampus = DB.campuses.map(c => [c, DB.cohorts.filter(x => x.campus === c)]).filter(([, l]) => l.length);
-  return head("Étudiants et cohortes", "Un import par campus en début d'année. La date de clôture coupe l'accès et archive la cohorte : rien à supprimer en juin.") + `
+  return head("Étudiants et cohortes", "Un import par site en début d'année. La date de clôture coupe l'accès et archive la cohorte : rien à supprimer en juin.") + `
   <section class="card"><h2>Importer une liste d'étudiants</h2>${importBlock("students")}</section>
-  <section class="card"><h2>Cohortes de l'année ${DB.year}</h2><div class="tablebox"><table><thead><tr><th>Campus</th><th style="text-align:left">Classe</th><th>Étudiants</th><th>Formateur</th><th>Clôture</th></tr></thead><tbody>
+  <section class="card"><h2>Cohortes de l'année ${DB.year}</h2><div class="tablebox"><table><thead><tr><th>Site</th><th style="text-align:left">Classe</th><th>Étudiants</th><th>Formateur</th><th>Clôture</th></tr></thead><tbody>
   ${byCampus.map(([, l]) => l.map(c => `<tr><td>${c.campus}</td><td style="text-align:left">${esc(c.classe)}</td><td>${c.count || 0}</td><td><select data-assign="${c.id}"><option value="">– à attribuer –</option>${DB.trainers.filter(t => t.campus === c.campus).map(t => `<option value="${t.id}" ${t.id === c.trainer ? "selected" : ""}>${esc(fullName(t))}</option>`).join("")}</select></td><td>${c.close}</td></tr>`).join("")).join("")}
-  </tbody></table></div><p class="hint">Un formateur peut aussi prendre lui-même une cohorte de son campus encore libre, depuis son espace.</p></section>`;
+  </tbody></table></div><p class="hint">Un formateur peut aussi prendre lui-même une cohorte de son site encore libre, depuis son espace.</p></section>`;
 }
 function vACase(){
   const s = DB.settings;
-  return head("Étude de cas et calendrier", "Le cadre commun à tous les campus : le cas joué, le mode de travail et les dates de dépôt.") + `
+  return head("Étude de cas et calendrier", "Le cadre commun à tous les sites : le cas joué, le mode de travail et les dates de dépôt.") + `
   <section class="card"><h2>Catalogue des études de cas</h2><div class="cases">
   ${DB.cases.map(c => `<label class="case ${c.id === s.caseId ? "on" : ""}"><input type="radio" name="case" value="${c.id}" ${c.id === s.caseId ? "checked" : ""} data-set="caseId">
     <span class="pill ${c.sector === "Commerce" ? "" : "warn"}">${c.sector}</span><b>${c.title}</b><span class="tag">${c.tag}</span><span class="hint">${c.obj}</span>
@@ -1474,10 +1586,10 @@ function vACase(){
     ${DB.deadlines.map(d => `<tr class="${d.deliv ? "sub" : ""}"><td style="text-align:left">${d.label}${d.final ? ' <span class="pill warn">final</span>' : ""}</td><td><input type="date" value="${d.date}" data-deadline="${d.id}" style="width:150px"></td></tr>`).join("")}
   </tbody></table></div><p class="hint">Les décisions sont verrouillées et calculées à 17 h le jour indiqué. Les relances partent la veille.</p></section></div>
   <section class="card"><div class="row" style="justify-content:space-between"><h2>Grille d'évaluation des livrables</h2><label class="row" style="gap:8px">Livrable <select id="rubD">${DELIVS().map(d => `<option value="${d.id}" ${d.id === A_RUB ? "selected" : ""}>${d.label}</option>`).join("")}</select></label></div>
-    <p class="hint">Exemple de grille à remplacer par les critères de votre référentiel (TP REM : blocs BC01, BC02, BC03). Chaque critère reçoit « satisfait » ou « non satisfait » pour l'ECF, et des points pour la note de contrôle continu. Les formateurs de tous les campus évaluent avec cette grille.</p>
+    <p class="hint">Exemple de grille à remplacer par les critères de votre référentiel (TP REM : blocs BC01, BC02, BC03). Chaque critère reçoit « satisfait » ou « non satisfait » pour l'ECF, et des points pour la note de contrôle continu. Les formateurs de tous les sites évaluent avec cette grille.</p>
     <div class="tablebox"><table><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>Points</th><th></th></tr></thead><tbody>
     ${rubric(A_RUB).map(c => `<tr><td style="text-align:left"><input value="${esc(c.label)}" data-rub="${A_RUB}|${c.id}|label" style="width:100%"></td>
-      <td><select data-rub="${A_RUB}|${c.id}|bloc">${["BC01", "BC02", "BC03", "Transversal"].map(b => `<option ${b === c.bloc ? "selected" : ""}>${b}</option>`).join("")}</select></td>
+      <td><select data-rub="${A_RUB}|${c.id}|bloc">${BLOCS.map(b => `<option ${b === c.bloc ? "selected" : ""}>${b}</option>`).join("")}</select></td>
       <td><input type="number" min="0" max="20" step="0.5" value="${c.max}" data-rub="${A_RUB}|${c.id}|max" style="width:70px"></td>
       <td><button class="back" data-act="rub-del" data-d="${A_RUB}" data-id="${c.id}">Retirer</button></td></tr>`).join("")}
     </tbody></table></div>
@@ -1488,26 +1600,26 @@ let A_RUB = "d1";
 function vAChallenge(){
   const c = DB.challenge;
   const demo = [["Nantes", "Groupe 1 · Lumière", 148200], ["Lyon", "Les Lunetiers", 141900], ["Lille", "Optique Nord", 139400], ["Toulouse", "Groupe 4", 131800], ["Paris Sud", "Vision 14", 127300], ["Nancy", "Groupe 2", 118600]];
-  return head("Challenge national", "Une proposition à construire ensemble : les six campus jouent le même cas, au même rythme, avec un classement commun.") + `
+  return head("Challenge national", "Une proposition à construire ensemble : les six sites jouent le même cas, au même rythme, avec un classement commun.") + `
   <div class="grid2">
   <section class="card"><h2>Principe proposé</h2>
     <ol class="steps-list"><li><b>Même cas, même calendrier</b> pour toutes les cohortes inscrites : les résultats sont comparables.</li>
-    <li><b>Classement par campus</b> pendant les six trimestres, puis un <b>classement national</b> des meilleurs groupes.</li>
-    <li><b>Finale</b> : les meilleurs groupes de chaque campus soutiennent leur stratégie devant un jury, à distance ou sur un campus.</li>
+    <li><b>Classement par site</b> pendant les six trimestres, puis un <b>classement national</b> des meilleurs groupes.</li>
+    <li><b>Finale</b> : les meilleurs groupes de chaque site soutiennent leur stratégie devant un jury, à distance ou sur un site.</li>
     <li><b>Critère</b> : le résultat cumulé seul, ou un score mixte qui intègre la note du formateur sur les livrables.</li></ol>
     <label class="radio"><input type="checkbox" ${c.on ? "checked" : ""} data-chal="on"> Activer le challenge pour l'année ${DB.year}</label>
     <div class="chips">${DB.campuses.map(x => `<label class="chipbox"><input type="checkbox" data-chalcamp="${x}" ${c.campuses.includes(x) ? "checked" : ""}> ${x}</label>`).join("")}</div>
     <div class="formgrid"><label>Classement<select data-chal="rule"><option value="resultat" ${c.rule === "resultat" ? "selected" : ""}>Résultat cumulé</option><option value="mixte" ${c.rule === "mixte" ? "selected" : ""}>Score mixte (70 % résultat, 30 % livrables)</option></select></label><label>Date de la finale<input type="date" value="${c.final}" data-chal="final"></label></div></section>
-  <section class="card"><h2>Aperçu du classement national</h2><div class="tablebox"><table><thead><tr><th>Rang</th><th>Campus</th><th>Meilleur groupe</th><th>Résultat cumulé</th></tr></thead><tbody>
+  <section class="card"><h2>Aperçu du classement national</h2><div class="tablebox"><table><thead><tr><th>Rang</th><th>Site</th><th>Meilleur groupe</th><th>Résultat cumulé</th></tr></thead><tbody>
     ${demo.filter(([x]) => c.campuses.includes(x)).map(([x, g, r], i) => `<tr><td><b>${i === 0 ? "1er" : (i + 1) + "e"}</b></td><td>${x}</td><td style="text-align:left">${g}</td><td>${eur.format(r)}</td></tr>`).join("")}
-  </tbody></table></div>${demoNote("Données fictives, pour illustrer l'écran. Les étudiants verraient le classement de leur campus et le rang national de leur groupe.")}</section></div>`;
+  </tbody></table></div>${demoNote("Données fictives, pour illustrer l'écran. Les étudiants verraient le classement de leur site et le rang national de leur groupe.")}</section></div>`;
 }
 function vAData(){
   const r = DB.retention;
-  return head("Données et archives", "Tu fixes les règles de conservation ; l'application les applique seule.") + `
+  return head("Données et archives", "Vous fixez les règles de conservation ; l'application les applique seule.") + `
   <div class="grid2">
   <section class="card"><h2>Année en cours : ${DB.year}</h2>
-    <p>À la date de clôture de chaque cohorte, les accès des étudiants se ferment et la cohorte passe en archive, en lecture seule. En septembre, tu repars d'une base neuve.</p>
+    <p>À la date de clôture de chaque cohorte, les accès des étudiants se ferment et la cohorte passe en archive, en lecture seule. En septembre, vous repartez d'une base neuve.</p>
     <label class="field"><span>Conservation des archives</span><select data-ret="archiveYears"><option value="1" ${r.archiveYears === "1" ? "selected" : ""}>1 an après la clôture</option><option value="3" ${r.archiveYears === "3" ? "selected" : ""}>3 ans après la clôture</option><option value="0" ${r.archiveYears === "0" ? "selected" : ""}>Suppression à la clôture</option></select></label>
     <label class="field"><span>Messages, bilans de séance et échanges avec le coach</span><select data-ret="purgeMessages"><option value="clôture" ${r.purgeMessages === "clôture" ? "selected" : ""}>Supprimés à la clôture de la cohorte</option><option value="3mois" ${r.purgeMessages === "3mois" ? "selected" : ""}>Supprimés trois mois après la clôture</option></select></label>
     <div class="row"><button class="btn" data-act="save-ret">Enregistrer</button><button class="btn ghost" data-act="export-all">Exporter les données de l'année (CSV)</button></div></section>
@@ -1586,8 +1698,8 @@ function vFHome(){
   const noGroup = coh.filter(c => DB.settings.mode === "groupe" && !DB.groups.some(g => g.cohort === c.id));
   noGroup.forEach(c => alerts.push(["warn", `La cohorte ${c.classe} n'a pas encore de groupes.`]));
   const me = trainerById(ME_TRAINER);
-  return head(`Bonjour ${me.prenom}`, `Ce que l'application a repéré pour toi aujourd'hui. Prochaine échéance : ${(() => { const n = DB.deadlines.find(d => d.date >= todayISO()); return n ? `${n.label}, le ${fmtDate(n.date)}` : "aucune"; })()}.`) + `
-  <section class="card"><h2>À traiter</h2>${alerts.length ? `<ul class="alerts">${alerts.map(([k, t]) => `<li class="${k}">${t}</li>`).join("")}</ul>` : `<p class="hint">Rien à signaler : tes groupes avancent.</p>`}</section>
+  return head(`Bonjour ${me.prenom}`, `Ce que l'application a repéré pour vous aujourd'hui. Prochaine échéance : ${(() => { const n = DB.deadlines.find(d => d.date >= todayISO()); return n ? `${n.label}, le ${fmtDate(n.date)}` : "aucune"; })()}.`) + `
+  <section class="card"><h2>À traiter</h2>${alerts.length ? `<ul class="alerts">${alerts.map(([k, t]) => `<li class="${k}">${t}</li>`).join("")}</ul>` : `<p class="hint">Rien à signaler : vos groupes avancent.</p>`}</section>
   ${coh.map(c => { const gs = DB.groups.filter(g => g.cohort === c.id); return `<section class="card"><div class="row" style="justify-content:space-between"><h2>${c.classe} · ${c.campus}</h2><div class="row" style="gap:8px"><span class="pill">${c.count} étudiants · clôture ${c.close}</span>${gs.length ? `<button class="btn ghost sm2" data-act="export-cohort" data-c="${c.id}">Exporter (tableur)</button><button class="btn ghost sm2" data-act="debrief" data-c="${c.id}">Fiche de débriefing</button>` : ""}</div></div>
     ${gs.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Groupe</th><th style="text-align:left">Membres</th><th>Trimestres joués</th><th>Décisions du T${curQ()}</th>${DELIVS().map(d => `<th>${d.label.split(" · ")[0]}</th>`).join("")}<th>Dernière activité</th><th></th></tr></thead><tbody>
     ${gs.map(g => { const p = groupStats(g); return `<tr><td style="text-align:left"><b>${esc(g.name)}</b></td><td style="text-align:left;white-space:normal">${g.members.map(id => studentById(id).prenom).join(", ")}</td><td>${p.played}/6</td><td>${decisionPill(p)}</td>
@@ -1614,10 +1726,10 @@ function vFEval(){
   const sel = `<div class="formgrid"><label>Cohorte<select id="evC">${coh.map(c => `<option value="${c.id}" ${c.id === F_EV.c ? "selected" : ""}>${c.classe} (${c.campus})</option>`).join("")}</select></label>
     <label>Livrable<select id="evD">${D3.map(x => `<option value="${x.id}" ${x.id === d.id ? "selected" : ""}>${x.label}</option>`).join("")}</select></label>
     <label>Groupe<select id="evG">${gs.map(g => `<option value="${g.id}" ${g.id === F_EV.g ? "selected" : ""}>${esc(g.name)} · ${groupStats(g).steps[d.id]}</option>`).join("")}</select></label></div>`;
-  if (!F_EV.g) return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les campus.") + `<section class="card">${sel}<p class="hint">Cette cohorte n'a pas encore de groupes.</p></section>`;
+  if (!F_EV.g) return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites.") + `<section class="card">${sel}<p class="hint">Cette cohorte n'a pas encore de groupes.</p></section>`;
   const g = DB.groups.find(x => x.id === F_EV.g), e = evalOf(g.id, d.id) || {res:{}, pts:{}, comment:""}, st = groupStats(g).steps[d.id];
   const max = r.reduce((a, c) => a + (+c.max || 0), 0);
-  return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les campus. L'ECF se prononce en « satisfait » ou « non satisfait » ; les points donnent la note de contrôle continu.") + `
+  return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites. L'ECF se prononce en « satisfait » ou « non satisfait » ; les points donnent la note de contrôle continu.") + `
   <section class="card">${sel}</section>
   <section class="card"><div class="row" style="justify-content:space-between"><h2>${esc(g.name)} · ${d.label}</h2>${stepPill(st)}</div>
     <p class="hint">Membres : ${g.members.map(id => esc(fullName(studentById(id)))).join(", ")}</p>
@@ -1661,7 +1773,7 @@ function vFGroups(){
   const students = DB.students.filter(s => s.cohort === c.id);
   const gs = DB.groups.filter(g => g.cohort === c.id);
   const indiv = DB.settings.mode === "individuel";
-  return head("Mes groupes", indiv ? "L'administration a fixé un travail individuel : chaque étudiant pilote son propre magasin." : `Tu constitues toi-même tes groupes. Règle nationale : ${max} étudiants au maximum par groupe.`,
+  return head("Mes groupes", indiv ? "L'administration a fixé un travail individuel : chaque étudiant pilote son propre magasin." : `Vous constituez vous-même vos groupes. Règle nationale : ${max} étudiants au maximum par groupe.`,
     `<label>Cohorte <select id="fCoh">${coh.map(x => `<option value="${x.id}" ${x.id === c.id ? "selected" : ""}>${x.classe} (${x.campus})</option>`).join("")}</select></label>`) + `
   ${indiv ? "" : `<div class="grid2">
   <section class="card"><h2>Groupes de ${c.classe}</h2>
@@ -1670,12 +1782,12 @@ function vFGroups(){
   <section class="card"><h2>Répartition des étudiants</h2>
     ${students.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Étudiant</th><th style="text-align:left">Groupe</th></tr></thead><tbody>${students.map(s => { const g = groupOf(s.id); return `<tr><td style="text-align:left">${esc(fullName(s))}</td><td style="text-align:left"><select data-member="${s.id}"><option value="">– sans groupe –</option>${gs.map(x => `<option value="${x.id}" ${g && g.id === x.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></td></tr>`; }).join("")}</tbody></table></div>` : `<p class="hint">Cette cohorte n'a pas encore d'étudiants importés.</p>`}
   </section></div>`}
-  <section class="card"><h2>Ajouter une cohorte de mon campus</h2>
-    ${free.length ? `<p class="hint">Cohortes importées par l'administration ISO, encore sans formateur :</p><div class="row">${free.map(x => `<button class="btn ghost" data-act="take-cohort" data-c="${x.id}">Prendre ${x.classe} (${x.count} étudiants)</button>`).join("")}</div>` : `<p class="hint">Toutes les cohortes de ton campus ont un formateur.</p>`}</section>`;
+  <section class="card"><h2>Ajouter une cohorte de mon site</h2>
+    ${free.length ? `<p class="hint">Cohortes importées par l'administration ISO, encore sans formateur :</p><div class="row">${free.map(x => `<button class="btn ghost" data-act="take-cohort" data-c="${x.id}">Prendre ${x.classe} (${x.count} étudiants)</button>`).join("")}</div>` : `<p class="hint">Toutes les cohortes de votre site ont un formateur.</p>`}</section>`;
 }
 function vFStudents(){
   const coh = myCohorts();
-  return head("Mes étudiants", "Toi seul réinitialises les mots de passe de tes étudiants. L'application leur envoie le nouveau par e-mail.") +
+  return head("Mes étudiants", "Vous seul réinitialisez les mots de passe de vos étudiants. L'application leur envoie le nouveau par e-mail.") +
   coh.map(c => { const list = DB.students.filter(s => s.cohort === c.id); return `<section class="card"><h2>${c.classe} · ${c.campus}</h2>${list.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Étudiant</th><th style="text-align:left">E-mail</th><th style="text-align:left">Groupe</th><th>Accès jusqu'au</th><th></th></tr></thead><tbody>
     ${list.map(s => `<tr><td style="text-align:left">${esc(fullName(s))}</td><td style="text-align:left">${esc(s.email)}</td><td style="text-align:left">${groupOf(s.id) ? esc(groupOf(s.id).name) : "–"}</td><td>${s.close}</td><td><button class="back" data-act="reset-student" data-id="${s.id}">Nouveau mot de passe</button></td></tr>`).join("")}
   </tbody></table></div>` : `<p class="hint">Aucun étudiant importé pour cette cohorte.</p>`}</section>`; }).join("");
@@ -1700,12 +1812,12 @@ function vFMsg(){
     <label class="field"><span>Message</span><textarea id="mText" rows="5" maxlength="800"></textarea></label>
     <label class="radio"><input type="checkbox" id="mMail" checked> Prévenir aussi par e-mail</label>
     <div class="row"><button class="btn" data-act="send-msg">Envoyer</button></div></section>
-  <section class="card"><h2>Messages envoyés</h2>${sent.length ? `<ul class="msglist">${sent.map(m => `<li><div class="row" style="justify-content:space-between"><b>${esc(m.title)}</b><span class="pill">${m.date}</span></div><p>${esc(m.text)}</p><span class="hint">Pour : ${esc(targetLabel(m.to))}${m.mail ? " · prévenu par e-mail" : ""}</span></li>`).join("")}</ul>` : `<p class="hint">Aucun message envoyé. Connecte-toi ensuite avec l'accès étudiant pour voir le message arriver.</p>`}</section></div>`;
+  <section class="card"><h2>Messages envoyés</h2>${sent.length ? `<ul class="msglist">${sent.map(m => `<li><div class="row" style="justify-content:space-between"><b>${esc(m.title)}</b><span class="pill">${m.date}</span></div><p>${esc(m.text)}</p><span class="hint">Pour : ${esc(targetLabel(m.to))}${m.mail ? " · prévenu par e-mail" : ""}</span></li>`).join("")}</ul>` : `<p class="hint">Aucun message envoyé. Passez ensuite à l'espace étudiant, avec « Changer de rôle » pour voir le message arriver.</p>`}</section></div>`;
 }
 let F_TPL = "t1";
 function vFEmails(){
   const t = DB.templates.find(x => x.id === F_TPL) || DB.templates[0];
-  return head("Modèles d'e-mails", "Des modèles prêts à l'emploi, que tu adaptes à ta façon. Les variables entre accolades se remplissent seules.") + `
+  return head("Modèles d'e-mails", "Des modèles prêts à l'emploi, que vous adaptez à votre façon. Les variables entre accolades se remplissent seules.") + `
   <div class="grid2">
   <section class="card"><h2>Modèles</h2><ul class="tpl-list">${DB.templates.map(x => `<li><button class="tplbtn ${x.id === t.id ? "on" : ""}" data-act="pick-tpl" data-id="${x.id}"><b>${esc(x.name)}</b><span>${esc(x.trigger)}</span></button></li>`).join("")}</ul></section>
   <section class="card"><h2>${esc(t.name)}</h2>
@@ -1720,73 +1832,10 @@ function vFEmails(){
     ${DB.scheduled.length ? `<div class="tablebox"><table><thead><tr><th>Date</th><th style="text-align:left">Modèle</th><th style="text-align:left">Destinataires</th><th></th></tr></thead><tbody>${DB.scheduled.map(s => `<tr><td>${fmtDate(s.when)} ${s.when.slice(11, 16).replace(":", " h ")}</td><td style="text-align:left">${esc(DB.templates.find(x => x.id === s.template).name)}</td><td style="text-align:left">${esc(targetLabel(s.to))}</td><td><button class="back" data-act="unschedule" data-id="${s.id}">Annuler</button></td></tr>`).join("")}</tbody></table></div>` : `<p class="hint">Aucun envoi programmé.</p>`}</section>`;
 }
 function vFTasks(){
-  return head("Tâches automatiques", "L'application travaille seule à ces moments. Décoche ce que tu ne veux plus recevoir.") + `
+  return head("Tâches automatiques", "L'application travaille seule à ces moments. Décochez ce que vous ne voulez plus recevoir.") + `
   <section class="card"><ul class="tasklist">${DB.tasks.map(k => `<li><label><input type="checkbox" data-task="${k.id}" ${k.on ? "checked" : ""}> ${esc(k.label)}</label></li>`).join("")}</ul>
   <div class="row"><button class="btn" data-act="save-tasks">Enregistrer</button><button class="btn ghost" data-act="recap-now">M'envoyer le récapitulatif maintenant</button></div>
   <p class="hint">Un échec d'envoi s'affiche en haut de « Suivi des groupes » et remonte au service technique.</p></section>`;
-}
-
-/* ====== ADMINISTRATION TECHNIQUE ====== */
-function vTHome(){
-  const nbS = DB.cohorts.reduce((s, c) => s + (c.count || 0), 0);
-  const errs = DB.log.filter(l => l.lvl === "err").length;
-  return head("Supervision", "L'état de l'application pour ISO, sans avoir à ouvrir le code.") + `
-  <div class="kpis">
-    <div class="kpi"><span>Version</span><strong>0.9</strong><em>maquette de démonstration</em></div>
-    <div class="kpi"><span>Comptes actifs</span><strong>${nbS + DB.trainers.length + 1}</strong><em>${nbS} étudiants, ${DB.trainers.length} formateurs</em></div>
-    ${jaugeKpi()}
-    <div class="kpi"><span>Tâches de la nuit</span><strong class="up">OK</strong><em>dernière exécution à 3 h</em></div>
-    <div class="kpi"><span>E-mails aujourd'hui</span><strong>212</strong><em>quota quotidien : 1 500</em></div>
-    <div class="kpi"><span>Coach IA ce mois</span><strong>${eur.format(DB.api.usedMonth)}</strong><em>budget : ${eur.format(DB.api.capMonth)}</em></div>
-    <div class="kpi"><span>Erreurs</span><strong class="${errs ? "down" : "up"}">${errs}</strong><em>sur les sept derniers jours</em></div>
-  </div>
-  <section class="card"><h2>Envoi à l'Atelier</h2><p>Deux nombres partent vers l'Atelier : la capacité (<b>${jauge().cap}</b>) et le nombre de comptes (<b>${jauge().n}</b>). Aucun nom d'étudiant ne les accompagne.</p></section>
-  <section class="card"><h2>Cohortes par campus</h2><div class="tablebox"><table><thead><tr><th>Campus</th><th>Cohorte</th><th>Formateur</th><th>Étudiants</th><th>Trimestre en cours</th><th>Clôture</th></tr></thead><tbody>
-  ${DB.cohorts.map(c => `<tr><td>${c.campus}</td><td>${c.id}</td><td style="text-align:left">${c.trainer ? esc(fullName(trainerById(c.trainer))) : "<em>aucun</em>"}</td><td>${c.count}</td><td>${c.trainer ? "T" + curQ() : "non commencé"}</td><td>${c.close}</td></tr>`).join("")}
-  </tbody></table></div></section>
-  <section class="card"><h2>Derniers événements</h2><ul class="alerts">${DB.log.slice(0, 4).map(l => `<li class="${l.lvl === "err" ? "bad" : l.lvl === "warn" ? "warn" : "ok"}"><b>${l.t}</b> · ${esc(l.msg)}</li>`).join("")}</ul><button class="back" data-go="t-log">Tout le journal</button></section>`;
-}
-let T_Q = "";
-function vTAccounts(){
-  const all = [{id:"ADM-01", role:"Administration ISO", name:"Administration ISO", email:"administration@iso.exemple.fr"}]
-    .concat(DB.trainers.map(t => ({id:t.id, role:"Formateur", name:fullName(t), email:t.email})))
-    .concat(DB.students.map(s => ({id:s.id, role:"Étudiant", name:fullName(s), email:s.email})));
-  const q = norm(T_Q);
-  const list = q ? all.filter(a => norm(a.id + a.name + a.email).includes(q)) : all.slice(0, 8);
-  return head("Comptes", "Tous les comptes, pour régler un problème signalé par ISO. Chaque action est inscrite dans le journal visible par l'administration ISO.") + `
-  <section class="card"><label class="field"><span>Rechercher un identifiant, un nom ou un e-mail</span><input id="tQ" value="${esc(T_Q)}" placeholder="Exemple : E-0007 ou Dupont"></label>
-  <div class="tablebox"><table><thead><tr><th>Identifiant</th><th>Rôle</th><th style="text-align:left">Nom</th><th style="text-align:left">E-mail</th><th>Actions</th></tr></thead><tbody>
-  ${list.map(a => `<tr><td>${a.id}</td><td>${a.role}</td><td style="text-align:left">${esc(a.name)}</td><td style="text-align:left">${esc(a.email)}</td><td style="white-space:normal"><button class="back" data-act="t-reset" data-id="${a.id}" data-n="${esc(a.name)}">Mot de passe</button> · <button class="back" data-act="t-unlock" data-id="${a.id}" data-n="${esc(a.name)}">Débloquer</button>${a.role === "Étudiant" ? ` · <button class="back" data-act="t-extend" data-id="${a.id}" data-n="${esc(a.name)}">Prolonger l'accès</button>` : ""}</td></tr>`).join("")}
-  </tbody></table></div>${q ? "" : `<p class="hint">${all.length} comptes au total. Tape une recherche pour filtrer.</p>`}
-  <p class="hint">L'accès aux noms et adresses e-mail est prévu au contrat de traitement des données, pour le seul support technique.</p></section>`;
-}
-function vTApi(){
-  const a = DB.api;
-  return head("Clé d'API et plafonds", "La connexion du coach à l'IA passe par ta clé. Elle est stockée côté serveur et n'apparaît jamais dans les pages des utilisateurs.") + `
-  <div class="grid2">
-  <section class="card"><h2>Clé d'API</h2>
-    <p>Clé enregistrée : <code>${esc(a.masked)}</code></p>
-    <label class="field"><span>Remplacer la clé</span><input id="apiKey" type="password" placeholder="sk-ant-…" autocomplete="off"></label>
-    <div class="row"><button class="btn" data-act="save-key">Enregistrer</button><button class="btn ghost" data-act="test-key">Tester la connexion</button></div>
-    ${demoNote("Dans la maquette, aucune clé n'est envoyée ni conservée.")}</section>
-  <section class="card"><h2>Plafonds</h2>
-    <label class="field"><span>Questions au coach par étudiant et par trimestre : <b id="capv">${a.capStudent}</b></span><input type="range" min="10" max="80" step="5" value="${a.capStudent}" data-api="capStudent"></label>
-    <label class="field"><span>Budget mensuel maximal pour ISO</span><input type="number" min="5" step="5" value="${a.capMonth}" data-api="capMonth" style="width:120px"></label>
-    <p>Dépensé ce mois : <b>${eur.format(a.usedMonth)}</b> sur ${eur.format(a.capMonth)} · ${num.format(a.questionsMonth)} questions.</p>
-    <div class="meter"><i style="width:${Math.min(100, a.usedMonth / a.capMonth * 100)}%"></i></div>
-    <p class="hint">À 80 % du budget, tu reçois une alerte. À 100 %, le coach passe sur ses analyses préprogrammées jusqu'au mois suivant : la simulation continue.</p>
-    <div class="row"><button class="btn" data-act="save-caps">Enregistrer les plafonds</button></div></section></div>`;
-}
-function vTSim(){
-  return head("Simulations", "Les gestes de dépannage les plus courants, sans toucher au classeur.") + `
-  <section class="card"><div class="tablebox"><table><thead><tr><th>Cohorte</th><th>Trimestre en cours</th><th>Groupes</th><th>Actions</th></tr></thead><tbody>
-  ${DB.cohorts.filter(c => c.trainer).map(c => `<tr><td>${c.id}</td><td>T${curQ()}</td><td>${DB.groups.filter(g => g.cohort === c.id).length || Math.ceil(c.count / DB.settings.maxGroup)}</td><td style="white-space:normal"><button class="back" data-act="t-recalc" data-id="${c.id}">Recalculer le T${played()}</button> · <button class="back" data-act="t-reopen" data-id="${c.id}">Rouvrir les décisions d'un groupe</button> · <button class="back" data-act="t-delay" data-id="${c.id}">Repousser la date limite de 24 h</button></td></tr>`).join("")}
-  </tbody></table></div><p class="hint">Avant chaque recalcul, l'application garde une copie de l'état précédent : tout geste peut être annulé.</p></section>`;
-}
-function vTLog(){
-  return head("Journal", "Tâches automatiques, envois et erreurs des trente derniers jours.") + `
-  <section class="card"><ul class="alerts">${DB.log.map(l => `<li class="${l.lvl === "err" ? "bad" : l.lvl === "warn" ? "warn" : "ok"}"><b>${l.t}</b> · ${esc(l.msg)}</li>`).join("")}</ul></section>
-  <section class="card"><h2>Mes interventions sur les comptes</h2><ul class="mini">${DB.support.map(s => `<li><b>${s.t}</b> · ${esc(s.act)} · ${esc(s.target)} · ${esc(s.why)}</li>`).join("")}</ul></section>`;
 }
 
 /* ====== MODE D'EMPLOI PAR RÔLE ====== */
@@ -1801,7 +1850,7 @@ function vGuide(){
   return head(g.title, g.sub, `<div class="row">${pdf ? `<a class="btn" href="${pdf}" target="_blank" rel="noopener">Guide illustré (PDF)</a>` : ""}<button class="btn ghost" data-act="print-guide">Imprimer cette page</button></div>`) +
   `<article class="guide">${g.sections.map((s, i) => `<section class="card"><div class="ghead"><span class="gnum">${i + 1}</span><div><h2>${s.t}</h2><span class="hint">${s.sub}</span></div></div>
     ${(s.p || []).map(x => `<p>${x}</p>`).join("")}${s.steps ? `<ol class="steps-list">${s.steps.map(x => `<li>${x}</li>`).join("")}</ol>` : ""}${s.tip ? `<p class="gtip">${s.tip}</p>` : ""}</section>`).join("")}</article>
-  <p class="hint">Ce guide correspond à ton rôle : chaque espace a le sien. Le guide illustré, avec les captures d'écran, s'ouvre avec le bouton « Guide illustré (PDF) ».</p>`;
+  <p class="hint">Ce guide correspond à votre rôle : chaque espace a le sien. Le guide illustré, avec les captures d'écran, s'ouvre avec le bouton « Guide illustré (PDF) ».</p>`;
 }
 
 /* ====== ÉTUDIANT : avancement ====== */
@@ -1840,7 +1889,7 @@ function studentMessages(){
 
 const ADMIN_VIEWS = {"a-home":vAHome, "a-trainers":vATrainers, "a-students":vAStudents, "a-case":vACase, "a-challenge":vAChallenge, "a-data":vAData,
   "f-home":vFHome, "f-eval":vFEval, "f-debrief":vFDebrief, "f-groups":vFGroups, "f-students":vFStudents, "f-msg":vFMsg, "f-emails":vFEmails, "f-tasks":vFTasks,
-  "t-home":vTHome, "t-accounts":vTAccounts, "t-api":vTApi, "t-sim":vTSim, "t-log":vTLog, "prog":vProg, "guide":vGuide};
+  "prog":vProg, "guide":vGuide};
 
 /* ----- Actions ----- */
 const today = () => new Date().toLocaleDateString("fr-FR");
@@ -1871,11 +1920,11 @@ const ACT = {
     if (done) DB.progress[F_EV.g] = DB.progress[F_EV.g] || {pending:true, steps:{d1:"à venir", d2:"à venir", d3:"à venir"}, last:"jamais"}, DB.progress[F_EV.g].steps[F_EV.d] = "validé";
     saveDB(); render();
     const sc = evalScore(F_EV.g, F_EV.d);
-    toast(done ? `Livrable validé : ${note20(sc.note)}, ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}. Le groupe voit sa note et ton retour.` : "Brouillon enregistré : le groupe ne voit rien tant que tu n'as pas validé.");
+    toast(done ? `Livrable validé : ${note20(sc.note)}, ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}. Le groupe voit sa note et votre retour.` : "Brouillon enregistré : le groupe ne voit rien tant que vous n'avez pas validé.");
   },
   "export-cohort": el => exportCohort(el.dataset.c),
   "debrief": el => { F_DEB = el.dataset.c; go("f-debrief"); },
-  "rub-add": el => { const r = DB.rubrics[el.dataset.d]; r.push({id:"c" + Date.now().toString(36), bloc:"BC02", label:"Nouveau critère", max:2}); saveDB(); render(); },
+  "rub-add": el => { const r = DB.rubrics[el.dataset.d]; r.push({id:"c" + Date.now().toString(36), bloc:BLOCS[1], label:"Nouveau critère", max:2}); saveDB(); render(); },
   "rub-del": el => { DB.rubrics[el.dataset.d] = DB.rubrics[el.dataset.d].filter(c => c.id !== el.dataset.id); saveDB(); render(); },
   "write-group": el => { F_TARGET = el.dataset.g; go("f-msg"); },
   "write-student": el => { F_TARGET = el.dataset.id; go("f-msg"); },
@@ -1888,9 +1937,9 @@ const ACT = {
     for (let i = 0; i < nb; i++) DB.groups.push({id:"G" + Date.now().toString(36) + i, cohort:F_COHORT, name:"Groupe " + (i + 1), members:[]});
     const gs = DB.groups.filter(g => g.cohort === F_COHORT);
     st.forEach((id, k) => gs[k % nb].members.push(id));
-    saveDB(); render(); toast(`${nb} groupes créés, ${max} étudiants au maximum par groupe. Tu peux ajuster chaque ligne.`);
+    saveDB(); render(); toast(`${nb} groupes créés, ${max} étudiants au maximum par groupe. Vous pouvez ajuster chaque ligne.`);
   },
-  "take-cohort": el => { cohortById(el.dataset.c).trainer = ME_TRAINER; saveDB(); render(); toast("Cohorte ajoutée à ton espace. Les étudiants recevront leur e-mail de bienvenue."); },
+  "take-cohort": el => { cohortById(el.dataset.c).trainer = ME_TRAINER; saveDB(); render(); toast("Cohorte ajoutée à votre espace. Les étudiants recevront leur e-mail de bienvenue."); },
   "reset-student": el => { const s = studentById(el.dataset.id); toast(`Un nouveau code est parti à l'adresse enregistrée de l'étudiant : ${s.email}. Vous ne le voyez pas.`); },
   "send-msg": () => {
     const title = $("mTitle").value.trim(), text = $("mText").value.trim();
@@ -1906,15 +1955,6 @@ const ACT = {
   "unschedule": el => { DB.scheduled = DB.scheduled.filter(s => s.id !== el.dataset.id); saveDB(); render(); },
   "save-tasks": () => { saveDB(); toast("Tâches automatiques enregistrées."); },
   "recap-now": () => toast(`Récapitulatif d'avancement envoyé à ${trainerById(ME_TRAINER).email}.`),
-  "t-reset": el => { logSupport("Mot de passe réinitialisé", `${el.dataset.id} · ${el.dataset.n}`); render(); toast(`Mot de passe provisoire envoyé. Action inscrite au journal visible par ISO.`); },
-  "t-unlock": el => { logSupport("Compte débloqué", `${el.dataset.id} · ${el.dataset.n}`); render(); toast("Compte débloqué. Action inscrite au journal."); },
-  "t-extend": el => { logSupport("Accès prolongé de 15 jours", `${el.dataset.id} · ${el.dataset.n}`); render(); toast("Accès prolongé de 15 jours. Action inscrite au journal."); },
-  "save-key": () => { const v = $("apiKey").value.trim(); if (v.length < 12) return toast("Colle une clé complète."); DB.api.masked = v.slice(0, 7) + "…" + v.slice(-4); saveDB(); render(); toast("Clé enregistrée côté serveur (démonstration : rien n'est conservé)."); },
-  "test-key": () => toast("Connexion à l'IA : réponse reçue en 0,8 s (démonstration)."),
-  "save-caps": () => { saveDB(); toast("Plafonds enregistrés."); },
-  "t-recalc": el => { logSupport(`Trimestre T${played()} recalculé`, el.dataset.id, "Contrôle technique"); render(); toast(`T${played()} recalculé. L'état précédent est sauvegardé.`); },
-  "t-reopen": el => { logSupport("Décisions rouvertes pour un groupe", el.dataset.id); render(); toast("Décisions rouvertes jusqu'à ce soir minuit."); },
-  "t-delay": el => { logSupport("Date limite repoussée de 24 h", el.dataset.id); render(); toast("Date limite repoussée de 24 h. Les étudiants sont prévenus."); }
 };
 function bindAdmin(m){
   m.querySelectorAll("[data-act]").forEach(b => b.onclick = e => { e.preventDefault(); const f = ACT[b.dataset.act]; if (f) f(b); });
@@ -1952,7 +1992,6 @@ function bindAdmin(m){
     saveDB(); render();
   });
   m.querySelectorAll("[data-task]").forEach(el => el.onchange = () => { DB.tasks.find(k => k.id === el.dataset.task).on = el.checked; });
-  m.querySelectorAll("[data-api]").forEach(el => el.oninput = () => { DB.api[el.dataset.api] = +el.value; if (el.dataset.api === "capStudent" && $("capv")) $("capv").textContent = el.value; });
   if ($("evC")) $("evC").onchange = e => { F_EV.c = e.target.value; F_EV.g = null; render(); };
   if ($("evD")) $("evD").onchange = e => { F_EV.d = e.target.value; render(); };
   if ($("evG")) $("evG").onchange = e => { F_EV.g = e.target.value; render(); };
@@ -2087,18 +2126,17 @@ function navList(){
   const l = NAV.slice(); l.splice(3, 0, STUDENT_EXTRA_NAV); l.push(GUIDE_NAV); return l;
 }
 function renderNav(){
-  $("storeName").textContent = ROLE === "etudiant" ? S.store : "Coach IA ISO";
-  $("brandSub").textContent = ROLE === "etudiant" ? "Maquette de démonstration · ISO" : ROLE_LABEL[ROLE];
-  $("nav").innerHTML = navList().map(n => `<button data-view="${n.id}" class="${G.view === n.id ? "on" : ""}" ${G.view === n.id ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${n.icon}</svg>${n.label}${n.id === "msg" && unreadAnnounces() ? `<span class="nbadge" aria-label="messages non lus">${unreadAnnounces()}</span>` : ""}</button>`).join("");
+  $("storeName").textContent = ROLE === "etudiant" ? S.store : ORG.app;
+  $("brandSub").textContent = ROLE === "etudiant" ? "Démonstration" : ROLE_LABEL[ROLE];
+  $("nav").innerHTML = navList().map(n => `<button data-view="${n.id}" class="${G.view === n.id ? "on" : ""}" ${G.view === n.id ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${n.icon}</svg>${neutre(n.label)}${n.id === "msg" && unreadAnnounces() ? `<span class="nbadge" aria-label="messages non lus">${unreadAnnounces()}</span>` : ""}</button>`).join("");
   $("nav").querySelectorAll("button").forEach(b => b.onclick = () => go(b.dataset.view, "__home"));
   const n = played();
-  const out = `<button class="logout" id="logoutBtn">Se déconnecter</button>`;
-  if (ROLE !== "etudiant"){ $("periodBox").innerHTML = `<span>Connecté</span><b>${ROLE_LABEL[ROLE]}</b>${out}`; $("logoutBtn").onclick = logout; return; }
+  $("periodBox").hidden = false;
+  if (ROLE !== "etudiant"){ $("periodBox").innerHTML = ""; $("periodBox").hidden = true; return; }
   $("periodBox").innerHTML = finished()
     ? `<span>Partie terminée</span><b>${S.periods.length} trimestres joués</b>`
     : `<span>Trimestre à préparer</span><b>${S.periods[n]} · ${S.periodLabels[n]}</b>`;
-  $("periodBox").innerHTML += `<div class="dots">${S.periods.map((p, i) => `<i class="${i < n ? "done" : (i === n ? "now" : "")}" title="${p}"></i>`).join("")}</div>` + out;
-  $("logoutBtn").onclick = logout;
+  $("periodBox").innerHTML += `<div class="dots">${S.periods.map((p, i) => `<i class="${i < n ? "done" : (i === n ? "now" : "")}" title="${p}"></i>`).join("")}</div>` + "";
 }
 function go(view, tab){
   G.view = view;
@@ -2113,9 +2151,9 @@ function render(){
   const views = {dash:viewDash, plan:viewPlan, bilan:viewBilan, cal:viewCal, msg:viewMsg, res:viewRes, ...ADMIN_VIEWS};
   const hidden = {formateur:["f-debrief"]}[ROLE] || [];
   if (!navList().some(x => x.id === G.view) && !hidden.includes(G.view)) G.view = navList()[0].id;
-  $("roleChip").innerHTML = `<span>${ROLE_LABEL[ROLE]}</span><button id="roleSwitch">Changer d'espace</button>`;
+  $("roleChip").innerHTML = `<span>${ROLE_LABEL[ROLE]}</span><button id="roleSwitch">Changer de rôle</button>`;
   $("roleSwitch").onclick = logout;
-  $("main").innerHTML = views[G.view]() + `<footer class="credit"><span>Conçu et développé par <b>Pierrick Briand</b>, ingénieur pédagogique</span><span>Maquette de démonstration · © 2026</span></footer>`;
+  $("main").innerHTML = views[G.view]() + `<footer class="credit"><span>Démonstration</span><span>© 2026 Pierrick Briand. Tous droits réservés.</span></footer>`;
   bindView();
   bindAdmin($("main"));
   if (window.hideHelp) window.hideHelp();
@@ -2129,7 +2167,8 @@ function typoFix(root){
   let n;
   while ((n = w.nextNode())){
     if (n.parentElement.closest("textarea, script, style, code")) continue;
-    const v = n.nodeValue;
+    let v = n.nodeValue;
+    { const w2 = neutre(v); if (w2 !== v){ v = w2; n.nodeValue = v; } }
     if (!/ [:;?!»]|« /.test(v)) continue;
     n.nodeValue = v.replace(/ ([:»])/g, "\u00a0$1").replace(/ ([;?!])/g, "\u202f$1").replace(/« /g, "«\u00a0");
   }
@@ -2203,7 +2242,7 @@ function cumChart(){
   max = Math.ceil(max / st) * st; min = Math.floor(min / st) * st;
   const x = i => pl + i * (W - pl - pr) / (N - 1);
   const y = v => pt + (max - v) / (max - min || 1) * (H - pt - pb);
-  const colors = ["var(--accent)", "#7a2e63", "#a99aa4", "#c49a6c", "#6f8fa8"];
+  const colors = ["var(--marine)", "var(--turquoise)", "var(--rose)", "var(--accent)", "var(--texte)"];
   let s = `<div class="tablebox"><svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:420px" role="img" aria-label="Résultat cumulé par magasin">`;
   for (let v = min; v <= max + 1e-6; v += st){
     s += `<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" ${Math.abs(v) < 1e-6 ? 'stroke-width="1.6"' : ""}/>`;
@@ -2771,7 +2810,7 @@ $("coachClose").onclick = closeCoach;
 document.addEventListener("keydown", e => { if (e.key === "Escape" && $("drawer").classList.contains("open")) closeCoach(); });
 $("askform").onsubmit = e => { e.preventDefault(); const v = $("ask").value; $("ask").value = ""; ask(v); };
 
-/* Écran d'accès de la version d'essai (démonstration, pas une protection) */
+/* Écran d'entrée : choix du rôle (le visiteur est déjà passé par la connexion du site) */
 function setRole(r){
   ROLE = r; document.body.dataset.role = r;
   G.view = navList()[0].id;
@@ -2785,20 +2824,18 @@ function unlock(role){
 function logout(){
   try{ sessionStorage.removeItem("coachia-role"); }catch(e){}
   closeCoach();
-  $("lgUser").value = ""; $("lgPass").value = ""; $("lgErr").textContent = "";
-  $("login").classList.remove("hide"); $("lgUser").focus();
+  $("login").classList.remove("hide");
+  const c = document.querySelector("[data-enter]"); if (c) c.focus();
 }
 /* Remise à zéro complète de la démonstration (rien n'est stocké ailleurs que dans l'onglet) */
 function resetDemo(){
   try{ sessionStorage.removeItem("coachia-db"); sessionStorage.removeItem("coachia-role"); }catch(e){}
-  DB = defaultDB(); saveDB();
+  DB = neutreDB(defaultDB()); saveDB();
   applyScenario(DB.settings.caseId); STOCK_CATS = S.categories.filter(c => c.stock);
   PENDING_IMPORT = null; F_COHORT = null; F_TARGET = ""; F_TPL = "t1"; T_Q = "";
   closeCoach(); $("thread").innerHTML = "";
   newGame(); welcome();
   setRole("etudiant");
-  $("lgUser").value = ""; $("lgPass").value = "";
-  $("lgErr").textContent = "";
   $("resetMsg").textContent = "La démonstration est remise à zéro : toutes les données d'essai ont été effacées.";
   $("resetBtn").textContent = "Remettre la démonstration à zéro"; $("resetBtn").dataset.confirm = "";
 }
@@ -2806,18 +2843,14 @@ $("resetBtn").onclick = () => {
   const b = $("resetBtn");
   if (b.dataset.confirm === "1"){ resetDemo(); return; }
   b.dataset.confirm = "1"; b.textContent = "Confirmer : tout effacer ?";
-  $("resetMsg").textContent = "Les imports, groupes, messages et trimestres joués seront effacés, dans les quatre espaces.";
+  $("resetMsg").textContent = "Les imports, groupes, messages et trimestres joués seront effacés, dans les trois espaces.";
   setTimeout(() => { if (b.dataset.confirm === "1"){ b.dataset.confirm = ""; b.textContent = "Remettre la démonstration à zéro"; $("resetMsg").textContent = ""; } }, 6000);
 };
-$("loginForm").onsubmit = e => {
-  e.preventDefault();
-  const a = ACCOUNTS[$("lgUser").value.trim().toLowerCase()];
-  if (a && a.pass === $("lgPass").value){
-    if (a.role === "clos"){ $("lgErr").textContent = "Accès clos depuis le 30/06/2026 : ta cohorte est archivée. Contacte ton formateur si tu as besoin de tes résultats."; return; }
-    unlock(a.role);
-  } else $("lgErr").textContent = "Identifiant ou mot de passe incorrect. Utilise un des accès de démonstration ci-dessous.";
-};
-document.querySelectorAll("[data-demo]").forEach(b => b.onclick = () => { const [u, p] = b.dataset.demo.split("|"); $("lgUser").value = u; $("lgPass").value = p; $("lgErr").textContent = ""; });
+document.querySelectorAll("[data-enter]").forEach(b => b.onclick = () => unlock(b.dataset.enter));
+$("entryOrg").textContent = ORG.nom;
+document.title = ORG.app + " · Démonstration";
+document.documentElement.classList.toggle("avec-logo", getComputedStyle(document.documentElement).getPropertyValue("--client-logo").trim() !== "none");
+$("brandOrg").textContent = ORG.nom === "Démonstration" ? "Coach IA · simulation" : ORG.nom + " · simulation";
 
 newGame();
 renderChips();
