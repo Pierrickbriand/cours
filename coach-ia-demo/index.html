@@ -862,6 +862,9 @@ if (typeof module !== "undefined") module.exports = {SCENARIO, DEFAULT_DECISION,
 </script>
 <script>
 /* ===== Modes d'emploi par rôle (source unique : application et PDF) ===== */
+/* Intitulé du format CSV dans Excel : un seul endroit à changer (à confirmer dans l'Excel de Pierrick) */
+const CSV_FORMAT = "CSV UTF-8 (délimité par des virgules)";
+const CSV_NOTE = "Malgré ce nom, Excel en français y met des points-virgules ; l'application accepte le point-virgule et la virgule.";;
 const GUIDES = {
   etudiant: {
     title: "Guide de l'étudiant",
@@ -928,7 +931,7 @@ const GUIDES = {
         tip:"Un groupe complet refuse un étudiant de plus : la règle nationale s'applique à tous les sites."},
       {t:"Mes étudiants", sub:"Les comptes et les mots de passe", shot:"f-students", p:[
         "Vous voyez la liste de chaque cohorte, avec l'adresse e-mail, le groupe et la date de fin d'accès.",
-        "<b>Nouveau mot de passe</b> : vous seul réinitialisez les mots de passe de vos étudiants. L'application leur envoie un mot de passe provisoire par e-mail."]},
+        "<b>Nouveau code</b> : vous pouvez renvoyer un nouveau code personnel à l'un de vos étudiants ; l'application le lui envoie par e-mail. L'administrateur de l'école traite les autres cas."]},
       {t:"Messages", sub:"Écrire à une cohorte ou à un groupe", shot:"f-msg", p:[
         "Choisissez les destinataires, un titre et un texte court. Les étudiants le voient dans leur espace, avec un badge, et peuvent être prévenus par e-mail.",
         "Les étudiants ne répondent pas dans l'application : pas de fil de discussion à modérer."]},
@@ -966,7 +969,7 @@ const GUIDES = {
       {t:"Importer les étudiants", sub:"Le modèle, le CSV, le contrôle", shot:"a-students", steps:[
         "<b>Téléchargez le modèle Excel</b> et complétez une ligne par étudiant.",
         "<b>Gardez les en-têtes</b> : NOM ; Prénom ; Classe ; e-mail ; date de clôture (au format JJ/MM/AAAA).",
-        "<b>Enregistrez en CSV</b> : « Fichier », « Enregistrer sous », « CSV UTF-8 (délimité par des points-virgules) ».",
+        "<b>Enregistrez en CSV</b> : « Fichier », « Enregistrer sous », « " + CSV_FORMAT + " ».",
         "<b>Choisissez le site et importez</b> le fichier. L'application affiche les lignes et les erreurs (e-mail invalide, date mal écrite, doublon) avant toute confirmation."],
         tip:"Une classe inconnue crée une nouvelle cohorte. Un formateur du site peut la prendre lui-même, ou vous l'attribuez dans le tableau des cohortes."},
       {t:"Étude de cas et calendrier", sub:"Le cadre commun à tous les sites", shot:"a-case", p:[
@@ -1388,7 +1391,7 @@ function defaultDB(){
     ]
   };
 }
-const VERSION = "0.11";
+const VERSION = "0.11.1";
 const MEM = {};
 const store = {
   get(k){ for (const f of [() => localStorage, () => sessionStorage]){ try{ const v = f().getItem(k); if (v != null) return v; }catch(e){} } return MEM[k] != null ? MEM[k] : null; },
@@ -1526,7 +1529,7 @@ function importBlock(kind){
     <li><b>Téléchargez le modèle</b> et complétez une ligne par ${kind === "students" ? "étudiant" : "formateur"}.
       <div class="row"><a class="btn ghost" href="${(window.XLSX_DATA || {})[xlsx] || xlsx}" download="${xlsx}">Modèle Excel (.xlsx)</a><button class="btn ghost" data-act="tpl-csv" data-kind="${kind}">Modèle CSV</button></div></li>
     <li><b>Gardez les en-têtes de la première ligne</b>, dans cet ordre : <span class="heads">${cols.map(c => `<code>${c}</code>`).join(" ; ")}</span>${kind === "students" ? " La date de clôture s'écrit JJ/MM/AAAA : à cette date, l'accès de l'étudiant se ferme et la cohorte passe en archive." : ""}</li>
-    <li><b>Enregistrez en CSV</b> : dans Excel, « Fichier », « Enregistrer sous », puis un format « CSV UTF-8 ». L'application accepte le point-virgule et la virgule.</li>
+    <li><b>Enregistrez en CSV</b> : dans Excel, « Fichier », « Enregistrer sous », puis le format « ${CSV_FORMAT} ». ${CSV_NOTE}</li>
     <li><b>Importez le fichier</b>${kind === "students" ? ` pour le site <select id="impCampus">${DB.campuses.map(c => `<option ${c === ORG.siteDefaut ? "selected" : ""}>${c}</option>`).join("")}</select>` : ""} :
       <label class="filebtn btn">Choisir le fichier CSV<input type="file" accept=".csv,text/csv" data-import="${kind}" hidden></label>
       <span class="hint">Rien n'est enregistré avant votre confirmation : vous voyez d'abord les lignes et les erreurs éventuelles.</span></li></ol>
@@ -2119,7 +2122,7 @@ function bindAdmin(m){
     const campus = $("impCampus") ? $("impCampus").value : "";
     const rd = new FileReader();
     rd.onload = () => { const txt = String(rd.result);
-      const res = /\.xlsx?$/i.test(f.name) || txt.startsWith("PK") ? {ok:[], errors:[], headerError:"Ce fichier est un classeur Excel. Enregistrez-le d'abord au format CSV : « Fichier », « Enregistrer sous », puis un format « CSV UTF-8 »."} : checkImport(parseCSV(txt), kind);
+      const res = /\.xlsx?$/i.test(f.name) || txt.startsWith("PK") ? {ok:[], errors:[], headerError:"Ce fichier est un classeur Excel. Enregistrez-le d'abord au format CSV : « Fichier », « Enregistrer sous », puis le format « " + CSV_FORMAT + " »."} : checkImport(parseCSV(txt), kind);
       PENDING_IMPORT = {kind, name:f.name, campus, res}; render(); };
     rd.readAsText(f, "utf-8");
   });
