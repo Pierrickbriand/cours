@@ -448,7 +448,7 @@ tr.total td{border-top:2px solid var(--marine)}
 </button>
 <aside class="drawer" id="drawer" aria-label="Coach IA">
   <header>
-    <div><h2>Ton coach</h2><span class="pill" id="mode">Analyses préprogrammées</span></div>
+    <div><h2>Ton coach</h2><span class="pill" id="mode">Analyses préprogrammées</span> <span class="pill" id="qCount"></span></div>
     <button class="close" id="coachClose" aria-label="Fermer le coach">×</button>
   </header>
   <div class="thread" id="thread"></div>
@@ -1244,7 +1244,7 @@ const NEUTRE = [
   [/l'administration ISO/g,"l'administration de l'école"],[/Administration ISO/g,"Administration de l'école"],[/administration ISO/g,"administration de l'école"],
   [/(visible |signalé |inscrite? au journal visible )par ISO/g,"$1par l'administration"],[/pour ISO/g,"pour l'école"],[/par ISO/g,"par l'école"],
   [/iso\.exemple/g,"ecole.exemple"],
-  [/Challenge national/g,"Challenge inter-sites"],[/challenge national/g,"challenge inter-sites"],[/classement national/g,"classement général"],[/Règle nationale/g,"Règle commune"],[/règle nationale/g,"règle commune"],[/cadre national/g,"cadre commun"],[/rang national/g,"rang général"]
+  [/Challenge national/g,"Challenge inter-sites"],[/challenge national/g,"challenge inter-sites"],[/classement national/g,"classement général"],[/Règle nationale/g,"Règle commune"],[/règle nationale/g,"règle commune"],[/cadre national/g,"cadre commun"],[/Cadre national/g,"Cadre commun"],[/rang national/g,"rang général"]
 ];
 /* Vocabulaire commun aux deux jeux : la connexion du site utilise un code personnel. */
 const VOCAB = [[/Nouveau mot de passe/g,"Nouveau code personnel"],[/nouveau mot de passe/g,"nouveau code personnel"],[/Mot de passe provisoire/g,"Code personnel provisoire"],[/mot de passe provisoire/g,"code personnel provisoire"],[/mots de passe/g,"codes personnels"],[/Mot de passe/g,"Code personnel"],[/mot de passe/g,"code personnel"]];
@@ -1258,7 +1258,8 @@ const ADMIN_NAV = {
   admin:[
     {id:"a-home", label:"Accueil", icon:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>'},
     {id:"a-trainers", label:"Formateurs", icon:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M17 11h4M19 9v4"/>'},
-    {id:"a-students", label:"Étudiants et cohortes", icon:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a5 5 0 0 1 5 6"/>'},
+    {id:"a-list", label:"Étudiants", icon:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>'},
+    {id:"a-students", label:"Cohortes et import", icon:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a5 5 0 0 1 5 6"/>'},
     {id:"a-case", label:"Étude de cas et calendrier", icon:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>'},
     {id:"a-challenge", label:"Challenge national", icon:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>'},
     {id:"a-data", label:"Données et archives", icon:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>'}
@@ -1285,8 +1286,16 @@ function defaultDB(){
   let k = 1;
   const mk = (list, cohort, classe) => list.map(([n, p]) => ({id:"E-" + String(k++).padStart(4, "0"), nom:n, prenom:p, classe, email:mail(p, n), close:"30/06/2027", cohort, lastLogin:["hier", "aujourd'hui", "il y a 3 jours", "il y a 6 jours"][k % 4], questions:(k * 7) % 31, bilans:k % 4}));
   const sa = mk(A, "NAN-REM-A", "TP REM A"), sb = mk(B, "NAN-REM-B", "TP REM B");
+  sa.slice(8).forEach(x => { x.lastLogin = "il y a 6 jours"; });
+  const NOMS = ["ADAM","ANDRE","BAILLY","BARBIER","BERTIN","BOYER","BRUNET","CARON","CHARPENTIER","COLIN","COLLET","DAVID","DELMAS","DUMAS","FABRE","FLEURY","GAILLARD","GAUTIER","GUERIN","HAMON","HUBERT","JACOB","JULIEN","KLEIN","LACROIX","LEBLANC","LEGRAND","LOPEZ","MALLET","MARCHAL","MASSON","MEYER","NOEL","OLIVIER","PERRIN","PICARD","PONS","RENARD","RIVIERE","SANCHEZ","TESSIER","VASSEUR","WEBER","ZIMMER"];
+  const PRENOMS = ["Alice","Basile","Camille","Dylan","Élise","Fabien","Gaëlle","Hakim","Iris","Jules","Kenza","Lola","Mathis","Nora","Océane","Paul","Quentin","Rayan","Salomé","Théo","Ugo","Valentine","Wassim","Yasmine","Zacharie"];
+  const mails = new Set(sa.concat(sb).map(x => x.email));
+  const gen = (nb, off, cohort, classe) => { const l = []; for (let i = 0; i < nb; i++){ const p = [NOMS[(i * 7 + off) % NOMS.length], PRENOMS[(i * 5 + off) % PRENOMS.length]]; l.push([p[0], p[1]]); } return mk(l, cohort, classe); };
+  const sc = gen(15, 3, "NAN-MCM-1", "MCM 1"), sd = gen(22, 11, "LYO-MCM-2", "MCM 2"), se = gen(18, 17, "LIL-REM-A", "TP REM A"), sf = gen(14, 29, "TLS-REM-A", "TP REM A");
+  const all = sa.concat(sb, sc, sd, se, sf);
+  all.forEach(x => { let b = x.email; let k2 = 2; while (all.some(y => y !== x && y.email === x.email && y.id < x.id)){ x.email = b.replace("@", k2++ + "@"); } });
   return {
-    v:5, year:"2026-2027",
+    v:6, year:"2026-2027",
     campuses:["Lille", "Lyon", "Nancy", "Nantes", "Paris Sud", "Toulouse"],
     cases:[
       {id:"optique", title:"Lumière Optique", sector:"Commerce", tag:"Magasin d'optique", obj:"Piloter un commerce de conseil : prix, stocks, équipe qualifiée, concurrence d'enseignes et de réseaux mutualistes.", playable:true},
@@ -1301,7 +1310,7 @@ function defaultDB(){
       {id:"q4", label:"Décisions du T4", date:"2027-02-05"},
       {id:"d2", label:"Livrable 2 · point d'étape stratégique", date:"2027-02-19", deliv:true},
       {id:"q5", label:"Décisions du T5", date:"2027-03-12"}, {id:"q6", label:"Décisions du T6", date:"2027-04-09"},
-      {id:"d3", label:"Livrable final · rapport et soutenance", date:"2027-05-21", deliv:true, final:true}
+      {id:"d3", label:"Livrable final · rapport et soutenance", date:"2027-05-21", deliv:true}
     ],
     trainers:[
       {id:"F-01", nom:"MARTIN", prenom:"Claire", campus:"Nantes", email:"c.martin@formateur.exemple.fr"},
@@ -1310,45 +1319,49 @@ function defaultDB(){
       {id:"F-04", nom:"ROBERT", prenom:"Karim", campus:"Toulouse", email:"k.robert@formateur.exemple.fr"}
     ],
     cohorts:[
-      {id:"NAN-REM-A", campus:"Nantes", classe:"TP REM A", trainer:"F-01", close:"30/06/2027", count:12},
-      {id:"NAN-REM-B", campus:"Nantes", classe:"TP REM B", trainer:"F-01", close:"30/06/2027", count:8},
-      {id:"NAN-MCM-1", campus:"Nantes", classe:"MCM 1", trainer:"", close:"30/06/2027", count:15},
-      {id:"LYO-MCM-2", campus:"Lyon", classe:"MCM 2", trainer:"F-02", close:"30/06/2027", count:22},
-      {id:"LIL-REM-A", campus:"Lille", classe:"TP REM A", trainer:"F-03", close:"30/06/2027", count:18},
-      {id:"TLS-REM-A", campus:"Toulouse", classe:"TP REM A", trainer:"F-04", close:"30/06/2027", count:14}
+      {id:"NAN-REM-A", campus:"Nantes", classe:"TP REM A", trainer:"F-01", close:"30/06/2027"},
+      {id:"NAN-REM-B", campus:"Nantes", classe:"TP REM B", trainer:"F-01", close:"30/06/2027"},
+      {id:"NAN-MCM-1", campus:"Nantes", classe:"MCM 1", trainer:"", close:"30/06/2027"},
+      {id:"LYO-MCM-2", campus:"Lyon", classe:"MCM 2", trainer:"F-02", close:"30/06/2027"},
+      {id:"LIL-REM-A", campus:"Lille", classe:"TP REM A", trainer:"F-03", close:"30/06/2027"},
+      {id:"TLS-REM-A", campus:"Toulouse", classe:"TP REM A", trainer:"F-04", close:"30/06/2027"}
     ],
-    students: sa.concat(sb),
+    students: all,
     groups:[
       {id:"G1", cohort:"NAN-REM-A", name:"Groupe 1 · Lumière", members:sa.slice(0, 4).map(s => s.id)},
       {id:"G2", cohort:"NAN-REM-A", name:"Groupe 2", members:sa.slice(4, 8).map(s => s.id)},
       {id:"G3", cohort:"NAN-REM-A", name:"Groupe 3", members:sa.slice(8, 12).map(s => s.id)}
     ],
     progress:{
-      G1:{live:true, steps:{d1:"déposé", d2:"à venir", d3:"à venir"}, last:"aujourd'hui"},
+      G1:{live:true, steps:{d1:"à venir", d2:"à venir", d3:"à venir"}, last:"aujourd'hui"},
       G2:{pending:false, steps:{d1:"validé", d2:"à venir", d3:"à venir"}, last:"hier", f:1.14, notes:{1:"Nous visons les familles du quartier : prix un peu sous le marché et une personne de plus en magasin.", 2:"Le stock saisonnier a manqué au T3 : nous commandons plus tôt et réduisons la communication locale.", 3:"Nous gardons la ligne prix bas et formons l'équipe à la vente associée.", 4:"Hausse des coûts : nous répercutons une partie sur les prix sans toucher à l'équipe.", 5:"Dernier trimestre : nous écoulons le stock et préparons le rapport final."}},
       G3:{pending:true,  steps:{d1:"en retard", d2:"à venir", d3:"à venir"}, last:"il y a 6 jours", f:0.71, notes:{1:"On garde les réglages de l'ancien gérant pour voir."}}
     },
+    deposits:{
+      G1:{d1:{name:"diagnostic-reprise.txt", size:78, when:"13/11/2026 17:40", data:"data:text/plain;charset=utf-8," + encodeURIComponent("Diagnostic de la reprise : livrable fictif de démonstration.")}},
+      G2:{d1:{name:"diagnostic-reprise.txt", size:78, when:"30/11/2026 09:15", data:"data:text/plain;charset=utf-8," + encodeURIComponent("Diagnostic de la reprise : livrable fictif de démonstration.")}}
+    },
     messages:[],
     rubrics:{
-      d1:[{id:"c1", bloc:"BC02", label:"Analyse les résultats du T1 : chiffre d'affaires, marge, trésorerie", max:6},
-          {id:"c2", bloc:"BC01", label:"Situe le magasin face à sa clientèle et à ses concurrents", max:4},
-          {id:"c3", bloc:"BC03", label:"Analyse l'organisation de l'équipe et sa charge de travail", max:4},
-          {id:"c4", bloc:"BC02", label:"Fixe des objectifs chiffrés et justifiés pour la suite", max:4},
+      d1:[{id:"c1", bloc:"BC02", label:"Analyse des résultats du T1 : chiffre d'affaires, marge, trésorerie", max:6},
+          {id:"c2", bloc:"BC01", label:"Position du magasin face à sa clientèle et à ses concurrents", max:4},
+          {id:"c3", bloc:"BC03", label:"Analyse de l'organisation de l'équipe et de sa charge de travail", max:4},
+          {id:"c4", bloc:"BC02", label:"Objectifs chiffrés et justifiés pour la suite", max:4},
           {id:"c5", bloc:"Transversal", label:"Clarté de l'écrit et de la présentation", max:2}],
-      d2:[{id:"c1", bloc:"BC02", label:"Compare les résultats obtenus aux objectifs annoncés", max:6},
-          {id:"c2", bloc:"BC01", label:"Justifie la politique de prix et de communication", max:5},
-          {id:"c3", bloc:"BC03", label:"Justifie les choix d'équipe et de formation", max:5},
-          {id:"c4", bloc:"Transversal", label:"S'appuie sur les bilans de séance pour argumenter", max:4}],
-      d3:[{id:"c1", bloc:"BC02", label:"Présente une analyse complète de la performance sur six trimestres", max:6},
-          {id:"c2", bloc:"BC01", label:"Montre comment l'activité commerciale a été coordonnée et améliorée", max:5},
-          {id:"c3", bloc:"BC03", label:"Explique les choix de management et leurs effets", max:5},
+      d2:[{id:"c1", bloc:"BC02", label:"Comparaison des résultats obtenus aux objectifs annoncés", max:6},
+          {id:"c2", bloc:"BC01", label:"Justification de la politique de prix et de communication", max:5},
+          {id:"c3", bloc:"BC03", label:"Justification des choix d'équipe et de formation", max:5},
+          {id:"c4", bloc:"Transversal", label:"Appui sur les bilans de séance pour argumenter", max:4}],
+      d3:[{id:"c1", bloc:"BC02", label:"Analyse complète de la performance sur six trimestres", max:6},
+          {id:"c2", bloc:"BC01", label:"Coordination et amélioration de l'activité commerciale", max:5},
+          {id:"c3", bloc:"BC03", label:"Choix de management et effets observés", max:5},
           {id:"c4", bloc:"Transversal", label:"Soutenance : clarté, répartition de la parole, réponses aux questions", max:4}]
     },
-    evals:{G2:{d1:{res:{c1:"S", c2:"S", c3:"NS", c4:"S", c5:"S"}, pts:{c1:5, c2:3, c3:1.5, c4:3, c5:2}, comment:"Diagnostic solide sur les chiffres. L'analyse de l'équipe reste trop rapide : reprenez la charge de travail par catégorie.", by:"F-01", date:"02/12/2026", done:true}}},
+    evals:{G2:{d1:{res:{c1:"S", c2:"S", c3:"NS", c4:"S", c5:"S"}, pts:{c1:5, c2:3, c3:1.5, c4:3, c5:2}, comment:"Diagnostic solide sur les chiffres. L'analyse de l'équipe reste trop rapide : reprenez la charge de travail par catégorie.", by:"F-01", date:"02/12/2026", done:true, log:[{t:"02/12/2026 11:05", by:"Claire MARTIN", action:"Validé"}]}}},
     templates:[
       {id:"t1", name:"Relance la veille d'une échéance", trigger:"La veille de chaque échéance, à 18 h", subject:"Rappel : {etape} à rendre demain", body:"Bonjour {prenom},\n\nPetit rappel : « {etape} » est attendu demain, {date}.\n\nBon courage à toute l'équipe,\n{formateur}"},
-      {id:"t2", name:"Bienvenue et identifiants", trigger:"À l'import de la cohorte", subject:"Ton accès à la simulation Coach IA", body:"Bonjour {prenom},\n\nTon compte est prêt. Identifiant : {email}. Mot de passe provisoire : {motdepasse}.\nTu le changeras à ta première connexion.\n\n{formateur}"},
-      {id:"t3", name:"Nouveau mot de passe", trigger:"Quand le formateur réinitialise un compte", subject:"Ton nouveau mot de passe", body:"Bonjour {prenom},\n\nVoici ton mot de passe provisoire : {motdepasse}.\nTu le changeras à ta prochaine connexion.\n\n{formateur}"},
+      {id:"t2", name:"Bienvenue et identifiants", trigger:"Quand un formateur prend la cohorte", subject:"Ton accès à la simulation Coach IA", body:"Bonjour {prenom},\n\nTon compte est prêt. Identifiant : {email}. Code personnel : {code}.\n\n{formateur}"},
+      {id:"t3", name:"Nouveau code personnel", trigger:"Quand un code est renvoyé à un étudiant", subject:"Ton nouveau code personnel", body:"Bonjour {prenom},\n\nVoici ton nouveau code personnel : {code}.\n\n{formateur}"},
       {id:"t4", name:"Bilan de séance manquant", trigger:"Deux jours après la fin d'un trimestre", subject:"Ton bilan de séance du {trimestre}", body:"Bonjour {prenom},\n\nTon équipe n'a pas encore rédigé son bilan de séance du {trimestre}. Deux ou trois lignes suffisent : il servira au débriefing.\n\n{formateur}"}
     ],
     scheduled:[{id:"s1", template:"t1", to:"NAN-REM-A", when:"2027-01-14T18:00"}],
@@ -1365,7 +1378,7 @@ function defaultDB(){
     challenge:{on:false, campuses:["Lille", "Lyon", "Nancy", "Nantes", "Paris Sud", "Toulouse"], final:"2027-06-04", rule:"resultat"},
     capacity:100,
     api:{capStudent:30, capMonth:40, usedMonth:12.4, questionsMonth:1834},
-    support:[{t:"05/11/2026 10:12", who:"Pierrick Briand", act:"Mot de passe réinitialisé", target:"F-03 · Sonia PETIT", why:"Demande de l'administration ISO"}],
+    support:[{t:"05/11/2026 10:12", who:(JEU === "iso" ? "Pierrick Briand" : "Assistance technique"), act:"Mot de passe réinitialisé", target:"F-03 · Sonia PETIT", why:"Demande de l'administration ISO"}],
     log:[
       {t:"12/11/2026 03:00", lvl:"ok", msg:"Sauvegarde hebdomadaire du classeur effectuée (8 copies conservées)."},
       {t:"11/11/2026 18:00", lvl:"ok", msg:"Relances de la veille envoyées : 34 e-mails, cohortes NAN-REM-A et LIL-REM-A."},
@@ -1375,10 +1388,17 @@ function defaultDB(){
     ]
   };
 }
+const VERSION = "0.11";
+const MEM = {};
+const store = {
+  get(k){ for (const f of [() => localStorage, () => sessionStorage]){ try{ const v = f().getItem(k); if (v != null) return v; }catch(e){} } return MEM[k] != null ? MEM[k] : null; },
+  set(k, v){ MEM[k] = v; try{ localStorage.setItem(k, v); return; }catch(e){} try{ sessionStorage.setItem(k, v); }catch(e){} },
+  del(k){ delete MEM[k]; try{ localStorage.removeItem(k); }catch(e){} try{ sessionStorage.removeItem(k); }catch(e){} }
+};
 let DB;
-function loadDB(){ try{ const x = JSON.parse(sessionStorage.getItem("coachia-db") || "null"); if (x && x.v === 5){ DB = x; return; } }catch(e){} DB = neutreDB(defaultDB()); }
+function loadDB(){ try{ const x = JSON.parse(store.get("coachia-db") || "null"); if (x && x.v === 6){ DB = x; return; } }catch(e){} DB = neutreDB(defaultDB()); }
 function neutreDB(d){ return JSON.parse(neutre(JSON.stringify(d))); }
-function saveDB(){ try{ sessionStorage.setItem("coachia-db", JSON.stringify(DB)); }catch(e){} }
+function saveDB(){ try{ store.set("coachia-db", JSON.stringify(DB)); }catch(e){} }
 loadDB();
 applyScenario(DB.settings.caseId);
 
@@ -1390,13 +1410,15 @@ const groupOf = sid => DB.groups.find(g => g.members.includes(sid));
 const fullName = p => p ? `${p.prenom} ${p.nom}` : "–";
 const fmtDate = iso => { if (!iso) return "–"; const [y, m, d] = iso.slice(0, 10).split("-"); return `${d}/${m}/${y}`; };
 const caseById = id => DB.cases.find(c => c.id === id);
+const cohortCount = c => DB.students.filter(s => s.cohort === c.id).length;
+const etu = n => n + " étudiant" + (n > 1 ? "s" : "");
 const myCohorts = () => DB.cohorts.filter(c => c.trainer === ME_TRAINER);
 const stepLabel = id => (DB.deadlines.find(d => d.id === id) || {}).label || id;
 const DELIVS = () => DB.deadlines.filter(d => d.deliv);
 function toast(t){
   let el = document.getElementById("toast");
   if (!el){ el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
-  el.textContent = neutre(t); el.classList.add("show");
+  el.textContent = typoStr(t); el.classList.add("show");
   clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 4200);
 }
 function stepPill(s){
@@ -1443,18 +1465,23 @@ function checkImport(rows, kind){
   if (missing.length){ out.headerError = `Colonnes introuvables : ${missing.join(", ")}. La première ligne doit contenir exactement : ${expected.join(" ; ")}.`; return out; }
   const ix = Object.fromEntries(expected.map(e => [e, h.indexOf(norm(e))]));
   const seen = new Set((kind === "students" ? DB.students : DB.trainers).map(x => x.email.toLowerCase()));
+  const inFile = new Set();
   rows.slice(1).forEach((r, k) => {
     const v = Object.fromEntries(expected.map(e => [e, (r[ix[e]] || "").trim()]));
     const line = k + 2, pb = [];
     if (!v.NOM) pb.push("NOM vide");
     if (!v["Prénom"]) pb.push("Prénom vide");
     if (!EMAIL_RE.test(v["e-mail"])) pb.push("e-mail invalide");
-    else if (seen.has(v["e-mail"].toLowerCase())) pb.push("e-mail déjà inscrit");
+    else if (inFile.has(v["e-mail"].toLowerCase())) pb.push("adresse en double dans le fichier");
+    else if (mailTaken(v["e-mail"])) pb.push("e-mail déjà inscrit");
     if (kind === "students"){
       if (!v.Classe) pb.push("Classe vide");
-      if (!DATE_RE.test(v["date de clôture"])) pb.push("date de clôture au format JJ/MM/AAAA");
+      const dt = DATE_RE.test(v["date de clôture"]) ? parseFR(v["date de clôture"]) : null;
+      if (!dt) pb.push("date de clôture inexistante ou au mauvais format (JJ/MM/AAAA)");
+      else if (isPastDate(dt)) pb.push("date de clôture déjà passée");
     } else if (!DB.campuses.some(c => norm(c) === norm((v.Site ?? v.Campus)))) pb.push("site inconnu");
-    if (pb.length) out.errors.push({line, v, pb}); else { out.ok.push(v); seen.add(v["e-mail"].toLowerCase()); }
+    if (EMAIL_RE.test(v["e-mail"])) inFile.add(v["e-mail"].toLowerCase());
+    if (pb.length) out.errors.push({line, v, pb}); else out.ok.push(v);
   });
   return out;
 }
@@ -1464,7 +1491,7 @@ function importPreview(kind){
   if (p.res.headerError) return `<div class="import-res bad"><b>Import impossible.</b> ${esc(p.res.headerError)}</div>`;
   const cols = kind === "students" ? HEAD_STUDENTS : HEAD_TRAINERS;
   return `<div class="import-res"><b>${p.res.ok.length} ligne${p.res.ok.length > 1 ? "s" : ""} prête${p.res.ok.length > 1 ? "s" : ""}</b>${p.res.errors.length ? ` · <span class="down">${p.res.errors.length} ligne${p.res.errors.length > 1 ? "s" : ""} à corriger</span>` : ""} · fichier « ${esc(p.name)} »
-    ${p.res.errors.length ? `<ul class="alerts">${p.res.errors.slice(0, 6).map(e => `<li class="bad">Ligne ${e.line} (${esc(e.v.NOM || "?")} ${esc(e.v["Prénom"] || "")}) : ${e.pb.join(", ")}.</li>`).join("")}</ul>` : ""}
+    ${p.res.errors.length ? `<ul class="alerts">${p.res.errors.slice(0, 20).map(e => `<li class="bad">Ligne ${e.line} (${esc(e.v.NOM || "?")} ${esc(e.v["Prénom"] || "")}) : ${e.pb.join(", ")}.</li>`).join("")}</ul>${p.res.errors.length > 20 ? `<p class="hint">… et ${p.res.errors.length - 20} autres lignes à corriger.</p>` : ""}` : ""}
     ${p.res.ok.length ? `<div class="tablebox"><table><thead><tr>${cols.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${p.res.ok.slice(0, 8).map(v => `<tr>${cols.map(c => `<td style="text-align:left">${esc(v[c])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${p.res.ok.length > 8 ? `<p class="hint">… et ${p.res.ok.length - 8} autres lignes.</p>` : ""}` : ""}
     <div class="row">${p.res.ok.length ? `<button class="btn" data-act="import-confirm" data-kind="${kind}">Importer ${p.res.ok.length} ligne${p.res.ok.length > 1 ? "s" : ""}</button>` : ""}<button class="btn ghost" data-act="import-cancel">Annuler</button></div></div>`;
 }
@@ -1475,14 +1502,13 @@ function confirmImport(kind){
     let n = DB.students.length + 1, created = 0;
     p.res.ok.forEach(v => {
       let c = DB.cohorts.find(x => x.campus === campus && norm(x.classe) === norm(v.Classe));
-      if (!c){ c = {id:`${campus.slice(0, 3).toUpperCase()}-${v.Classe.replace(/\s+/g, "-").toUpperCase()}`, campus, classe:v.Classe, trainer:"", close:v["date de clôture"], count:0}; DB.cohorts.push(c); created++; }
-      DB.students.push({id:"E-" + String(n++).padStart(4, "0"), nom:v.NOM.toUpperCase(), prenom:v["Prénom"], classe:v.Classe, email:v["e-mail"], close:v["date de clôture"], cohort:c.id, lastLogin:"jamais", questions:0, bilans:0});
-      c.count = (c.count || 0) + 1;
+      if (!c){ c = {id:`${campus.slice(0, 3).toUpperCase()}-${v.Classe.replace(/\s+/g, "-").toUpperCase()}`, campus, classe:v.Classe, trainer:"", close:v["date de clôture"]}; DB.cohorts.push(c); created++; }
+      DB.students.push({id:"E-" + String(n++).padStart(4, "0"), nom:upperNom(v.NOM), prenom:v["Prénom"], classe:v.Classe, email:v["e-mail"], close:v["date de clôture"], cohort:c.id, lastLogin:"jamais", questions:0, bilans:0});
     });
     toast(`${p.res.ok.length} étudiants importés${created ? `, ${created} cohorte${created > 1 ? "s" : ""} créée${created > 1 ? "s" : ""}` : ""}. Les e-mails de bienvenue partiront quand un formateur prendra la cohorte.`);
   } else {
     let n = DB.trainers.length + 1;
-    p.res.ok.forEach(v => DB.trainers.push({id:"F-" + String(n++).padStart(2, "0"), nom:v.NOM.toUpperCase(), prenom:v["Prénom"], campus:DB.campuses.find(c => norm(c) === norm((v.Site ?? v.Campus))), email:v["e-mail"]}));
+    p.res.ok.forEach(v => DB.trainers.push({id:"F-" + String(n++).padStart(2, "0"), nom:upperNom(v.NOM), prenom:v["Prénom"], campus:DB.campuses.find(c => norm(c) === norm((v.Site ?? v.Campus))), email:v["e-mail"]}));
     toast(`${p.res.ok.length} formateurs inscrits. Chacun reçoit ses identifiants par e-mail.`);
   }
   PENDING_IMPORT = null; saveDB(); render();
@@ -1500,7 +1526,7 @@ function importBlock(kind){
     <li><b>Téléchargez le modèle</b> et complétez une ligne par ${kind === "students" ? "étudiant" : "formateur"}.
       <div class="row"><a class="btn ghost" href="${(window.XLSX_DATA || {})[xlsx] || xlsx}" download="${xlsx}">Modèle Excel (.xlsx)</a><button class="btn ghost" data-act="tpl-csv" data-kind="${kind}">Modèle CSV</button></div></li>
     <li><b>Gardez les en-têtes de la première ligne</b>, dans cet ordre : <span class="heads">${cols.map(c => `<code>${c}</code>`).join(" ; ")}</span>${kind === "students" ? " La date de clôture s'écrit JJ/MM/AAAA : à cette date, l'accès de l'étudiant se ferme et la cohorte passe en archive." : ""}</li>
-    <li><b>Enregistrez en CSV</b> : dans Excel, « Fichier », « Enregistrer sous », puis « CSV UTF-8 (délimité par des points-virgules) ».</li>
+    <li><b>Enregistrez en CSV</b> : dans Excel, « Fichier », « Enregistrer sous », puis un format « CSV UTF-8 ». L'application accepte le point-virgule et la virgule.</li>
     <li><b>Importez le fichier</b>${kind === "students" ? ` pour le site <select id="impCampus">${DB.campuses.map(c => `<option ${c === ORG.siteDefaut ? "selected" : ""}>${c}</option>`).join("")}</select>` : ""} :
       <label class="filebtn btn">Choisir le fichier CSV<input type="file" accept=".csv,text/csv" data-import="${kind}" hidden></label>
       <span class="hint">Rien n'est enregistré avant votre confirmation : vous voyez d'abord les lignes et les erreurs éventuelles.</span></li></ol>
@@ -1511,7 +1537,7 @@ function importBlock(kind){
 /* ----- Jauge : deux nombres (capacité, comptes) envoyés à l'Atelier. Aucun pack, aucun prix ici. ----- */
 function jauge(){
   const cap = DB.capacity || 100;
-  const n = DB.cohorts.reduce((a, c) => a + (c.count || 0), 0);
+  const n = DB.students.length;
   return {cap, n, free:Math.max(0, cap - n), over:Math.max(0, n - cap)};
 }
 function jaugeKpi(){
@@ -1519,7 +1545,7 @@ function jaugeKpi(){
   return `<div class="kpi jauge ${j.over ? "over" : ""}"><span>Comptes étudiants sur la capacité</span><strong>${j.n} / ${j.cap}</strong><em>${j.over ? `capacité dépassée de ${j.over} compte${j.over > 1 ? "s" : ""}` : `${j.free} place${j.free > 1 ? "s" : ""} libre${j.free > 1 ? "s" : ""}`}</em><i class="jbar"><b style="width:${Math.min(100, Math.round(j.n / j.cap * 100))}%"></b></i></div>`;
 }
 function vAHome(){
-  const nbS = DB.cohorts.reduce((s, c) => s + (c.count || 0), 0);
+  const nbS = DB.students.length;
   const camp = new Set(DB.cohorts.map(c => c.campus)).size;
   const free = DB.cohorts.filter(c => !c.trainer);
   const next = DB.deadlines.find(d => d.date >= todayISO());
@@ -1545,9 +1571,9 @@ function vAHome(){
   <section class="card"><h2>Coach IA ce mois-ci</h2>
     <p><b>${num.format(DB.api.questionsMonth)}</b> questions posées au coach, soit <b>${dec1.format(DB.api.questionsMonth / Math.max(1, nbS))}</b> par étudiant.</p>
     <p class="hint">Usage inclus dans la licence. Chaque étudiant est plafonné à ${DB.api.capStudent} questions par trimestre ; le service technique gère la connexion à l'IA.</p>
-    <h3>Dernières interventions du support</h3>
+    <h3>Dernières interventions</h3>
     <ul class="mini">${DB.support.slice(0, 3).map(s => `<li><b>${s.t}</b> · ${esc(s.act)} · ${esc(s.target)}</li>`).join("")}</ul>
-    <button class="back" data-go="a-data">Voir tout le journal du support</button></section></div>`;
+    <button class="back" data-go="a-data">Voir tout le journal des interventions</button></section></div>`;
 }
 function vATrainers(){
   return head("Formateurs", "Vous inscrivez les formateurs ; chacun reçoit ses identifiants par e-mail et choisit ensuite ses cohortes.") + `
@@ -1556,16 +1582,40 @@ function vATrainers(){
   </tbody></table></div></section>
   <div class="grid2">
   <section class="card"><h2>Ajouter un formateur</h2>
-    <div class="formgrid"><label>NOM<input id="tNom"></label><label>Prénom<input id="tPre"></label><label>Site<select id="tCamp">${DB.campuses.map(c => `<option>${c}</option>`).join("")}</select></label><label>E-mail<input id="tMail" type="email"></label></div>
+    <div class="formgrid"><label>NOM<input id="tNom" maxlength="60"></label><label>Prénom<input id="tPre" maxlength="60"></label><label>Site<select id="tCamp">${DB.campuses.map(c => `<option>${c}</option>`).join("")}</select></label><label>E-mail<input id="tMail" type="email" maxlength="120"></label></div>
     <div class="row"><button class="btn" data-act="add-trainer">Inscrire et envoyer les identifiants</button></div></section>
   <section class="card"><h2>Importer plusieurs formateurs</h2>${importBlock("trainers")}</section></div>`;
 }
+let A_STU = {q:"", cohort:""};
+const cohortOf = id => DB.cohorts.find(c => c.id === id);
+function stuRows(){
+  const q = A_STU.q.trim().toLowerCase();
+  const l = DB.students.filter(x => (!A_STU.cohort || x.cohort === A_STU.cohort) && (!q || [x.nom, x.prenom, x.email].some(v => String(v).toLowerCase().includes(q))));
+  if (!l.length) return `<tr><td colspan="8" class="hint">Aucun étudiant ne correspond à cette recherche.</td></tr>`;
+  return l.map(x => { const c = cohortOf(x.cohort) || {}, g = groupOf(x.id), me = x.id === ME_STUDENT;
+    return `<tr><td style="text-align:left">${esc(x.nom)}</td><td style="text-align:left">${esc(x.prenom)}</td><td style="text-align:left">${esc(x.email)}</td><td>${esc(c.classe || x.cohort)}</td><td>${g ? esc(g.name) : "Sans groupe"}</td><td>${esc(x.lastLogin || "jamais")}</td><td>${esc(c.close || "–")}</td>
+    <td style="text-align:left;white-space:nowrap">${me ? `<span class="hint">Compte de démonstration</span>` : `<button class="back" data-act="stu-move" data-id="${x.id}" aria-label="Changer de cohorte : ${esc(fullName(x))}">Changer de cohorte</button> <button class="back" data-act="stu-mail" data-id="${x.id}" aria-label="Corriger l'adresse e-mail : ${esc(fullName(x))}">Corriger l'adresse e-mail</button> <button class="back" data-act="stu-remove" data-id="${x.id}" aria-label="Retirer de la simulation : ${esc(fullName(x))}">Retirer de la simulation</button>`}</td></tr>`; }).join("");
+}
+function vAList(){
+  return head("Étudiants", "Tous les étudiants de la simulation : retrouvez un compte, changez de cohorte, corrigez une adresse ou retirez un étudiant.") + `
+  <section class="card"><div class="row"><label class="field grow"><span>Rechercher par nom, prénom ou e-mail</span><input id="stuQ" type="search" value="${esc(A_STU.q)}" maxlength="80"></label>
+  <label class="field"><span>Cohorte</span><select id="stuC"><option value="">Toutes les cohortes</option>${DB.cohorts.map(c => `<option value="${c.id}" ${c.id === A_STU.cohort ? "selected" : ""}>${esc(c.campus)} · ${esc(c.classe)}</option>`).join("")}</select></label></div>
+  <p class="hint" id="stuN"></p>
+  <div class="tablebox"><table><thead><tr><th style="text-align:left">Nom</th><th style="text-align:left">Prénom</th><th style="text-align:left">E-mail</th><th>Cohorte</th><th>Groupe</th><th>Dernière connexion</th><th>Clôture</th><th style="text-align:left">Gestes</th></tr></thead><tbody id="stuBody">${stuRows()}</tbody></table></div>
+  <p class="hint">Chaque geste demande une confirmation et s'inscrit au journal des interventions, avec votre nom, la date et l'heure.</p></section>`;
+}
+function stuLog(act, x, why){ DB.support.unshift({t:stamp(), who:ORG.admin, act, target:`${x.id} · ${fullName(x)}`, why}); }
+function stuLeave(x){
+  const g = groupOf(x.id); if (!g) return "";
+  g.members = g.members.filter(id => id !== x.id);
+  return g.members.length ? "" : ` Le groupe « ${g.name} » est maintenant vide : son formateur peut le compléter ou le laisser tel quel.`;
+}
 function vAStudents(){
   const byCampus = DB.campuses.map(c => [c, DB.cohorts.filter(x => x.campus === c)]).filter(([, l]) => l.length);
-  return head("Étudiants et cohortes", "Un import par site en début d'année. La date de clôture coupe l'accès et archive la cohorte : rien à supprimer en juin.") + `
+  return head("Cohortes et import", "Un import par site en début d'année. La date de clôture coupe l'accès et archive la cohorte : rien à supprimer en juin.") + `
   <section class="card"><h2>Importer une liste d'étudiants</h2>${importBlock("students")}</section>
   <section class="card"><h2>Cohortes de l'année ${DB.year}</h2><div class="tablebox"><table><thead><tr><th>Site</th><th style="text-align:left">Classe</th><th>Étudiants</th><th>Formateur</th><th>Clôture</th></tr></thead><tbody>
-  ${byCampus.map(([, l]) => l.map(c => `<tr><td>${c.campus}</td><td style="text-align:left">${esc(c.classe)}</td><td>${c.count || 0}</td><td><select data-assign="${c.id}"><option value="">– à attribuer –</option>${DB.trainers.filter(t => t.campus === c.campus).map(t => `<option value="${t.id}" ${t.id === c.trainer ? "selected" : ""}>${esc(fullName(t))}</option>`).join("")}</select></td><td>${c.close}</td></tr>`).join("")).join("")}
+  ${byCampus.map(([, l]) => l.map(c => `<tr><td>${c.campus}</td><td style="text-align:left">${esc(c.classe)}</td><td>${cohortCount(c)}</td><td><select data-assign="${c.id}"><option value="">– à attribuer –</option>${DB.trainers.filter(t => t.campus === c.campus).map(t => `<option value="${t.id}" ${t.id === c.trainer ? "selected" : ""}>${esc(fullName(t))}</option>`).join("")}</select></td><td>${c.close}</td></tr>`).join("")).join("")}
   </tbody></table></div><p class="hint">Un formateur peut aussi prendre lui-même une cohorte de son site encore libre, depuis son espace.</p></section>`;
 }
 function vACase(){
@@ -1583,18 +1633,18 @@ function vACase(){
     <label class="field"><span>Nombre maximal d'étudiants par groupe (règle nationale) : <b id="maxv">${s.maxGroup}</b></span><input type="range" min="2" max="6" value="${s.maxGroup}" data-set="maxGroup" ${s.mode === "individuel" ? "disabled" : ""}></label>
     <p class="hint">Les formateurs ne peuvent pas dépasser ce nombre en constituant leurs groupes.</p></section>
   <section class="card"><h2>Échéances et livrables</h2><div class="tablebox"><table><thead><tr><th style="text-align:left">Étape</th><th>Date limite</th></tr></thead><tbody>
-    ${DB.deadlines.map(d => `<tr class="${d.deliv ? "sub" : ""}"><td style="text-align:left">${d.label}${d.final ? ' <span class="pill warn">final</span>' : ""}</td><td><input type="date" value="${d.date}" data-deadline="${d.id}" style="width:150px"></td></tr>`).join("")}
+    ${DB.deadlines.map(d => `<tr class="${d.deliv ? "sub" : ""}"><td style="text-align:left">${d.label}</td><td><input type="date" value="${d.date}" data-deadline="${d.id}" style="width:150px"></td></tr>`).join("")}
   </tbody></table></div><p class="hint">Les décisions sont verrouillées et calculées à 17 h le jour indiqué. Les relances partent la veille.</p></section></div>
   <section class="card"><div class="row" style="justify-content:space-between"><h2>Grille d'évaluation des livrables</h2><label class="row" style="gap:8px">Livrable <select id="rubD">${DELIVS().map(d => `<option value="${d.id}" ${d.id === A_RUB ? "selected" : ""}>${d.label}</option>`).join("")}</select></label></div>
-    <p class="hint">Exemple de grille à remplacer par les critères de votre référentiel (TP REM : blocs BC01, BC02, BC03). Chaque critère reçoit « satisfait » ou « non satisfait » pour l'ECF, et des points pour la note de contrôle continu. Les formateurs de tous les sites évaluent avec cette grille.</p>
+    ${rubLocked(A_RUB) ? `<p class="hint demo-note"><b>Grille verrouillée.</b> ${rubLocked(A_RUB)} note${rubLocked(A_RUB) > 1 ? "s sont publiées" : " est publiée"} avec cette grille : la modifier changerait les notes déjà données. Une nouvelle version de grille, sans effet sur les notes passées, reste à prévoir.</p>` : ""}<p class="hint">Exemple de grille à remplacer par les critères de votre référentiel (TP REM : blocs BC01, BC02, BC03). Chaque critère reçoit « satisfait » ou « non satisfait » pour l'ECF, et des points pour la note de contrôle continu. Les formateurs de tous les sites évaluent avec cette grille.</p>
     <div class="tablebox"><table><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>Points</th><th></th></tr></thead><tbody>
-    ${rubric(A_RUB).map(c => `<tr><td style="text-align:left"><input value="${esc(c.label)}" data-rub="${A_RUB}|${c.id}|label" style="width:100%"></td>
-      <td><select data-rub="${A_RUB}|${c.id}|bloc">${BLOCS.map(b => `<option ${b === c.bloc ? "selected" : ""}>${b}</option>`).join("")}</select></td>
-      <td><input type="number" min="0" max="20" step="0.5" value="${c.max}" data-rub="${A_RUB}|${c.id}|max" style="width:70px"></td>
-      <td><button class="back" data-act="rub-del" data-d="${A_RUB}" data-id="${c.id}">Retirer</button></td></tr>`).join("")}
+    ${rubric(A_RUB).map(c => `<tr><td style="text-align:left"><input value="${esc(c.label)}" data-rub="${A_RUB}|${c.id}|label" aria-label="Libellé du critère" maxlength="160" style="width:100%" ${rubLocked(A_RUB) ? "disabled" : ""}></td>
+      <td><select data-rub="${A_RUB}|${c.id}|bloc" aria-label="Bloc du critère" ${rubLocked(A_RUB) ? "disabled" : ""}>${BLOCS.map(b => `<option ${b === c.bloc ? "selected" : ""}>${b}</option>`).join("")}</select></td>
+      <td><input type="number" min="0" max="20" step="0.5" value="${c.max}" data-rub="${A_RUB}|${c.id}|max" aria-label="Points du critère" style="width:70px" ${rubLocked(A_RUB) ? "disabled" : ""}></td>
+      <td>${rubLocked(A_RUB) ? "" : `<button class="back" data-act="rub-del" data-d="${A_RUB}" data-id="${c.id}">Retirer</button>`}</td></tr>`).join("")}
     </tbody></table></div>
-    <div class="row"><button class="btn ghost" data-act="rub-add" data-d="${A_RUB}">Ajouter un critère</button><span class="hint">Total : ${rubric(A_RUB).reduce((a, c) => a + (+c.max || 0), 0)} points, ramenés sur 20.</span></div></section>
-  <div class="row"><button class="btn" data-act="save-frame">Enregistrer le cadre national</button></div>`;
+    <div class="row">${rubLocked(A_RUB) ? "" : `<button class="btn ghost" data-act="rub-add" data-d="${A_RUB}">Ajouter un critère</button>`}<span class="hint">Total : ${rubric(A_RUB).reduce((a, c) => a + (+c.max || 0), 0)} points, ramenés sur 20.</span></div></section>
+  <div class="row"><button class="btn" data-act="save-frame">Enregistrer le cadre</button></div>`;
 }
 let A_RUB = "d1";
 function vAChallenge(){
@@ -1611,12 +1661,20 @@ function vAChallenge(){
     <div class="chips">${DB.campuses.map(x => `<label class="chipbox"><input type="checkbox" data-chalcamp="${x}" ${c.campuses.includes(x) ? "checked" : ""}> ${x}</label>`).join("")}</div>
     <div class="formgrid"><label>Classement<select data-chal="rule"><option value="resultat" ${c.rule === "resultat" ? "selected" : ""}>Résultat cumulé</option><option value="mixte" ${c.rule === "mixte" ? "selected" : ""}>Score mixte (70 % résultat, 30 % livrables)</option></select></label><label>Date de la finale<input type="date" value="${c.final}" data-chal="final"></label></div></section>
   <section class="card"><h2>Aperçu du classement national</h2><div class="tablebox"><table><thead><tr><th>Rang</th><th>Site</th><th>Meilleur groupe</th><th>Résultat cumulé</th></tr></thead><tbody>
-    ${demo.filter(([x]) => c.campuses.includes(x)).map(([x, g, r], i) => `<tr><td><b>${i === 0 ? "1er" : (i + 1) + "e"}</b></td><td>${x}</td><td style="text-align:left">${g}</td><td>${eur.format(r)}</td></tr>`).join("")}
+    ${demo.map(([x, g, r]) => [neutre(x), neutre(g), r]).filter(([x]) => c.campuses.includes(x)).map(([x, g, r], i) => `<tr><td><b>${i === 0 ? "1er" : (i + 1) + "e"}</b></td><td>${x}</td><td style="text-align:left">${g}</td><td>${eur.format(r)}</td></tr>`).join("")}
   </tbody></table></div>${demoNote("Données fictives, pour illustrer l'écran. Les étudiants verraient le classement de leur site et le rang national de leur groupe.")}</section></div>`;
+}
+let A_ARCH = null;
+function archiveCard(){
+  const a = DB.archives.find(x => x.year === A_ARCH); if (!a) return "";
+  const rows = [["Nantes", "TP REM A", 30], ["Nantes", "MCM 1", 26], ["Lyon", "MCM 2", 24], ["Lille", "TP REM A", 20], ["Toulouse", "TP REM A", 18]];
+  return `<section class="card"><div class="row" style="justify-content:space-between"><h2>Archive ${a.year} · lecture seule</h2><button class="btn ghost" data-act="close-archive">Fermer l'archive</button></div>
+  <div class="tablebox"><table><thead><tr><th>Site</th><th style="text-align:left">Classe</th><th>Étudiants</th><th>Clôturée le</th></tr></thead><tbody>${rows.map(([x, c, n]) => `<tr><td>${neutre(x)}</td><td style="text-align:left">${neutre(c)}</td><td>${n}</td><td>${a.closed}</td></tr>`).join("")}</tbody></table></div>
+  <p class="hint">Archive fictive pour la démonstration : ${a.students} étudiants dans ${a.cohorts} cohortes. Une archive se consulte mais ne se modifie plus.</p></section>`;
 }
 function vAData(){
   const r = DB.retention;
-  return head("Données et archives", "Vous fixez les règles de conservation ; l'application les applique seule.") + `
+  return head("Données et archives", "Vous fixez les règles de conservation ; l'application les applique seule.") + archiveCard() + `
   <div class="grid2">
   <section class="card"><h2>Année en cours : ${DB.year}</h2>
     <p>À la date de clôture de chaque cohorte, les accès des étudiants se ferment et la cohorte passe en archive, en lecture seule. En septembre, vous repartez d'une base neuve.</p>
@@ -1624,9 +1682,9 @@ function vAData(){
     <label class="field"><span>Messages, bilans de séance et échanges avec le coach</span><select data-ret="purgeMessages"><option value="clôture" ${r.purgeMessages === "clôture" ? "selected" : ""}>Supprimés à la clôture de la cohorte</option><option value="3mois" ${r.purgeMessages === "3mois" ? "selected" : ""}>Supprimés trois mois après la clôture</option></select></label>
     <div class="row"><button class="btn" data-act="save-ret">Enregistrer</button><button class="btn ghost" data-act="export-all">Exporter les données de l'année (CSV)</button></div></section>
   <section class="card"><h2>Archives</h2><div class="tablebox"><table><thead><tr><th>Année</th><th style="text-align:left">Cohortes</th><th>Étudiants</th><th>Clôturée le</th><th></th></tr></thead><tbody>
-    ${DB.archives.map(a => `<tr><td><b>${a.year}</b></td><td>${a.cohorts}</td><td>${a.students}</td><td>${a.closed}</td><td><button class="back" data-act="open-archive">Consulter</button></td></tr>`).join("")}
+    ${DB.archives.map(a => `<tr><td><b>${a.year}</b></td><td>${a.cohorts}</td><td>${a.students}</td><td>${a.closed}</td><td><button class="back" data-act="open-archive" data-year="${a.year}">Consulter</button></td></tr>`).join("")}
   </tbody></table></div><p class="hint">Une archive se consulte (résultats, livrables, classements) mais ne se modifie plus. Les comptes des étudiants archivés ne peuvent plus se connecter.</p></section></div>
-  <section class="card"><h2>Journal du support technique</h2><p class="hint">Chaque intervention du service technique sur un compte est inscrite ici, avec sa raison. C'est la contrepartie de l'accès prévu au contrat de traitement des données.</p>
+  <section class="card"><h2>Journal des interventions</h2><p class="hint">Chaque intervention sur un compte, par l'administration ou par le service technique, est inscrite ici, avec sa raison. C'est la contrepartie de l'accès prévu au contrat de traitement des données.</p>
   <div class="tablebox"><table><thead><tr><th>Date</th><th>Intervenant</th><th style="text-align:left">Action</th><th style="text-align:left">Compte</th><th style="text-align:left">Motif</th></tr></thead><tbody>
   ${DB.support.map(s => `<tr><td>${s.t}</td><td>${esc(s.who)}</td><td style="text-align:left">${esc(s.act)}</td><td style="text-align:left">${esc(s.target)}</td><td style="text-align:left;white-space:normal">${esc(s.why)}</td></tr>`).join("")}
   </tbody></table></div></section>`;
@@ -1635,12 +1693,22 @@ function vAData(){
 /* ====== FORMATEUR ====== */
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const curQ = () => Math.min(played() + 1, N);
+const LOGIN_ORDER = ["aujourd'hui", "hier", "il y a 3 jours", "il y a 6 jours", "jamais"];
+function lastOfGroup(g){
+  const l = g.members.map(id => (studentById(id) || {}).lastLogin).filter(Boolean);
+  return l.length ? l.sort((a, b) => LOGIN_ORDER.indexOf(a) - LOGIN_ORDER.indexOf(b))[0] : "jamais";
+}
 function groupStats(g){
   const p = DB.progress[g.id] || {pending:true, steps:{d1:"à venir", d2:"à venir", d3:"à venir"}, last:"jamais"};
-  return {...p, played:played()};
+  const steps = {...p.steps};
+  DELIVS().forEach(d => { const dep = (DB.deposits[g.id] || {})[d.id]; const v = steps[d.id];
+    if (v === "validé") return;
+    steps[d.id] = dep ? "déposé" : (d.date < todayISO() ? "en retard" : "à venir"); });
+  return {...p, steps, last:lastOfGroup(g), played:played()};
 }
 /* ----- Évaluation des livrables ----- */
 const rubric = did => DB.rubrics[did] || [];
+const rubLocked = did => DB.groups.filter(g => (evalOf(g.id, did) || {}).done).length;
 const evalOf = (gid, did) => (DB.evals[gid] || {})[did];
 function evalScore(gid, did){
   const e = evalOf(gid, did), r = rubric(did); if (!e || !r.length) return null;
@@ -1694,13 +1762,14 @@ function vFHome(){
   groups.forEach(g => { const p = groupStats(g);
     if (p.pending && !p.live && !finished()) alerts.push(["warn", `${g.name} (${cohortById(g.cohort).classe}) n'a pas encore validé ses décisions du T${curQ()}.`]);
     Object.entries(p.steps).forEach(([k, v]) => { if (v === "déposé") alerts.push(["warn", `${g.name} a déposé « ${stepLabel(k)} » : à valider.`]); if (v === "en retard") alerts.push(["bad", `${g.name} est en retard sur « ${stepLabel(k)} ».`]); });
-    if (/6 jours|jamais/.test(p.last)) alerts.push(["bad", `${g.name} ne s'est pas connecté depuis ${p.last.replace("il y a ", "")}.`]); });
+    if (p.last === "jamais") alerts.push(["bad", `${g.name} ne s'est encore jamais connecté.`]);
+    else if (p.last === "il y a 6 jours") alerts.push(["bad", `${g.name} ne s'est pas connecté depuis 6 jours.`]); });
   const noGroup = coh.filter(c => DB.settings.mode === "groupe" && !DB.groups.some(g => g.cohort === c.id));
   noGroup.forEach(c => alerts.push(["warn", `La cohorte ${c.classe} n'a pas encore de groupes.`]));
   const me = trainerById(ME_TRAINER);
   return head(`Bonjour ${me.prenom}`, `Ce que l'application a repéré pour vous aujourd'hui. Prochaine échéance : ${(() => { const n = DB.deadlines.find(d => d.date >= todayISO()); return n ? `${n.label}, le ${fmtDate(n.date)}` : "aucune"; })()}.`) + `
   <section class="card"><h2>À traiter</h2>${alerts.length ? `<ul class="alerts">${alerts.map(([k, t]) => `<li class="${k}">${t}</li>`).join("")}</ul>` : `<p class="hint">Rien à signaler : vos groupes avancent.</p>`}</section>
-  ${coh.map(c => { const gs = DB.groups.filter(g => g.cohort === c.id); return `<section class="card"><div class="row" style="justify-content:space-between"><h2>${c.classe} · ${c.campus}</h2><div class="row" style="gap:8px"><span class="pill">${c.count} étudiants · clôture ${c.close}</span>${gs.length ? `<button class="btn ghost sm2" data-act="export-cohort" data-c="${c.id}">Exporter (tableur)</button><button class="btn ghost sm2" data-act="debrief" data-c="${c.id}">Fiche de débriefing</button>` : ""}</div></div>
+  ${coh.map(c => { const gs = DB.groups.filter(g => g.cohort === c.id); return `<section class="card"><div class="row" style="justify-content:space-between"><h2>${c.classe} · ${c.campus}</h2><div class="row" style="gap:8px"><span class="pill">${etu(cohortCount(c))} · clôture ${c.close}</span>${gs.length ? `<button class="btn ghost sm2" data-act="export-cohort" data-c="${c.id}">Exporter (tableur)</button><button class="btn ghost sm2" data-act="debrief" data-c="${c.id}">Fiche de débriefing</button>` : ""}</div></div>
     ${gs.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Groupe</th><th style="text-align:left">Membres</th><th>Trimestres joués</th><th>Décisions du T${curQ()}</th>${DELIVS().map(d => `<th>${d.label.split(" · ")[0]}</th>`).join("")}<th>Dernière activité</th><th></th></tr></thead><tbody>
     ${gs.map(g => { const p = groupStats(g); return `<tr><td style="text-align:left"><b>${esc(g.name)}</b></td><td style="text-align:left;white-space:normal">${g.members.map(id => studentById(id).prenom).join(", ")}</td><td>${p.played}/6</td><td>${decisionPill(p)}</td>
       ${DELIVS().map(d => `<td>${p.steps[d.id] === "déposé" ? `<button class="btn sm" data-act="eval-step" data-g="${g.id}" data-s="${d.id}" title="Le groupe a déposé ce livrable : clique pour l'évaluer avec la grille">Évaluer le dépôt</button>` : stepPill(p.steps[d.id]) + (evalScore(g.id, d.id) ? `<br><span class="hint">${note20(evalScore(g.id, d.id).note)}</span>` : "")}</td>`).join("")}
@@ -1728,19 +1797,23 @@ function vFEval(){
     <label>Groupe<select id="evG">${gs.map(g => `<option value="${g.id}" ${g.id === F_EV.g ? "selected" : ""}>${esc(g.name)} · ${groupStats(g).steps[d.id]}</option>`).join("")}</select></label></div>`;
   if (!F_EV.g) return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites.") + `<section class="card">${sel}<p class="hint">Cette cohorte n'a pas encore de groupes.</p></section>`;
   const g = DB.groups.find(x => x.id === F_EV.g), e = evalOf(g.id, d.id) || {res:{}, pts:{}, comment:""}, st = groupStats(g).steps[d.id];
+  const dep = (DB.deposits[g.id] || {})[d.id], locked = !!e.done, can = !!dep || locked, dis = locked || !can ? "disabled" : "";
   const max = r.reduce((a, c) => a + (+c.max || 0), 0);
   return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites. L'ECF se prononce en « satisfait » ou « non satisfait » ; les points donnent la note de contrôle continu.") + `
   <section class="card">${sel}</section>
   <section class="card"><div class="row" style="justify-content:space-between"><h2>${esc(g.name)} · ${d.label}</h2>${stepPill(st)}</div>
     <p class="hint">Membres : ${g.members.map(id => esc(fullName(studentById(id)))).join(", ")}</p>
+    ${dep ? `<p class="depot"><b>Dépôt du groupe :</b> <a href="${dep.data}" download="${esc(dep.name)}">${esc(dep.name)}</a> · ${fileKo(dep.size)} · déposé le ${dep.when}</p>` : `<p class="hint demo-note">Le groupe n'a rien déposé pour ce livrable : il n'y a rien à évaluer.</p>`}
+    ${locked ? `<p class="hint demo-note">Évaluation validée : elle est en lecture seule. Pour la modifier, rouvrez-la ; l'action est inscrite à l'historique.</p>` : ""}
     <div class="tablebox"><table class="rubric"><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>ECF</th><th>Points</th></tr></thead><tbody>
     ${r.map(c => `<tr><td style="text-align:left;white-space:normal">${esc(c.label)}</td><td><span class="pill">${c.bloc}</span></td>
-      <td><div class="seg"><label><input type="radio" name="ev-${c.id}" value="S" data-evres="${c.id}" ${e.res[c.id] === "S" ? "checked" : ""}> Satisfait</label><label><input type="radio" name="ev-${c.id}" value="NS" data-evres="${c.id}" ${e.res[c.id] === "NS" ? "checked" : ""}> Non satisfait</label></div></td>
-      <td><input type="number" min="0" max="${c.max}" step="0.5" value="${e.pts[c.id] ?? ""}" data-evpts="${c.id}" style="width:70px"> / ${c.max}</td></tr>`).join("")}
+      <td><div class="seg"><label><input type="radio" name="ev-${c.id}" value="S" data-evres="${c.id}" ${dis} ${e.res[c.id] === "S" ? "checked" : ""}> Satisfait</label><label><input type="radio" name="ev-${c.id}" value="NS" data-evres="${c.id}" ${dis} ${e.res[c.id] === "NS" ? "checked" : ""}> Non satisfait</label></div></td>
+      <td><input type="number" min="0" max="${c.max}" step="0.5" value="${e.pts[c.id] ?? ""}" data-evpts="${c.id}" aria-label="Points : ${esc(c.label)}" ${dis} style="width:70px"> / ${c.max}</td></tr>`).join("")}
     </tbody></table></div>
     <div class="evsum" id="evSum"></div>
-    <label class="field"><span>Retour au groupe (visible par les étudiants après validation)</span><textarea id="evCom" rows="3" maxlength="800">${esc(e.comment || "")}</textarea></label>
-    <div class="row"><button class="btn" data-act="eval-save" data-done="1">Valider le livrable et publier la note</button><button class="btn ghost" data-act="eval-save" data-done="">Enregistrer le brouillon</button></div>
+    <label class="field"><span>Retour au groupe (visible par les étudiants après validation)</span><textarea id="evCom" rows="3" maxlength="800" ${dis}>${esc(e.comment || "")}</textarea></label>
+    <div class="row">${locked ? `<button class="btn ghost" data-act="eval-reopen">Rouvrir l'évaluation</button>` : can ? `<button class="btn" data-act="eval-save" data-done="1">Valider le livrable et publier la note</button><button class="btn ghost" data-act="eval-save" data-done="">Enregistrer le brouillon</button>` : ""}</div>
+    ${(e.log || []).length ? `<h3>Historique</h3><ul class="mini">${e.log.slice().reverse().map(l => `<li><b>${l.t}</b> · ${esc(l.by)} · ${esc(l.action)}</li>`).join("")}</ul>` : ""}
     <p class="hint">Total sur ${max} points, ramené sur 20. L'ECF n'est satisfaite que si tous les critères le sont.</p></section>`;
 }
 function evalLive(){
@@ -1783,11 +1856,11 @@ function vFGroups(){
     ${students.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Étudiant</th><th style="text-align:left">Groupe</th></tr></thead><tbody>${students.map(s => { const g = groupOf(s.id); return `<tr><td style="text-align:left">${esc(fullName(s))}</td><td style="text-align:left"><select data-member="${s.id}"><option value="">– sans groupe –</option>${gs.map(x => `<option value="${x.id}" ${g && g.id === x.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></td></tr>`; }).join("")}</tbody></table></div>` : `<p class="hint">Cette cohorte n'a pas encore d'étudiants importés.</p>`}
   </section></div>`}
   <section class="card"><h2>Ajouter une cohorte de mon site</h2>
-    ${free.length ? `<p class="hint">Cohortes importées par l'administration ISO, encore sans formateur :</p><div class="row">${free.map(x => `<button class="btn ghost" data-act="take-cohort" data-c="${x.id}">Prendre ${x.classe} (${x.count} étudiants)</button>`).join("")}</div>` : `<p class="hint">Toutes les cohortes de votre site ont un formateur.</p>`}</section>`;
+    ${free.length ? `<p class="hint">Cohortes importées par l'administration ISO, encore sans formateur :</p><div class="row">${free.map(x => `<button class="btn ghost" data-act="take-cohort" data-c="${x.id}">Prendre ${x.classe} (${etu(cohortCount(x))})</button>`).join("")}</div>` : `<p class="hint">Toutes les cohortes de votre site ont un formateur.</p>`}</section>`;
 }
 function vFStudents(){
   const coh = myCohorts();
-  return head("Mes étudiants", "Vous seul réinitialisez les mots de passe de vos étudiants. L'application leur envoie le nouveau par e-mail.") +
+  return head("Mes étudiants", "Vous renvoyez un nouveau code personnel à vos étudiants ; l'administrateur de l'école et l'assistance peuvent aussi le faire. Le code part par e-mail et ne s'affiche jamais.") +
   coh.map(c => { const list = DB.students.filter(s => s.cohort === c.id); return `<section class="card"><h2>${c.classe} · ${c.campus}</h2>${list.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Étudiant</th><th style="text-align:left">E-mail</th><th style="text-align:left">Groupe</th><th>Accès jusqu'au</th><th></th></tr></thead><tbody>
     ${list.map(s => `<tr><td style="text-align:left">${esc(fullName(s))}</td><td style="text-align:left">${esc(s.email)}</td><td style="text-align:left">${groupOf(s.id) ? esc(groupOf(s.id).name) : "–"}</td><td>${s.close}</td><td><button class="back" data-act="reset-student" data-id="${s.id}">Nouveau mot de passe</button></td></tr>`).join("")}
   </tbody></table></div>` : `<p class="hint">Aucun étudiant importé pour cette cohorte.</p>`}</section>`; }).join("");
@@ -1796,15 +1869,15 @@ let F_TARGET = "";
 function targets(){
   const out = [];
   myCohorts().forEach(c => { out.push([c.id, `Toute la cohorte ${c.classe}`]); DB.groups.filter(g => g.cohort === c.id).forEach(g => out.push([g.id, `${g.name} (${c.classe})`])); });
-  myCohorts().forEach(c => DB.students.filter(s => s.cohort === c.id).forEach(s => { const g = groupOf(s.id); out.push([s.id, `${fullName(s)} seul (${g ? g.name + ", " : ""}${c.classe})`]); }));
+  myCohorts().forEach(c => DB.students.filter(s => s.cohort === c.id).forEach(s => { const g = groupOf(s.id); out.push([s.id, `Étudiant : ${fullName(s)} (${g ? g.name + ", " : ""}${c.classe})`]); }));
   return out;
 }
 const targetLabel = id => (targets().find(t => t[0] === id) || [id, id])[1];
-const targetGroups = () => { const t = targets(); return [["Cohortes et groupes", t.filter(x => !studentById(x[0]))], ["Un étudiant seul", t.filter(x => studentById(x[0]))]]; };
+const targetGroups = () => { const t = targets(); return [["Cohortes et groupes", t.filter(x => !studentById(x[0]))], ["Un seul étudiant", t.filter(x => studentById(x[0]))]]; };
 const targetOptions = sel => targetGroups().map(([l, xs]) => xs.length ? `<optgroup label="${l}">${xs.map(([id, n]) => `<option value="${id}" ${id === sel ? "selected" : ""}>${esc(n)}</option>`).join("")}</optgroup>` : "").join("");
 function vFMsg(){
   const sent = DB.messages.filter(m => m.from === ME_TRAINER).slice().reverse();
-  return head("Messages", "Écris à une cohorte entière, à un groupe ou à un seul étudiant. Les étudiants le voient dans leur espace, avec un badge.") + `
+  return head("Messages", "Écrivez à une cohorte entière, à un groupe ou à un seul étudiant. Les étudiants le voient dans leur espace, avec un badge.") + `
   <div class="grid2">
   <section class="card"><h2>Nouveau message</h2>
     <label class="field"><span>Destinataires</span><select id="mTo">${targetOptions(F_TARGET)}</select></label>
@@ -1823,7 +1896,7 @@ function vFEmails(){
   <section class="card"><h2>${esc(t.name)}</h2>
     <label class="field"><span>Objet</span><input id="tplSub" value="${esc(t.subject)}"></label>
     <label class="field"><span>Texte</span><textarea id="tplBody" rows="8">${esc(t.body)}</textarea></label>
-    <div class="chips">${["{prenom}", "{etape}", "{date}", "{trimestre}", "{formateur}", "{email}", "{motdepasse}"].map(v => `<button class="chip" data-act="ins-var" data-v="${v}">${v}</button>`).join("")}</div>
+    <div class="chips">${["{prenom}", "{etape}", "{date}", "{trimestre}", "{formateur}", "{email}", "{code}"].map(v => `<button class="chip" data-act="ins-var" data-v="${v}">${v}</button>`).join("")}</div>
     <p class="hint">Envoi : ${esc(t.trigger)}.</p>
     <div class="row"><button class="btn" data-act="save-tpl">Enregistrer le modèle</button><button class="btn ghost" data-act="test-tpl">M'envoyer un test</button></div></section></div>
   <section class="card"><h2>Envois programmés</h2>
@@ -1839,18 +1912,16 @@ function vFTasks(){
 }
 
 /* ====== MODE D'EMPLOI PAR RÔLE ====== */
-const GUIDE_PDF = {
-  etudiant:"https://drive.google.com/file/d/1zzgVh2pXNgqFhC--3YTTiIiD95HySdUU/view",
-  formateur:"https://drive.google.com/file/d/1x-pVLf2qjM5UI-uBRZ0HPraCnAkrwOQb/view",
-  admin:"https://drive.google.com/file/d/1BOS7an2eO4cUpNKaJ2hlvq_pve5I5rdb/view"
-};
+const GUIDE_PDF = JEU === "iso"
+  ? {etudiant:"guides/guide-etudiant.pdf", formateur:"guides/guide-formateur.pdf", admin:"guides/guide-administrateur.pdf"}
+  : {etudiant:"guides/guide-etudiant.pdf"};
 function vGuide(){
   const g = GUIDES[ROLE];
   const pdf = GUIDE_PDF[ROLE];
   return head(g.title, g.sub, `<div class="row">${pdf ? `<a class="btn" href="${pdf}" target="_blank" rel="noopener">Guide illustré (PDF)</a>` : ""}<button class="btn ghost" data-act="print-guide">Imprimer cette page</button></div>`) +
   `<article class="guide">${g.sections.map((s, i) => `<section class="card"><div class="ghead"><span class="gnum">${i + 1}</span><div><h2>${s.t}</h2><span class="hint">${s.sub}</span></div></div>
     ${(s.p || []).map(x => `<p>${x}</p>`).join("")}${s.steps ? `<ol class="steps-list">${s.steps.map(x => `<li>${x}</li>`).join("")}</ol>` : ""}${s.tip ? `<p class="gtip">${s.tip}</p>` : ""}</section>`).join("")}</article>
-  <p class="hint">Ce guide correspond à votre rôle : chaque espace a le sien. Le guide illustré, avec les captures d'écran, s'ouvre avec le bouton « Guide illustré (PDF) ».</p>`;
+  <p class="hint">Ce guide correspond à votre rôle : chaque espace a le sien. ${pdf ? "Le guide illustré, avec les captures d'écran, s'ouvre avec le bouton « Guide illustré (PDF) »." : "Ce guide est lisible ici et s'imprime avec le bouton « Imprimer cette page »."}</p>`;
 }
 
 /* ====== ÉTUDIANT : avancement ====== */
@@ -1862,12 +1933,16 @@ function vProg(){
   <div class="kpis">
     <div class="kpi"><span>Trimestres joués</span><strong>${played()}/${N}</strong><em>${finished() ? "partie terminée" : "trimestre " + S.periods[played()] + " en préparation"}</em></div>
     <div class="kpi"><span>Bilans de séance</span><strong>${bilans}</strong><em>rédigés par ton équipe</em></div>
-    <div class="kpi"><span>Questions au coach</span><strong>${G.chat.filter(m => m.role === "user").length}/${DB.api.capStudent}</strong><em>sur ce trimestre</em></div>
+    <div class="kpi"><span>Questions au coach</span><strong>${qUsed()}/${DB.api.capStudent}</strong><em>sur ce trimestre</em></div>
   </div>
   ${countdown()}
   <section class="card"><h2>Livrables et validations</h2><div class="tablebox"><table><thead><tr><th style="text-align:left">Étape</th><th>Date limite</th><th>Statut</th><th>Note</th></tr></thead><tbody>
   ${DELIVS().map(d => { const s = p ? p.steps[d.id] : "à venir", sc = g && s === "validé" ? evalScore(g.id, d.id) : null; return `<tr><td style="text-align:left">${d.label}</td><td>${fmtDate(d.date)}</td><td>${stepPill(s)}${s === "validé" ? ` <span class="hint">par ${esc(fullName(tr))}</span>` : ""}</td><td>${sc && sc.done ? `<b>${note20(sc.note)}</b> <span class="pill ${sc.ecf ? "ok" : "bad"}">ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}</span>` : "–"}</td></tr>`; }).join("")}
-  </tbody></table></div><p class="hint">Quand ta formatrice valide une étape, elle passe en vert ici, avec ta note et son retour.</p>
+  </tbody></table></div><p class="hint">Quand ta formatrice valide une étape, elle passe en vert ici, avec ta note et son retour.</p></section>
+  <section class="card"><h2>Déposer un livrable</h2><p class="hint">Un seul fichier par livrable, 1 Mo au maximum dans la démonstration. Tu peux le remplacer tant qu'il n'est pas validé.</p>
+  ${g ? `<ul class="msglist">${DELIVS().map(d => { const dep = (DB.deposits[g.id] || {})[d.id], s = p.steps[d.id]; return `<li><div class="row" style="justify-content:space-between"><b>${d.label}</b>${stepPill(s)}</div>
+    <span class="hint">${dep ? `Déposé : ${esc(dep.name)} · ${fileKo(dep.size)} · le ${dep.when}` : `Rien de déposé · date limite le ${fmtDate(d.date)}`}</span>
+    ${s === "validé" ? `<span class="hint">Livrable validé : il ne se remplace plus.</span>` : `<label class="filebtn btn sm">${dep ? "Remplacer le fichier" : "Déposer un fichier"}<input type="file" data-deposit="${d.id}" hidden></label>`}</li>`; }).join("")}</ul>` : `<p class="hint">Tu n'as pas encore de groupe : ta formatrice te placera dans un groupe avant le premier dépôt.</p>`}
   ${g ? DELIVS().map(d => { const e = evalOf(g.id, d.id); if (!e || !e.done) return ""; return `<div class="feedback"><b>${d.label} · retour de ta formatrice</b>${e.comment ? `<p>${esc(e.comment)}</p>` : ""}<ul>${rubric(d.id).map(c => `<li class="${e.res[c.id] === "S" ? "ok" : "bad"}">${esc(c.label)} : ${e.res[c.id] === "S" ? "satisfait" : "non satisfait"} · ${String(e.pts[c.id] ?? 0).replace(".", ",")}/${c.max}</li>`).join("")}</ul></div>`; }).join("") : ""}</section>
   <section class="card"><h2>Calendrier des décisions</h2><div class="tablebox"><table><tbody>${DB.deadlines.filter(d => !d.deliv).map(d => `<tr><td style="text-align:left">${d.label}</td><td>${fmtDate(d.date)} à 17 h</td></tr>`).join("")}</tbody></table></div></section>`;
 }
@@ -1877,7 +1952,7 @@ const inDays = n => n <= 0 ? "aujourd'hui" : n === 1 ? "demain" : `dans ${n} jou
 function countdown(){
   const g = groupOf(ME_STUDENT), p = g ? groupStats(g) : null, t = todayISO();
   const deliv = DELIVS().find(d => d.date >= t && !(p && p.steps[d.id] === "validé"));
-  const dec = DB.deadlines.find(d => !d.deliv && d.date >= t);
+  const dec = finished() ? null : DB.deadlines.find(d => d.id === "q" + (played() + 1));
   const box = (k, d, lab, extra) => { const n = daysTo(d.date); return `<div class="cd ${n <= 3 ? "urgent" : n <= 7 ? "soon" : ""}"><strong>${n <= 0 ? "J" : "J-" + n}</strong><div><span class="cd-k">${k}</span><b>${esc(lab)}</b><em>${inDays(n)}, le ${fmtDate(d.date)}${extra}</em></div></div>`; };
   if (!deliv && !dec) return "";
   return `<section class="countdown" aria-label="Compte à rebours">${deliv ? box("Prochain livrable", deliv, deliv.label, p && p.steps[deliv.id] === "déposé" ? " · déposé, en attente de validation" : "") : ""}${dec ? box("Prochaines décisions", dec, dec.label, " à 17 h") : ""}</section>`;
@@ -1887,36 +1962,93 @@ function studentMessages(){
   return DB.messages.filter(m => m.to === s.cohort || (g && m.to === g.id) || m.to === ME_STUDENT);
 }
 
-const ADMIN_VIEWS = {"a-home":vAHome, "a-trainers":vATrainers, "a-students":vAStudents, "a-case":vACase, "a-challenge":vAChallenge, "a-data":vAData,
+const ADMIN_VIEWS = {"a-home":vAHome, "a-trainers":vATrainers, "a-list":vAList, "a-students":vAStudents, "a-case":vACase, "a-challenge":vAChallenge, "a-data":vAData,
   "f-home":vFHome, "f-eval":vFEval, "f-debrief":vFDebrief, "f-groups":vFGroups, "f-students":vFStudents, "f-msg":vFMsg, "f-emails":vFEmails, "f-tasks":vFTasks,
   "prog":vProg, "guide":vGuide};
 
 /* ----- Actions ----- */
 const today = () => new Date().toLocaleDateString("fr-FR");
+const stamp = () => new Date().toLocaleString("fr-FR", {dateStyle:"short", timeStyle:"short"}).replace(",", "");
+const parseFR = t => { const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(t).trim()); if (!m) return null; const d = new Date(Date.UTC(+m[3], +m[2] - 1, +m[1])); return d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[1] ? d : null; };
+const isPastDate = d => d.toISOString().slice(0, 10) < todayISO();
+const upperNom = n => { const t = n.trim().replace(/\s+/g, " "); const m = /^(d'|de la |de |du |des |le |la |von |van )(.+)$/i.exec(t); return m ? m[1].toLowerCase() + m[2].toUpperCase() : t.toUpperCase(); };
+const mailTaken = (m, except) => DB.students.concat(DB.trainers).some(x => x !== except && x.email.toLowerCase() === m.toLowerCase());
+const fileKo = n => n < 1024 ? n + " octets" : Math.round(n / 1024) + " Ko";
+function confirmBox(title, html, okLabel, onOk, extra){
+  let d = document.getElementById("confirmBox"); if (d) d.remove();
+  d = document.createElement("dialog"); d.id = "confirmBox"; d.className = "confirm";
+  d.innerHTML = `<form method="dialog"><h2>${title}</h2><div class="cbody">${html}</div><p class="cerr" role="alert"></p><div class="row"><button class="btn" value="ok">${okLabel}</button><button class="btn ghost" value="cancel" formnovalidate>Annuler</button></div></form>`;
+  document.body.appendChild(d); typoFix(d);
+  d.querySelector("form").onsubmit = e => { if (e.submitter && e.submitter.value === "ok"){ const err = onOk(d); if (err){ e.preventDefault(); d.querySelector(".cerr").textContent = err; typoFix(d.querySelector(".cerr")); return; } } };
+  d.addEventListener("close", () => d.remove());
+  d.showModal(); const f = d.querySelector("select,input"); if (f) f.focus();
+}
 const ACT = {
+  "stu-move": el => {
+    const x = studentById(el.dataset.id), cur = cohortOf(x.cohort), opts = DB.cohorts.filter(c => c.campus === cur.campus && c.id !== cur.id), g = groupOf(x.id);
+    if (!opts.length) return toast(`Il n'y a pas d'autre cohorte sur le site de ${cur.campus} : le changement est impossible.`);
+    confirmBox("Changer de cohorte", `<p><b>${esc(fullName(x))}</b> est dans la cohorte ${esc(cur.classe)} (${esc(cur.campus)}).</p>
+      <label class="field"><span>Nouvelle cohorte (même site)</span><select id="mvC">${opts.map(c => `<option value="${c.id}">${esc(c.classe)} · clôture le ${esc(c.close)}</option>`).join("")}</select></label>
+      <p class="hint">${g ? `L'étudiant quitte « ${esc(g.name)} » et arrive sans groupe dans la nouvelle cohorte. ` : "L'étudiant arrive sans groupe. "}Les résultats déjà joués restent ceux de son ancien groupe. Sa date de clôture devient celle de la nouvelle cohorte.</p>`, "Changer de cohorte", () => {
+      const n = cohortOf($("mvC").value); if (!n || n.campus !== cur.campus) return "Choisissez une cohorte du même site.";
+      const warn = stuLeave(x); x.cohort = n.id; if ("classe" in x) x.classe = n.classe;
+      stuLog("Changement de cohorte", x, `De ${cur.classe} vers ${n.classe}, retrait du groupe`);
+      saveDB(); render(); toast(`${fullName(x)} est maintenant dans la cohorte ${n.classe}, sans groupe.${warn}`);
+    });
+  },
+  "stu-mail": el => {
+    const x = studentById(el.dataset.id);
+    confirmBox("Corriger l'adresse e-mail", `<p><b>${esc(fullName(x))}</b> : adresse actuelle ${esc(x.email)}.</p><label class="field"><span>Nouvelle adresse e-mail</span><input id="mlA" type="email" maxlength="120" value="${esc(x.email)}"></label>`, "Corriger l'adresse", () => {
+      const v = $("mlA").value.trim();
+      if (!EMAIL_RE.test(v)) return "Cette adresse e-mail n'est pas valide.";
+      if (v.toLowerCase() === x.email.toLowerCase()) return "L'adresse est identique à l'actuelle.";
+      if (mailTaken(v, x)) return "Cette adresse e-mail est déjà inscrite.";
+      const old = x.email; x.email = v; stuLog("Adresse e-mail corrigée", x, `De ${old} vers ${v}`);
+      saveDB(); render(); toast(`L'adresse de ${fullName(x)} est corrigée.`);
+    });
+  },
+  "stu-remove": el => {
+    const x = studentById(el.dataset.id), g = groupOf(x.id), c = cohortOf(x.cohort) || {};
+    confirmBox("Retirer de la simulation", `<p>Vous allez retirer <b>${esc(fullName(x))}</b> (${esc(c.classe || x.cohort)}) de la simulation.</p><p class="hint">Son compte est supprimé et les totaux de la cohorte baissent d'un étudiant. ${g ? `Il quitte « ${esc(g.name)} ». ` : ""}Les résultats déjà joués restent ceux de son groupe.</p>`, "Retirer l'étudiant", () => {
+      const warn = stuLeave(x); DB.students = DB.students.filter(y => y !== x);
+      stuLog("Étudiant retiré de la simulation", x, `Cohorte ${c.classe || x.cohort}`);
+      saveDB(); render(); toast(`${fullName(x)} est retiré de la simulation.${warn}`);
+    });
+  },
   "print-guide": () => window.print(),
   "tpl-csv": el => csvTemplate(el.dataset.kind),
   "import-cancel": () => { PENDING_IMPORT = null; render(); },
   "import-confirm": el => confirmImport(el.dataset.kind),
   "resend": el => toast(`Identifiants renvoyés à ${trainerById(el.dataset.id).email}.`),
   "add-trainer": () => {
-    const nom = $("tNom").value.trim(), pre = $("tPre").value.trim(), mail = $("tMail").value.trim();
-    if (!nom || !pre || !EMAIL_RE.test(mail)) return toast("Complète le nom, le prénom et une adresse e-mail valide.");
-    DB.trainers.push({id:"F-" + String(DB.trainers.length + 1).padStart(2, "0"), nom:nom.toUpperCase(), prenom:pre, campus:$("tCamp").value, email:mail});
-    saveDB(); render(); toast(`${pre} ${nom.toUpperCase()} est inscrit. Ses identifiants partent par e-mail.`);
+    const nom = upperNom($("tNom").value), pre = $("tPre").value.trim(), mail = $("tMail").value.trim();
+    if (!nom || !pre || !EMAIL_RE.test(mail)) return toast("Complétez le nom, le prénom et une adresse e-mail valide.");
+    if (mailTaken(mail)) return toast("Cette adresse e-mail est déjà inscrite.");
+    DB.trainers.push({id:"F-" + String(DB.trainers.length + 1).padStart(2, "0"), nom, prenom:pre, campus:$("tCamp").value, email:mail});
+    saveDB(); render(); toast(`Inscription de ${pre} ${nom} enregistrée. Ses identifiants partent par e-mail.`);
   },
-  "save-frame": () => { saveDB(); toast("Cadre national enregistré. Les formateurs et les étudiants voient les nouvelles dates."); },
+  "save-frame": () => { saveDB(); toast("Cadre enregistré. Les formateurs et les étudiants voient les nouvelles dates."); },
   "save-ret": () => { saveDB(); toast("Règles de conservation enregistrées."); },
   "export-all": () => { const rows = [["Identifiant", ...HEAD_STUDENTS, "Cohorte", "Groupe"]].concat(DB.students.map(s => [s.id, s.nom, s.prenom, s.classe, s.email, s.close, s.cohort, groupOf(s.id) ? groupOf(s.id).name : ""])); download(`coach-ia-export-${DB.year}.csv`, "﻿" + rows.map(r => r.join(";")).join("\r\n"), "text/csv;charset=utf-8"); },
-  "open-archive": () => toast("Archive 2025-2026 : consultation en lecture seule (résultats, livrables, classements). Démonstration."),
+  "open-archive": el => { A_ARCH = el.dataset.year; render(); window.scrollTo(0, 0); },
+  "close-archive": () => { A_ARCH = null; render(); },
   "validate-step": el => { DB.progress[el.dataset.g].steps[el.dataset.s] = "validé"; saveDB(); render(); toast("Étape validée. Le groupe la voit en vert dans son espace."); },
   "eval-step": el => { F_EV = {c:DB.groups.find(g => g.id === el.dataset.g).cohort, d:el.dataset.s, g:el.dataset.g}; go("f-eval"); },
+  "eval-reopen": () => {
+    const e = evalOf(F_EV.g, F_EV.d); if (!e) return;
+    e.done = false; (e.log = e.log || []).push({t:stamp(), by:fullName(trainerById(ME_TRAINER)), action:"Rouvert pour modification"});
+    if (DB.progress[F_EV.g]) DB.progress[F_EV.g].steps[F_EV.d] = "à venir";
+    saveDB(); render(); toast("Évaluation rouverte : le groupe ne voit plus la note tant que vous n'avez pas validé de nouveau.");
+  },
   "eval-save": el => {
+    const dep = (DB.deposits[F_EV.g] || {})[F_EV.d], cur = evalOf(F_EV.g, F_EV.d);
+    if (!dep && !(cur && cur.done)) return toast("Aucun dépôt à évaluer : le groupe n'a rien déposé pour ce livrable.");
     const r = rubric(F_EV.d), res = {}, pts = {};
     r.forEach(c => { const chk = $("main").querySelector(`[data-evres="${c.id}"]:checked`); if (chk) res[c.id] = chk.value; const v = $("main").querySelector(`[data-evpts="${c.id}"]`).value; if (v !== "") pts[c.id] = Math.min(+c.max, Math.max(0, +v)); });
     const done = !!el.dataset.done;
-    if (done && r.some(c => !res[c.id] || pts[c.id] == null)) return toast("Pour valider, renseigne l'ECF et les points de chaque critère.");
-    (DB.evals[F_EV.g] = DB.evals[F_EV.g] || {})[F_EV.d] = {res, pts, comment:$("evCom").value.trim(), by:ME_TRAINER, date:today(), done};
+    if (done && r.some(c => !res[c.id] || pts[c.id] == null)) return toast("Pour valider, renseignez l'ECF et les points de chaque critère.");
+    const log = ((cur && cur.log) || []).concat(done ? [{t:stamp(), by:fullName(trainerById(ME_TRAINER)), action:"Validé"}] : []);
+    (DB.evals[F_EV.g] = DB.evals[F_EV.g] || {})[F_EV.d] = {res, pts, comment:$("evCom").value.trim(), by:ME_TRAINER, date:today(), done, log};
     if (done) DB.progress[F_EV.g] = DB.progress[F_EV.g] || {pending:true, steps:{d1:"à venir", d2:"à venir", d3:"à venir"}, last:"jamais"}, DB.progress[F_EV.g].steps[F_EV.d] = "validé";
     saveDB(); render();
     const sc = evalScore(F_EV.g, F_EV.d);
@@ -1924,14 +2056,20 @@ const ACT = {
   },
   "export-cohort": el => exportCohort(el.dataset.c),
   "debrief": el => { F_DEB = el.dataset.c; go("f-debrief"); },
-  "rub-add": el => { const r = DB.rubrics[el.dataset.d]; r.push({id:"c" + Date.now().toString(36), bloc:BLOCS[1], label:"Nouveau critère", max:2}); saveDB(); render(); },
-  "rub-del": el => { DB.rubrics[el.dataset.d] = DB.rubrics[el.dataset.d].filter(c => c.id !== el.dataset.id); saveDB(); render(); },
+  "rub-add": el => { if (rubLocked(el.dataset.d)) return toast("Grille verrouillée : des notes sont déjà publiées."); const r = DB.rubrics[el.dataset.d]; r.push({id:"c" + Date.now().toString(36), bloc:BLOCS[1], label:"Nouveau critère", max:2}); saveDB(); render(); },
+  "rub-del": el => { if (rubLocked(el.dataset.d)) return toast("Grille verrouillée : des notes sont déjà publiées."); DB.rubrics[el.dataset.d] = DB.rubrics[el.dataset.d].filter(c => c.id !== el.dataset.id); saveDB(); render(); },
   "write-group": el => { F_TARGET = el.dataset.g; go("f-msg"); },
   "write-student": el => { F_TARGET = el.dataset.id; go("f-msg"); },
   "add-group": () => { const n = DB.groups.filter(g => g.cohort === F_COHORT).length + 1; DB.groups.push({id:"G" + Date.now().toString(36), cohort:F_COHORT, name:"Groupe " + n, members:[]}); saveDB(); render(); },
   "auto-groups": () => {
     const max = DB.settings.maxGroup, st = DB.students.filter(s => s.cohort === F_COHORT).map(s => s.id);
     if (!st.length) return toast("Aucun étudiant dans cette cohorte.");
+    const old = DB.groups.filter(g => g.cohort === F_COHORT);
+    if (old.some(g => DB.progress[g.id] || DB.evals[g.id] || DB.deposits[g.id])) return toast("Répartition automatique impossible : certains groupes ont déjà joué ou déposé. Ajustez-les à la main.");
+    if (old.some(g => g.members.length) && !ACT._okAuto){
+      confirmBox("Répartir automatiquement ?", `<p>Les ${old.length} groupes actuels de cette cohorte seront remplacés par une répartition automatique de ${etu(st.length)}.</p>`, "Remplacer les groupes", () => { ACT._okAuto = true; ACT["auto-groups"](); ACT._okAuto = false; });
+      return;
+    }
     DB.groups = DB.groups.filter(g => g.cohort !== F_COHORT);
     const nb = Math.ceil(st.length / max);
     for (let i = 0; i < nb; i++) DB.groups.push({id:"G" + Date.now().toString(36) + i, cohort:F_COHORT, name:"Groupe " + (i + 1), members:[]});
@@ -1943,27 +2081,46 @@ const ACT = {
   "reset-student": el => { const s = studentById(el.dataset.id); toast(`Un nouveau code est parti à l'adresse enregistrée de l'étudiant : ${s.email}. Vous ne le voyez pas.`); },
   "send-msg": () => {
     const title = $("mTitle").value.trim(), text = $("mText").value.trim();
-    if (!title || !text) return toast("Ajoute un titre et un message.");
+    if (!title || !text) return toast("Ajoutez un titre et un message.");
     DB.messages.push({id:Date.now(), from:ME_TRAINER, to:$("mTo").value, title, text, date:today(), mail:$("mMail").checked});
     F_TARGET = ""; saveDB(); render(); toast("Message envoyé. Il apparaît dans l'espace des étudiants concernés.");
   },
   "pick-tpl": el => { F_TPL = el.dataset.id; render(); },
   "ins-var": el => { const ta = $("tplBody"); const p = ta.selectionStart || ta.value.length; ta.value = ta.value.slice(0, p) + el.dataset.v + ta.value.slice(p); ta.focus(); },
-  "save-tpl": () => { const t = DB.templates.find(x => x.id === F_TPL); t.subject = $("tplSub").value; t.body = $("tplBody").value; saveDB(); toast("Modèle enregistré."); },
+  "save-tpl": () => { const t = DB.templates.find(x => x.id === F_TPL); if (!$("tplSub").value.trim() || !$("tplBody").value.trim()) return toast("L'objet et le texte du modèle ne peuvent pas être vides."); t.subject = $("tplSub").value.trim(); t.body = $("tplBody").value; saveDB(); toast("Modèle enregistré."); },
   "test-tpl": () => toast(`E-mail de test envoyé à ${trainerById(ME_TRAINER).email}.`),
-  "schedule": () => { DB.scheduled.push({id:"s" + Date.now(), template:$("sTpl").value, to:$("sTo").value, when:$("sWhen").value || "2026-12-10T18:00"}); saveDB(); render(); toast("Envoi programmé."); },
+  "schedule": () => {
+    const w = $("sWhen").value;
+    if (!w) return toast("Choisissez la date et l'heure de l'envoi.");
+    if (new Date(w) < new Date()) return toast("Cette date est déjà passée : choisissez une date à venir.");
+    DB.scheduled.push({id:"s" + Date.now(), template:$("sTpl").value, to:$("sTo").value, when:w}); DB.scheduled.sort((a, b) => a.when.localeCompare(b.when)); saveDB(); render(); toast("Envoi programmé."); },
   "unschedule": el => { DB.scheduled = DB.scheduled.filter(s => s.id !== el.dataset.id); saveDB(); render(); },
   "save-tasks": () => { saveDB(); toast("Tâches automatiques enregistrées."); },
   "recap-now": () => toast(`Récapitulatif d'avancement envoyé à ${trainerById(ME_TRAINER).email}.`),
 };
+function bindAdminActs(m){ m.querySelectorAll("[data-act]").forEach(b => b.onclick = e => { e.preventDefault(); const f = ACT[b.dataset.act]; if (f) f(b); }); }
 function bindAdmin(m){
+  const sq = m.querySelector("#stuQ"), sc = m.querySelector("#stuC");
+  if (sq){ const upd = () => { A_STU.q = sq.value; A_STU.cohort = sc.value; $("stuBody").innerHTML = stuRows(); typoFix($("stuBody")); const n = $("stuBody").querySelectorAll("tr[data-x],tr").length; bindAdminActs($("stuBody")); $("stuN").textContent = `${DB.students.filter(x => (!A_STU.cohort || x.cohort === A_STU.cohort) && (!A_STU.q.trim() || [x.nom, x.prenom, x.email].some(v => String(v).toLowerCase().includes(A_STU.q.trim().toLowerCase())))).length} sur ${DB.students.length} étudiants`; typoFix($("stuN")); }; sq.oninput = upd; sc.onchange = upd; upd(); }
   m.querySelectorAll("[data-act]").forEach(b => b.onclick = e => { e.preventDefault(); const f = ACT[b.dataset.act]; if (f) f(b); });
   m.querySelectorAll("[data-go]").forEach(b => b.onclick = () => go(b.dataset.go));
+  m.querySelectorAll("[data-deposit]").forEach(inp => inp.onchange = () => {
+    const f = inp.files[0]; if (!f) return; const g = groupOf(ME_STUDENT), did = inp.dataset.deposit;
+    if (!g) return toast("Tu n'as pas encore de groupe.");
+    if (f.size === 0) return toast("Ce fichier est vide : choisis-en un autre.");
+    if (f.size > 1048576) return toast("Ce fichier dépasse 1 Mo : réduis-le avant de le déposer.");
+    const rd = new FileReader();
+    rd.onload = () => { (DB.deposits[g.id] = DB.deposits[g.id] || {})[did] = {name:f.name, size:f.size, when:stamp(), data:String(rd.result)};
+      saveDB(); render(); toast(`Livrable déposé : ${f.name} (${fileKo(f.size)}). Ta formatrice le voit dans son espace.`); };
+    rd.readAsDataURL(f);
+  });
   m.querySelectorAll("[data-import]").forEach(inp => inp.onchange = () => {
     const f = inp.files[0]; if (!f) return; const kind = inp.dataset.import;
     const campus = $("impCampus") ? $("impCampus").value : "";
     const rd = new FileReader();
-    rd.onload = () => { PENDING_IMPORT = {kind, name:f.name, campus, res:checkImport(parseCSV(String(rd.result)), kind)}; render(); };
+    rd.onload = () => { const txt = String(rd.result);
+      const res = /\.xlsx?$/i.test(f.name) || txt.startsWith("PK") ? {ok:[], errors:[], headerError:"Ce fichier est un classeur Excel. Enregistrez-le d'abord au format CSV : « Fichier », « Enregistrer sous », puis un format « CSV UTF-8 »."} : checkImport(parseCSV(txt), kind);
+      PENDING_IMPORT = {kind, name:f.name, campus, res}; render(); };
     rd.readAsText(f, "utf-8");
   });
   m.querySelectorAll("[data-assign]").forEach(s => s.onchange = () => { cohortById(s.dataset.assign).trainer = s.value; saveDB(); toast(s.value ? "Cohorte attribuée." : "Cohorte libérée."); });
@@ -1979,7 +2136,15 @@ function bindAdmin(m){
     if (k === "maxGroup" && $("maxv")) $("maxv").textContent = el.value; else render();
     saveDB();
   });
-  m.querySelectorAll("[data-deadline]").forEach(el => el.onchange = () => { DB.deadlines.find(d => d.id === el.dataset.deadline).date = el.value; saveDB(); });
+  m.querySelectorAll("[data-deadline]").forEach(el => el.onchange = () => {
+    const k = DB.deadlines.findIndex(d => d.id === el.dataset.deadline), prev = DB.deadlines[k - 1], next = DB.deadlines[k + 1], v = el.value;
+    let err = "";
+    if (!v) err = "La date ne peut pas être vide.";
+    else if (v < todayISO()) err = "La date est déjà passée.";
+    else if (prev && v < prev.date) err = `La date doit venir après « ${prev.label} » (${fmtDate(prev.date)}).`;
+    else if (next && v > next.date) err = `La date doit venir avant « ${next.label} » (${fmtDate(next.date)}).`;
+    if (err){ toast(err); render(); return; }
+    DB.deadlines[k].date = v; saveDB(); render(); });
   m.querySelectorAll("[data-chal]").forEach(el => el.onchange = () => { const k = el.dataset.chal; DB.challenge[k] = el.type === "checkbox" ? el.checked : el.value; saveDB(); if (k === "on") toast(el.checked ? "Challenge national activé." : "Challenge national désactivé."); });
   m.querySelectorAll("[data-chalcamp]").forEach(el => el.onchange = () => { const c = el.dataset.chalcamp; DB.challenge.campuses = el.checked ? DB.challenge.campuses.concat(c) : DB.challenge.campuses.filter(x => x !== c); saveDB(); render(); });
   m.querySelectorAll("[data-ret]").forEach(el => el.onchange = () => { DB.retention[el.dataset.ret] = el.value; });
@@ -1996,9 +2161,18 @@ function bindAdmin(m){
   if ($("evD")) $("evD").onchange = e => { F_EV.d = e.target.value; render(); };
   if ($("evG")) $("evG").onchange = e => { F_EV.g = e.target.value; render(); };
   m.querySelectorAll("[data-evres], [data-evpts]").forEach(el => el.oninput = el.onchange = evalLive);
+  m.querySelectorAll("[data-evpts]").forEach(el => el.addEventListener("change", () => {
+    const max = +el.max, v = el.value === "" ? null : Number(el.value); if (v == null) return;
+    const ok = isFinite(v) ? Math.min(max, Math.max(0, v)) : 0;
+    if (ok !== v){ el.value = ok; toast(`Points ramenés à ${String(ok).replace(".", ",")} : ce critère va de 0 à ${max}.`); evalLive(); } }));
   evalLive();
   if ($("rubD")) $("rubD").onchange = e => { A_RUB = e.target.value; render(); };
-  m.querySelectorAll("[data-rub]").forEach(el => el.onchange = () => { const [d, id, k] = el.dataset.rub.split("|"); const c = DB.rubrics[d].find(x => x.id === id); c[k] = k === "max" ? Math.max(0, +el.value || 0) : el.value; saveDB(); });
+  m.querySelectorAll("[data-rub]").forEach(el => el.onchange = () => { const [d, id, k] = el.dataset.rub.split("|"); const c = DB.rubrics[d].find(x => x.id === id);
+    if (rubLocked(d)){ render(); return; }
+    if (k === "max"){ const v = Number(el.value); if (el.value.trim() === "" || !isFinite(v) || v < 0 || v > 20){ toast("Les points d'un critère vont de 0 à 20."); render(); return; } c.max = v; }
+    else if (k === "label"){ if (!el.value.trim()){ toast("Le libellé du critère ne peut pas être vide."); render(); return; } c.label = el.value.trim(); }
+    else c[k] = el.value;
+    saveDB(); render(); });
   if ($("fIndCoh")) $("fIndCoh").onchange = e => { F_IND = e.target.value; render(); };
   if ($("fCoh")) $("fCoh").onchange = e => { F_COHORT = e.target.value; render(); };
   if ($("tQ")){ const q = $("tQ"); q.oninput = () => { T_Q = q.value; const pos = q.selectionStart; render(); const n = $("tQ"); n.focus(); n.setSelectionRange(pos, pos); }; }
@@ -2099,13 +2273,23 @@ const visibleAnnounces = () => ANNOUNCES.filter(a => played() >= a.at).map(a => 
 const unreadAnnounces = () => Math.max(0, visibleAnnounces().length - G.readMsgs);
 
 let G;
+function saveGame(){
+  try{ store.set("coachia-game", JSON.stringify({caseId:DB.settings.caseId, G:{...G, visited:[...G.visited]}})); }catch(e){}
+}
+function loadGame(){
+  try{
+    const x = JSON.parse(store.get("coachia-game") || "null");
+    if (!x || x.caseId !== DB.settings.caseId || !x.G || !Array.isArray(x.G.history) || !x.G.history.length) return;
+    G = x.G; G.visited = new Set(G.visited || []); G.q = G.q || {};
+  }catch(e){}
+}
 function newGame(){
   G = {state:clone(INITIAL_STATE), history:[], draft:null, view:"dash", planTab:null, bilanTab:null, bilanIdx:0, visited:new Set(), chat:[], unread:0, notes:{}, readMsgs:0};
   const {r, next} = simulatePeriod(G.state, DEFAULT_DECISION, 0);
   G.history.push({r, forecast:null});
   G.state = next;
   G.draft = nextDraft(DEFAULT_DECISION);
-  G.bilanIdx = 0;
+  G.bilanIdx = 0; G.q = {};
 }
 /* Changement d'étude de cas : le moteur est rechargé en place, la partie repart du T1 */
 function scenarioChanged(id){
@@ -2138,14 +2322,26 @@ function renderNav(){
     : `<span>Trimestre à préparer</span><b>${S.periods[n]} · ${S.periodLabels[n]}</b>`;
   $("periodBox").innerHTML += `<div class="dots">${S.periods.map((p, i) => `<i class="${i < n ? "done" : (i === n ? "now" : "")}" title="${p}"></i>`).join("")}</div>` + "";
 }
+let NOPUSH = false;
 function go(view, tab){
   G.view = view;
   if (view === "msg") G.readMsgs = visibleAnnounces().length;
   if (view === "plan" && tab) G.planTab = tab === "__home" ? null : tab;
   if (view === "bilan" && tab) G.bilanTab = tab === "__home" ? null : tab;
+  const h = "#" + view + (view === "plan" && G.planTab ? "/" + G.planTab : view === "bilan" && G.bilanTab ? "/" + G.bilanTab : "");
+  if (!NOPUSH && location.hash !== h){ try{ history.pushState({}, "", h); }catch(e){} }
   render();
   window.scrollTo(0, 0);
 }
+window.addEventListener("popstate", () => {
+  const h = location.hash.replace(/^#\/?/, "");
+  if (!h || h === "entree"){ if ($("login").classList.contains("hide")){ store.del("coachia-role"); closeCoach(); $("login").classList.remove("hide"); } return; }
+  const [v, t] = h.split("/");
+  const okView = navList().some(x => x.id === v) || (ROLE === "formateur" && v === "f-debrief") || ["dash", "plan", "bilan", "cal", "msg", "res"].includes(v) && ROLE === "etudiant";
+  if (!okView) return;
+  if ($("login").classList.contains("hide") === false){ $("login").classList.add("hide"); store.set("coachia-role", ROLE); }
+  NOPUSH = true; go(v, t || "__home"); NOPUSH = false;
+});
 function render(){
   renderNav();
   const views = {dash:viewDash, plan:viewPlan, bilan:viewBilan, cal:viewCal, msg:viewMsg, res:viewRes, ...ADMIN_VIEWS};
@@ -2153,25 +2349,30 @@ function render(){
   if (!navList().some(x => x.id === G.view) && !hidden.includes(G.view)) G.view = navList()[0].id;
   $("roleChip").innerHTML = `<span>${ROLE_LABEL[ROLE]}</span><button id="roleSwitch">Changer de rôle</button>`;
   $("roleSwitch").onclick = logout;
-  $("main").innerHTML = views[G.view]() + `<footer class="credit"><span>Démonstration</span><span>© 2026 Pierrick Briand. Tous droits réservés.</span></footer>`;
+  $("main").innerHTML = views[G.view]() + `<footer class="credit"><span>Démonstration · version ${VERSION}</span><span>© 2026 Pierrick Briand. Tous droits réservés.</span></footer>`;
   bindView();
   bindAdmin($("main"));
+  updateQ(); saveGame();
   if (window.hideHelp) window.hideHelp();
   applyHelp($("main"));
   typoFix($("main"));
 }
 /* Typographie française : espace insécable avant : et », fine insécable avant ; ? ! */
+function typoStr(v){
+  v = neutre(v);
+  v = v.replace(/'/g, "\u2019").replace(/\.\.\./g, "\u2026").replace(/(^|[\s(\u00ab])-(?=\d)/g, "$1\u2212");
+  return v.replace(/ ([:\u00bb])/g, "\u00a0$1").replace(/ ([;?!])/g, "\u202f$1").replace(/\u00ab /g, "\u00ab\u00a0");
+}
 function typoFix(root){
   if (!root) return;
   const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   let n;
   while ((n = w.nextNode())){
     if (n.parentElement.closest("textarea, script, style, code")) continue;
-    let v = n.nodeValue;
-    { const w2 = neutre(v); if (w2 !== v){ v = w2; n.nodeValue = v; } }
-    if (!/ [:;?!»]|« /.test(v)) continue;
-    n.nodeValue = v.replace(/ ([:»])/g, "\u00a0$1").replace(/ ([;?!])/g, "\u202f$1").replace(/« /g, "«\u00a0");
+    const v = n.nodeValue, t = typoStr(v);
+    if (t !== v) n.nodeValue = t;
   }
+  if (root.querySelectorAll) root.querySelectorAll("[placeholder],[title],[aria-label]").forEach(e => ["placeholder", "title", "aria-label"].forEach(k => { const v = e.getAttribute(k); if (v){ const t = typoStr(v); if (t !== v) e.setAttribute(k, t); } }));
 }
 function tabsHtml(list, current, key){
   return `<div class="tabs" role="tablist">${list.map(([id, label]) => `<button role="tab" aria-selected="${id === current}" class="${id === current ? "on" : ""}" data-${key}="${id}">${label}${key === "ptab" && G.visited.has(id) && id !== current ? '<span class="ok">✓</span>' : ""}</button>`).join("")}</div>`;
@@ -2189,7 +2390,7 @@ function viewDash(){
   const n = played();
   const ev = finished() ? null : S.events[n];
   const kpis = [
-    ["Résultat cumulé", eur.format(r.cumResult), `<em>depuis la reprise</em>`],
+    ["Résultat cumulé", eur.format(r.cumResult), `<em>${played() > 1 ? "T1 de l'ancien gérant compris" : "T1 joué par l'ancien gérant"}</em>`],
     ["Résultat " + S.periods[n - 1], `<span class="${r.result >= 0 ? "up" : "down"}">${eur.format(r.result)}</span>`, delta(r.result, p && p.result, eur.format)],
     ["Chiffre d'affaires", eur.format(r.ca), delta(r.ca, p && p.ca, eur.format)],
     ["Part de marché", pct(r.marketShare), delta(r.marketShare * 100, p && p.marketShare * 100, v => dec1.format(v) + " pt")],
@@ -2426,6 +2627,8 @@ function derivedInvest(){
 function alertsFor(f){
   const a = [];
   if (f.result < 0) a.push(["bad", `Résultat prévu négatif : ${eur.format(f.result)}.`]);
+  const up = (S.events[played()].costUp) || {};
+  S.categories.forEach(c => { const p = G.draft.price[c.id], cost = c.cost * (up[c.id] || 1); if (p < cost) a.push(["bad", `${c.name} : vente à perte, le prix (${eur.format(p)}) est sous le coût (${eur.format(cost)}).`]); });
   if (f.overdraft > 0) a.push(["bad", `Trésorerie insuffisante : découvert prévu de ${eur.format(f.overdraft)}.`]);
   STOCK_CATS.forEach(c => { const x = f.cats[c.id]; if (x.lostStock > 0) a.push(["warn", `${c.name} : rupture probable de ${num.format(x.lostStock)} ${c.unit}.`]); else if (x.stockEnd > x.sales * 0.6 && x.stockEnd > 40) a.push(["warn", `${c.name} : il resterait ${num.format(x.stockEnd)} ${c.unit} en stock : de la trésorerie immobilisée et 3 % de frais de stock par trimestre.`]); });
   if (f.lostStaff > 0) a.push(["warn", `Équipe trop juste : ${num.format(f.lostStaff)} ventes perdues faute de personnel.`]);
@@ -2572,19 +2775,21 @@ function bClassement(r, p, f, i){
   const rows = rankingRows(i);
   return `<section class="card"><h2>Classement après le ${S.periods[i]}</h2><div class="tablebox"><table><thead><tr><th>Rang</th><th>Magasin</th><th>Résultat cumulé</th><th>Résultat du trimestre</th><th>Chiffre d'affaires</th><th>Part de marché</th></tr></thead><tbody>
   ${rows.map((x, k) => `<tr class="${x.me ? "me" : ""}"><td>${k + 1}</td><td style="text-align:left">${x.name}</td><td>${eur.format(x.cum)}</td><td>${eur.format(x.res)}</td><td>${eur.format(x.ca)}</td><td>${pct(x.share)}</td></tr>`).join("")}
-  </tbody></table></div><p class="hint">Critère de classement : le résultat cumulé depuis la reprise. Dans la version complète, chaque ligne est une équipe de ta classe.</p></section>`;
+  </tbody></table></div><p class="hint">Critère de classement : le résultat cumulé, T1 de l'ancien gérant compris. Dans la version complète, chaque ligne est une équipe de ta classe.</p></section>`;
 }
 
 /* ----- Calendrier et ressources ----- */
 function viewCal(){
-  const n = played();
-  const deliverables = {0:"Note de diagnostic du magasin", 2:"Point d'étape stratégique", 5:"Rapport final et soutenance"};
-  return `<div class="top"><div><h1>Calendrier de la session</h1><p>Dans la version complète, l'administrateur de l'école fixe une date limite par trimestre. Les décisions sont alors verrouillées et calculées pour toutes les équipes.</p></div></div>
-  <section class="card"><div class="tablebox"><table><thead><tr><th>Trimestre</th><th>Période</th><th>Événement</th><th>Statut</th><th>Résultat</th><th>Livrable proposé</th></tr></thead><tbody>
-  ${S.periods.map((pp, i) => `<tr><td><b>${pp}</b></td><td>${S.periodLabels[i]}</td><td style="text-align:left;white-space:normal">${i <= n ? S.events[i].title : "<em>à découvrir</em>"}</td>
-  <td>${i < n ? '<span class="pill ok">joué</span>' : (i === n ? '<span class="pill warn">en préparation</span>' : '<span class="pill">à venir</span>')}</td>
-  <td>${i < n ? eur.format(G.history[i].r.result) : "–"}</td><td style="text-align:left;white-space:normal">${deliverables[i] ? deliverables[i] + ` (après le ${pp})` : ""}</td></tr>`).join("")}
-  </tbody></table></div><p class="hint">Les livrables sont des propositions : ils s'adaptent au référentiel de chaque formation.</p></section>`;
+  const n = played(), t = todayISO();
+  return `<div class="top"><div><h1>Calendrier de la session</h1><p>Les dates sont fixées par l'administrateur de l'école. Les décisions d'un trimestre se verrouillent à sa date limite.</p></div></div>
+  <section class="card"><div class="tablebox"><table><thead><tr><th style="text-align:left">Échéance</th><th>Date limite</th><th>Statut</th></tr></thead><tbody>
+  ${DB.deadlines.slice().sort((x, y) => x.date.localeCompare(y.date)).map(d => {
+    let st;
+    if (d.deliv){ const g = groupOf(ME_STUDENT), v = g && DB.progress[g.id] ? DB.progress[g.id].steps[d.id] : "à venir", dep = g && (DB.deposits[g.id] || {})[d.id];
+      st = v === "validé" ? '<span class="pill ok">validé</span>' : dep ? '<span class="pill warn">déposé</span>' : (d.date < t ? '<span class="pill bad">en retard</span>' : '<span class="pill">à venir</span>'); }
+    else { const k = +d.id.slice(1); st = k <= n ? '<span class="pill ok">joué</span>' : k === n + 1 ? '<span class="pill warn">en préparation</span>' : '<span class="pill">à venir</span>'; }
+    return `<tr><td style="text-align:left">${esc(d.label)}</td><td>${fmtDate(d.date)}</td><td>${st}</td></tr>`; }).join("")}
+  </tbody></table></div><p class="hint">Le T1 a été joué par l'ancien gérant du magasin.</p></section>`;
 }
 function viewMsg(){
   const list = visibleAnnounces().slice().reverse();
@@ -2645,6 +2850,7 @@ function refreshDerived(){
   const box = $("derived"); if (!box || G.view !== "plan") return;
   const fn = {offre:derivedOffre, stocks:derivedStocks, comm:derivedComm, equipe:derivedEquipe, invest:derivedInvest}[G.planTab];
   if (fn) box.innerHTML = fn();
+  saveGame();
 }
 function bindView(){
   const m = $("main");
@@ -2653,13 +2859,24 @@ function bindView(){
   m.querySelectorAll("[data-goplan]").forEach(b => b.onclick = () => go("plan", b.dataset.goplan));
   m.querySelectorAll("[data-opencoach]").forEach(b => b.onclick = openCoach);
   m.querySelectorAll("[data-nextplan]").forEach(b => b.onclick = () => { const k = PLAN_TABS.findIndex(t => t[0] === G.planTab); go("plan", PLAN_TABS[Math.min(k + 1, PLAN_TABS.length - 1)][0]); });
-  m.querySelectorAll("[data-price]").forEach(el => el.oninput = () => { const v = Math.max(1, +el.value || 1); G.draft.price[el.dataset.price] = v; refreshDerived(); });
+  m.querySelectorAll("[data-price]").forEach(el => {
+    const cat = S.categories.find(c => c.id === el.dataset.price), ref = avgCompPrice(cat), lo = Math.max(1, Math.ceil(ref * 0.3)), hi = Math.floor(ref * 3);
+    el.min = lo; el.max = hi;
+    el.oninput = () => { const v = +el.value; if (isFinite(v) && v >= lo && v <= hi){ G.draft.price[cat.id] = v; refreshDerived(); } };
+    el.onchange = () => {
+      const raw = el.value.trim(), v = Number(raw); let ok = v;
+      if (raw === "" || !isFinite(v) || v <= 0){ ok = G.draft.price[cat.id]; toast(`Prix non valide : saisissez un nombre positif. Le prix reste à ${eur.format(ok)}.`); }
+      else if (v < lo){ ok = lo; toast(`Prix trop bas : le minimum accepté est ${eur.format(lo)} (30 % du prix de référence).`); }
+      else if (v > hi){ ok = hi; toast(`Prix trop haut : le maximum accepté est ${eur.format(hi)} (3 fois le prix de référence).`); }
+      el.value = ok; G.draft.price[cat.id] = ok; refreshDerived();
+    };
+  });
   m.querySelectorAll("[data-order]").forEach(el => el.oninput = () => { G.draft.order[el.dataset.order] = Math.max(0, Math.round(+el.value || 0)); refreshDerived(); });
   m.querySelectorAll("[data-comm]").forEach(el => el.oninput = () => { G.draft.comm[el.dataset.comm] = +el.value; refreshDerived(); });
   m.querySelectorAll("[data-staff]").forEach(el => el.oninput = () => { G.draft.staff[el.dataset.staff] = +el.value; refreshDerived(); });
   m.querySelectorAll("[data-invest]").forEach(el => el.onchange = () => { const id = el.dataset.invest; G.draft.invest = el.checked ? G.draft.invest.concat(id) : G.draft.invest.filter(x => x !== id); refreshDerived(); });
   m.querySelectorAll("[data-loan]").forEach(el => el.oninput = () => { G.draft.loan = Math.max(-G.state.loan, Math.round(+el.value || 0)); refreshDerived(); });
-  m.querySelectorAll("[data-note]").forEach(el => el.oninput = () => { G.notes[+el.dataset.note] = el.value.trim(); });
+  m.querySelectorAll("[data-note]").forEach(el => el.oninput = () => { G.notes[+el.dataset.note] = el.value.trim(); saveGame(); });
   m.querySelectorAll("[data-bilan-t1]").forEach(b => b.onclick = () => { G.bilanIdx = 0; G.bilanTab = null; go("bilan"); });
   m.querySelectorAll("[data-view-go]").forEach(b => b.onclick = () => go(b.dataset.viewGo));
   if ($("bilanSel")) $("bilanSel").onchange = e => { G.bilanIdx = +e.target.value; render(); };
@@ -2743,14 +2960,16 @@ let sampleFn = null;
 function setMode(on){ $("mode").textContent = on ? "Coach IA connecté" : "Analyses préprogrammées"; $("mode").className = "pill" + (on ? " ok" : ""); }
 function openCoach(){ $("drawer").classList.add("open"); $("coachFab").setAttribute("aria-expanded", "true"); G.unread = 0; updateBadge(); setTimeout(() => $("ask").focus(), 50); }
 function closeCoach(){ $("drawer").classList.remove("open"); $("coachFab").setAttribute("aria-expanded", "false"); $("coachFab").focus(); }
+const qUsed = () => (G.q || (G.q = {}))[played()] || 0;
+function updateQ(){ const e = $("qCount"); if (e){ e.textContent = `${qUsed()}/${DB.api.capStudent} questions`; e.className = "pill" + (qUsed() >= DB.api.capStudent ? " bad" : (qUsed() >= DB.api.capStudent - 5 ? " warn" : "")); } }
 function updateBadge(){ const b = $("coachBadge"); b.textContent = G.unread; b.classList.toggle("show", G.unread > 0); }
-function addMsg(role, text){
+function addMsg(role, text, noPush){
   const el = document.createElement("div");
   el.className = "msg " + (role === "assistant" ? "coach" : "me");
   el.innerHTML = `<span class="who">${role === "assistant" ? "Coach" : "Toi"}</span>`;
   const body = document.createElement("span"); body.textContent = text; el.appendChild(body);
   $("thread").appendChild(el); typoFix(el); $("thread").scrollTop = $("thread").scrollHeight;
-  G.chat.push({role, content:text});
+  if (!noPush){ G.chat.push({role, content:text}); saveGame(); }
   return {body, idx:G.chat.length - 1};
 }
 function coachSay(text, notify){
@@ -2759,8 +2978,8 @@ function coachSay(text, notify){
 }
 function renderChips(){
   const keys = ["Comment lire mon bilan ?", "Comment fixer mes prix ?", "Combien commander ?", "Pourquoi ma trésorerie bouge ?", "Que font mes concurrents ?"];
-  $("chips").innerHTML = keys.map(k => `<button type="button" class="chip">${k}</button>`).join("");
-  $("chips").querySelectorAll(".chip").forEach(b => b.onclick = () => ask(b.textContent));
+  $("chips").innerHTML = keys.map(k => `<button type="button" class="chip" data-q="${k}">${k}</button>`).join(""); typoFix($("chips"));
+  $("chips").querySelectorAll(".chip").forEach(b => b.onclick = () => ask(b.dataset.q));
 }
 function contextForAI(){
   const hist = G.history.map((h, i) => ({trimestre:S.periods[i], evenement:S.events[i].title, strategie_annoncee:G.notes[i] || null, decisions:h.r.decision,
@@ -2783,6 +3002,11 @@ const sysPrompt = () => `Tu es le coach IA d'une simulation de gestion d'une ${S
 - typographie française : guillemets « », espace avant : ; ! ?, pas de tiret cadratin, pas de markdown.`;
 async function ask(q){
   if (!q.trim()) return;
+  if (qUsed() >= DB.api.capStudent){
+    coachSay(`Tu as posé tes ${DB.api.capStudent} questions de ce trimestre. Le compteur repart à zéro au trimestre suivant. D'ici là, relis ton bilan et note tes questions pour ta formatrice.`);
+    updateQ(); return;
+  }
+  G.q[played()] = qUsed() + 1; updateQ();
   addMsg("user", q);
   const c = canned(q);
   if (!sampleFn){ coachSay(c || "Dans cette maquette, le coach connecté à l'IA répond librement. Ici, il fonctionne en mode démonstration : utilise les questions proposées ou le bouton « Demander l'avis du coach » dans la synthèse."); return; }
@@ -2799,6 +3023,11 @@ async function ask(q){
     body.textContent = fb; G.chat[idx].content = fb;
     if (e && e.code === "not_granted"){ sampleFn = null; setMode(false); }
   }
+}
+function restoreChat(){
+  $("thread").innerHTML = "";
+  G.chat.forEach(m => addMsg(m.role, m.content, true));
+  updateBadge();
 }
 function welcome(){
   coachSay(`Bienvenue chez ${S.store}. Je t'accompagne pendant les six trimestres. Je ne donne pas les réponses : je t'aide à lire tes chiffres et à justifier tes choix.\n\nPremier constat sur le ${S.periods[0]}, joué par l'ancien gérant : ` + diagnose(0));
@@ -2818,26 +3047,22 @@ function setRole(r){
 function unlock(role){
   setRole(role || "etudiant");
   $("login").classList.add("hide");
-  try{ sessionStorage.setItem("coachia-role", ROLE); }catch(e){}
+  store.set("coachia-role", ROLE);
   render();
+  try{ history.pushState({}, "", "#" + G.view); }catch(e){}
 }
 function logout(){
-  try{ sessionStorage.removeItem("coachia-role"); }catch(e){}
+  store.del("coachia-role");
   closeCoach();
+  try{ history.pushState({}, "", "#entree"); }catch(e){}
   $("login").classList.remove("hide");
   const c = document.querySelector("[data-enter]"); if (c) c.focus();
 }
-/* Remise à zéro complète de la démonstration (rien n'est stocké ailleurs que dans l'onglet) */
+/* Remise à zéro complète de la démonstration : les données vivent dans ce navigateur, le rechargement repart d'une base neuve */
 function resetDemo(){
-  try{ sessionStorage.removeItem("coachia-db"); sessionStorage.removeItem("coachia-role"); }catch(e){}
-  DB = neutreDB(defaultDB()); saveDB();
-  applyScenario(DB.settings.caseId); STOCK_CATS = S.categories.filter(c => c.stock);
-  PENDING_IMPORT = null; F_COHORT = null; F_TARGET = ""; F_TPL = "t1"; T_Q = "";
-  closeCoach(); $("thread").innerHTML = "";
-  newGame(); welcome();
-  setRole("etudiant");
-  $("resetMsg").textContent = "La démonstration est remise à zéro : toutes les données d'essai ont été effacées.";
-  $("resetBtn").textContent = "Remettre la démonstration à zéro"; $("resetBtn").dataset.confirm = "";
+  ["coachia-db", "coachia-game", "coachia-role"].forEach(k => store.del(k));
+  store.set("coachia-flash", "La démonstration est remise à zéro : toutes les données d'essai ont été effacées.");
+  location.reload();
 }
 $("resetBtn").onclick = () => {
   const b = $("resetBtn");
@@ -2852,10 +3077,13 @@ document.title = ORG.app + " · Démonstration";
 document.documentElement.classList.toggle("avec-logo", getComputedStyle(document.documentElement).getPropertyValue("--client-logo").trim() !== "none");
 $("brandOrg").textContent = ORG.nom === "Démonstration" ? "Coach IA · simulation" : ORG.nom + " · simulation";
 
+typoFix($("login")); typoFix($("drawer"));
 newGame();
+loadGame();
 renderChips();
-welcome();
-try{ const r = sessionStorage.getItem("coachia-role"); if (r && ADMIN_NAV[r] || r === "etudiant"){ setRole(r); $("login").classList.add("hide"); } }catch(e){}
+if (G.chat.length) restoreChat(); else welcome();
+{ const r = store.get("coachia-role"), hv = location.hash.replace(/^#\/?/, "").split("/")[0], v = hv || G.view; if (r && (ADMIN_NAV[r] || r === "etudiant")){ setRole(r); if (navList().some(x => x.id === v) || (r === "formateur" && v === "f-debrief")) G.view = v; $("login").classList.add("hide"); } }
+{ const fl = store.get("coachia-flash"); if (fl){ store.del("coachia-flash"); $("resetMsg").textContent = fl; } }
 document.body.dataset.role = ROLE;
 render();
 
