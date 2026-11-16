@@ -362,6 +362,7 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 #form-demo .champ{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:6px}
 #form-demo label{font-size:.8125rem;font-weight:600;color:var(--encre)}
 #form-demo .facultatif{font-weight:400;color:var(--texte)}
+#form-demo .champ input{flex:none}
 #form-demo input[type=text],#form-demo input[type=email]{width:100%;box-sizing:border-box;border:1px solid #AEB9CF;border-radius:16px;padding:12px 18px;background:#fff;font-family:inherit;font-size:.9375rem;color:var(--encre)}
 #form-demo input:focus{outline:2px solid var(--turquoise);outline-offset:1px}
 #form-demo .case{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:.8125rem;color:var(--texte)}
