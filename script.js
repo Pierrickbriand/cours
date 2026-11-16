@@ -218,14 +218,19 @@
     const erreur = $('#dm-erreur');
     const merci = $('#dm-merci');
     const bouton = $('button[type="submit"]', form);
+    let enCours = false;
+    const libelle = bouton.textContent;
     form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
+      if (enCours) return;
       const prenom = $('#dm-prenom').value.trim(), nom = $('#dm-nom').value.trim(), orga = $('#dm-orga').value.trim(), mail = $('#dm-mail').value.trim();
       erreur.textContent = '';
       if (!prenom || !nom) { erreur.textContent = 'Indiquez votre prénom et votre nom.'; return; }
       if (!emailValide(mail)) { erreur.textContent = 'Indiquez une adresse e-mail valide.'; $('#dm-mail').focus(); return; }
       if (!$('#dm-accord').checked) { erreur.textContent = 'Cochez la case pour recevoir votre accès.'; return; }
+      enCours = true;
       bouton.disabled = true;
+      bouton.textContent = 'Envoi en cours…';
       let rep = null;
       try {
         const r = await fetch(CONFIG.endpoint, {
@@ -235,10 +240,19 @@
         });
         rep = await r.json();
       } catch (e) { rep = null; }
+      enCours = false;
       bouton.disabled = false;
+      bouton.textContent = libelle;
       if (rep && rep.ok) {
-        merci.textContent = 'Merci. Votre accès arrive par e-mail dans quelques minutes. Pensez à regarder vos courriers indésirables.';
+        merci.textContent = '';
+        const t = document.createElement('strong'); t.textContent = 'Votre accès est en route';
+        const p1 = document.createElement('p'); p1.textContent = 'Un e-mail vient d’être envoyé à ' + mail + '. Il contient le lien, votre adresse et votre code. Comptez quelques minutes.';
+        const p2 = document.createElement('p'); p2.textContent = 'Rien reçu ? Regardez vos courriers indésirables. Après dix minutes, écrivez-moi : ' + CONFIG.email + '.';
+        merci.append(t, p1, p2);
         merci.hidden = false;
+        form.classList.add('envoye');
+        enCours = true; // une seule demande par visite
+        merci.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         return;
       }
       const err = rep && rep.err;

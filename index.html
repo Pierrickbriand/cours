@@ -336,23 +336,23 @@
         </div>
         <form class="guide-formulaire" id="form-demo" novalidate>
           <div class="champ-ligne">
-            <label class="sr-only" for="dm-prenom">Votre prénom</label>
-            <input id="dm-prenom" name="prenom" type="text" autocomplete="given-name" placeholder="Votre prénom" required>
-            <label class="sr-only" for="dm-nom">Votre nom</label>
-            <input id="dm-nom" name="nom" type="text" autocomplete="family-name" placeholder="Votre nom" required>
+            <div class="champ"><label for="dm-prenom">Prénom</label>
+            <input id="dm-prenom" name="prenom" type="text" autocomplete="given-name" placeholder="Camille" required></div>
+            <div class="champ"><label for="dm-nom">Nom</label>
+            <input id="dm-nom" name="nom" type="text" autocomplete="family-name" placeholder="Martin" required></div>
           </div>
           <div class="champ-ligne">
-            <label class="sr-only" for="dm-orga">Votre organisme</label>
-            <input id="dm-orga" name="organisme" type="text" autocomplete="organization" placeholder="Votre organisme (facultatif)">
-            <label class="sr-only" for="dm-mail">Votre adresse e-mail</label>
-            <input id="dm-mail" name="email" type="email" autocomplete="email" placeholder="Votre adresse e-mail" required>
+            <div class="champ"><label for="dm-orga">Organisme <span class="facultatif">(facultatif)</span></label>
+            <input id="dm-orga" name="organisme" type="text" autocomplete="organization" placeholder="Nom de votre école ou de votre centre"></div>
+            <div class="champ"><label for="dm-mail">Adresse e-mail professionnelle</label>
+            <input id="dm-mail" name="email" type="email" autocomplete="email" placeholder="prenom.nom@organisme.fr" required></div>
           </div>
           <input id="dm-piege" name="site" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-          <label class="mention" style="display:flex;gap:8px;align-items:flex-start"><input id="dm-accord" type="checkbox" style="margin-top:3px"><span>J'accepte de recevoir mon accès par e-mail et d'être recontacté au sujet de la démonstration.</span></label>
+          <label class="mention case" for="dm-accord"><input id="dm-accord" type="checkbox"><span>J'accepte de recevoir mon accès par e-mail et d'être recontacté au sujet de la démonstration.</span></label>
           <button class="bouton bouton-turquoise" type="submit">Recevoir mon accès</button>
           <p class="erreur" id="dm-erreur" role="alert"></p>
-          <p class="confirmation" id="dm-merci" hidden></p>
-          <p class="mention">Vos données servent à vous envoyer l'accès et à vous recontacter au sujet de la démonstration. Elles sont conservées 12&nbsp;mois au plus et effacées sur simple demande, par e-mail. <a href="mentions.html#donnees">Vos données</a>.</p>
+          <div class="demo-ok" id="dm-merci" role="status" aria-live="polite" hidden></div>
+          <p class="mention" id="dm-mention">Vos données servent à vous envoyer l'accès et à vous recontacter au sujet de la démonstration. Elles sont conservées 12&nbsp;mois au plus et effacées sur simple demande, par e-mail. <a href="mentions.html#donnees">Vos données</a>.</p>
         </form>
       </div>
     </section>

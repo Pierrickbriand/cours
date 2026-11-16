@@ -356,3 +356,18 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .connexion .liste-cours{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:0 0 24px;padding:0;list-style:none}
 .connexion .liste-cours a{display:block;background:#fff;border-left:4px solid var(--turquoise);border-radius:16px;padding:16px;color:var(--marine);font-weight:500;text-decoration:none}
 .connexion .liste-cours a:hover{background:#F5F6FA}
+
+/* formulaire de démonstration : champs libellés, envoi unique, confirmation */
+#form-demo{gap:12px}
+#form-demo .champ{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:6px}
+#form-demo label{font-size:.8125rem;font-weight:600;color:var(--encre)}
+#form-demo .facultatif{font-weight:400;color:var(--texte)}
+#form-demo input[type=text],#form-demo input[type=email]{width:100%;box-sizing:border-box;border:1px solid #AEB9CF;border-radius:16px;padding:12px 18px;background:#fff;font-family:inherit;font-size:.9375rem;color:var(--encre)}
+#form-demo input:focus{outline:2px solid var(--turquoise);outline-offset:1px}
+#form-demo .case{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:.8125rem;color:var(--texte)}
+#form-demo .case input{margin-top:2px;flex:none;width:18px;height:18px;accent-color:var(--turquoise)}
+#form-demo button[disabled]{opacity:.7;cursor:progress}
+#form-demo .demo-ok{background:#fff;border:1px solid #9BD3CC;border-left:6px solid var(--turquoise);border-radius:16px;padding:18px 20px;color:var(--encre)}
+#form-demo .demo-ok strong{display:block;font-size:1.0625rem;color:#14524D;margin-bottom:6px}
+#form-demo .demo-ok p{margin:6px 0 0;font-size:.9375rem}
+#form-demo.envoye > :not(.demo-ok):not(#dm-mention){display:none}
