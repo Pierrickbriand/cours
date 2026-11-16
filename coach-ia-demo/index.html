@@ -416,6 +416,7 @@ tr.total td{border-top:2px solid var(--marine)}
 @media (max-width:860px){.event{flex-direction:column;gap:4px}.event b{white-space:normal}}
 @media (prefers-reduced-motion: reduce){.role-card{transition:none}}
 td.gestes{min-width:150px;white-space:normal}td.gestes .back{display:block;margin:3px 0;text-align:left;white-space:normal;line-height:1.3}
+.iabox{display:block;margin:16px 0;padding:10px 14px;border:1px dashed #b7c3d6;border-radius:12px;background:rgba(255,255,255,.55);color:#51607a;font-size:.85rem;line-height:1.5}.iabox b{display:block;color:var(--marine);font-size:.8rem;letter-spacing:.02em;margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -1272,6 +1273,7 @@ const ADMIN_NAV = {
     {id:"f-home", label:"Suivi des groupes", icon:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>'},
     {id:"f-groups", label:"Mes groupes", icon:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a5 5 0 0 1 5 6"/>'},
     {id:"f-eval", label:"Évaluer les livrables", icon:'<path d="M9 11l3 3 8-8"/><path d="M4 4h10M4 9h5M4 14h5M4 19h16"/>'},
+    {id:"f-jury", label:"Préparer le jury", icon:'<path d="M4 20h16M6 20V9l6-5 6 5v11"/><path d="M10 20v-5h4v5"/>'},
     {id:"f-students", label:"Mes étudiants", icon:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/>'},
     {id:"f-msg", label:"Messages", icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
     {id:"f-emails", label:"Modèles d'e-mails", icon:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'},
@@ -1392,7 +1394,7 @@ function defaultDB(){
     ]
   };
 }
-const VERSION = "0.11.2";
+const VERSION = "0.14";
 const MEM = {};
 const store = {
   get(k){ for (const f of [() => localStorage, () => sessionStorage]){ try{ const v = f().getItem(k); if (v != null) return v; }catch(e){} } return MEM[k] != null ? MEM[k] : null; },
@@ -1430,6 +1432,9 @@ function stepPill(s){
   return `<span class="pill ${cls}">${s}</span>`;
 }
 function head(title, sub, extra){ return `<div class="top"><div><h1>${title}</h1><p>${sub}</p></div>${extra || ""}</div>`; }
+/* Encadré « version complète » : même aspect partout, jamais présenté comme actif */
+function iaBox(t){ return `<aside class="iabox"><b>Avec l'IA, dans la version complète</b><span>${t}</span></aside>`; }
+function fullBox(titre, t){ return `<aside class="iabox"><b>${titre} : dans la version complète</b><span>${t}</span></aside>`; }
 function demoNote(t){ return `<p class="hint demo-note">${t}</p>`; }
 function download(name, content, type){
   const blob = new Blob([content], {type}); const a = document.createElement("a");
@@ -1640,17 +1645,53 @@ function vACase(){
     ${DB.deadlines.map(d => `<tr class="${d.deliv ? "sub" : ""}"><td style="text-align:left">${d.label}</td><td><input type="date" value="${d.date}" data-deadline="${d.id}" style="width:150px"></td></tr>`).join("")}
   </tbody></table></div><p class="hint">Les décisions sont verrouillées et calculées à 17 h le jour indiqué. Les relances partent la veille.</p></section></div>
   <section class="card"><div class="row" style="justify-content:space-between"><h2>Grille d'évaluation des livrables</h2><label class="row" style="gap:8px">Livrable <select id="rubD">${DELIVS().map(d => `<option value="${d.id}" ${d.id === A_RUB ? "selected" : ""}>${d.label}</option>`).join("")}</select></label></div>
-    ${rubLocked(A_RUB) ? `<p class="hint demo-note"><b>Grille verrouillée.</b> ${rubLocked(A_RUB)} note${rubLocked(A_RUB) > 1 ? "s sont publiées" : " est publiée"} avec cette grille : la modifier changerait les notes déjà données. Une nouvelle version de grille, sans effet sur les notes passées, reste à prévoir.</p>` : ""}<p class="hint">Exemple de grille à remplacer par les critères de votre référentiel (TP REM : blocs BC01, BC02, BC03). Chaque critère reçoit « satisfait » ou « non satisfait » pour l'ECF, et des points pour la note de contrôle continu. Les formateurs de tous les sites évaluent avec cette grille.</p>
-    <div class="tablebox"><table><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>Points</th><th></th></tr></thead><tbody>
+    <p class="hint">Exemple de grille à remplacer par les critères de votre référentiel. Les blocs sont facultatifs : nommez-les comme vous voulez, ou laissez la colonne vide. Les formateurs de tous les sites évaluent avec cette grille.</p>
+    <label class="field"><span>Ce que la grille donne</span><select id="gmode"><option value="both" ${gradeMode() === "both" ? "selected" : ""}>Un avis « satisfait » ou « non satisfait » et une note sur 20</option><option value="note" ${gradeMode() === "note" ? "selected" : ""}>Une note sur 20 seulement</option><option value="ecf" ${gradeMode() === "ecf" ? "selected" : ""}>Un avis « satisfait » ou « non satisfait » seulement</option></select></label>
+    <p class="hint"><b>Version ${curV(A_RUB)}</b> de la grille.${rubLocked(A_RUB) ? ` ${rubLocked(A_RUB)} note${rubLocked(A_RUB) > 1 ? "s sont publiées" : " est publiée"} avec elle : elle ne se modifie plus. Créez une nouvelle version pour changer les critères ; les notes déjà données ne bougent pas.` : " Aucune note n'est encore publiée avec cette version : vous pouvez la modifier librement."}</p>
+    <div class="tablebox"><table><thead><tr><th style="text-align:left">Critère</th><th>Bloc (facultatif)</th><th>Points</th><th></th></tr></thead><tbody>
     ${rubric(A_RUB).map(c => `<tr><td style="text-align:left"><input value="${esc(c.label)}" data-rub="${A_RUB}|${c.id}|label" aria-label="Libellé du critère" maxlength="160" style="width:100%" ${rubLocked(A_RUB) ? "disabled" : ""}></td>
-      <td><select data-rub="${A_RUB}|${c.id}|bloc" aria-label="Bloc du critère" ${rubLocked(A_RUB) ? "disabled" : ""}>${BLOCS.map(b => `<option ${b === c.bloc ? "selected" : ""}>${b}</option>`).join("")}</select></td>
+      <td><input value="${esc(c.bloc || "")}" list="blocList" data-rub="${A_RUB}|${c.id}|bloc" aria-label="Bloc du critère" maxlength="40" style="width:130px" ${rubLocked(A_RUB) ? "disabled" : ""}></td>
       <td><input type="number" min="0" max="20" step="0.5" value="${c.max}" data-rub="${A_RUB}|${c.id}|max" aria-label="Points du critère" style="width:70px" ${rubLocked(A_RUB) ? "disabled" : ""}></td>
       <td>${rubLocked(A_RUB) ? "" : `<button class="back" data-act="rub-del" data-d="${A_RUB}" data-id="${c.id}">Retirer</button>`}</td></tr>`).join("")}
-    </tbody></table></div>
-    <div class="row">${rubLocked(A_RUB) ? "" : `<button class="btn ghost" data-act="rub-add" data-d="${A_RUB}">Ajouter un critère</button>`}<span class="hint">Total : ${rubric(A_RUB).reduce((a, c) => a + (+c.max || 0), 0)} points, ramenés sur 20.</span></div></section>
+    </tbody></table></div><datalist id="blocList">${[...new Set(rubric(A_RUB).map(c => c.bloc).filter(Boolean).concat(BLOCS))].map(b => `<option value="${esc(b)}">`).join("")}</datalist>
+    <div class="row">${rubLocked(A_RUB) ? `<button class="btn" data-act="rub-newver" data-d="${A_RUB}">Créer une nouvelle version</button>` : `<button class="btn ghost" data-act="rub-add" data-d="${A_RUB}">Ajouter un critère</button>`}<span class="hint">Total : ${rubric(A_RUB).reduce((a, c) => a + (+c.max || 0), 0)} points, ramenés sur 20.</span></div>
+    ${oldRubs(A_RUB).length ? `<h3>Versions précédentes</h3><div class="tablebox"><table><thead><tr><th>Version</th><th>Archivée le</th><th>Critères</th><th>Notes données</th></tr></thead><tbody>${oldRubs(A_RUB).map(o => `<tr><td>${o.v}</td><td>${esc(o.date)}</td><td>${o.items.length}</td><td>${usedBy(A_RUB, o.v)}</td></tr>`).join("")}</tbody></table></div>` : ""}
+    <h3>Importer la grille par fichier</h3>${gridImportBlock()}
+    ${fullBox("Grille propre à un site", "Par défaut, une seule grille sert à tous les sites. Dans la version complète, l'administrateur pourra donner une grille propre à un site.")}
+  </section>
   <div class="row"><button class="btn" data-act="save-frame">Enregistrer le cadre</button></div>`;
 }
-let A_RUB = "d1";
+let A_RUB = "d1", PENDING_GRID = null;
+const HEAD_GRID = ["Critère", "Bloc", "Points"];
+function checkGrid(rows){
+  const out = {ok:[], errors:[], headerError:""};
+  if (!rows.length){ out.headerError = "Le fichier est vide."; return out; }
+  const h = rows[0].map(norm), ix = HEAD_GRID.map(e => h.indexOf(norm(e)));
+  const missing = HEAD_GRID.filter((e, i) => ix[i] < 0 && e !== "Bloc");
+  if (missing.length){ out.headerError = `Colonnes introuvables : ${missing.join(", ")}. La première ligne doit contenir : ${HEAD_GRID.join(" ; ")}.`; return out; }
+  rows.slice(1).forEach((r, k) => {
+    const cell = i => ix[i] < 0 ? "" : String(r[ix[i]] || "").trim();
+    if (r.every(x => !String(x || "").trim())) return;
+    const v = {label:cell(0), bloc:cell(1), pts:cell(2)}, pb = [], line = k + 2, n = Number(v.pts.replace(",", "."));
+    if (!v.label) pb.push("critère vide"); else if (v.label.length > 160) pb.push("critère de plus de 160 caractères");
+    if (v.bloc.length > 40) pb.push("bloc de plus de 40 caractères");
+    if (v.pts === "" || !isFinite(n) || n <= 0 || n > 20) pb.push("points : un nombre de 0,5 à 20");
+    v.max = n; if (pb.length) out.errors.push({line, v, pb}); else out.ok.push(v);
+  });
+  if (out.ok.length > 30) out.headerError = "Une grille compte 30 critères au plus.";
+  if (!out.ok.length && !out.errors.length) out.headerError = "Aucun critère dans le fichier.";
+  return out;
+}
+function gridImportBlock(){
+  const p = PENDING_GRID;
+  const prev = !p ? "" : p.res.headerError ? `<div class="import-res bad"><b>Import impossible.</b> ${esc(p.res.headerError)}</div>` : `<div class="import-res"><b>${p.res.ok.length} critère${p.res.ok.length > 1 ? "s" : ""} prêt${p.res.ok.length > 1 ? "s" : ""}</b>${p.res.errors.length ? ` · <span class="down">${p.res.errors.length} ligne${p.res.errors.length > 1 ? "s" : ""} à corriger</span>` : ""} · fichier « ${esc(p.name)} »
+    ${p.res.errors.length ? `<ul class="alerts">${p.res.errors.slice(0, 20).map(e => `<li class="bad">Ligne ${e.line} (${esc(e.v.label || "?")}) : ${e.pb.join(", ")}.</li>`).join("")}</ul>${p.res.errors.length > 20 ? `<p class="hint">… et ${p.res.errors.length - 20} autres lignes à corriger.</p>` : ""}` : ""}
+    ${p.res.ok.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>Points</th></tr></thead><tbody>${p.res.ok.map(v => `<tr><td style="text-align:left">${esc(v.label)}</td><td>${esc(v.bloc)}</td><td>${String(v.max).replace(".", ",")}</td></tr>`).join("")}</tbody></table></div><p class="hint">${rubLocked(A_RUB) ? "Des notes sont publiées : l'import créera une nouvelle version de la grille." : "L'import remplacera les critères actuels de ce livrable."}</p>` : ""}
+    <div class="row">${p.res.ok.length && !p.res.errors.length ? `<button class="btn" data-act="grid-confirm">Appliquer cette grille</button>` : ""}<button class="btn ghost" data-act="grid-cancel">Annuler</button></div></div>`;
+  return `<p class="hint">Un fichier CSV avec trois colonnes : <code>Critère</code> ; <code>Bloc</code> (facultatif) ; <code>Points</code>. Rien n'est enregistré avant votre confirmation.</p>
+    <div class="row"><a class="btn ghost" href="modele-import-grille.xlsx" download="modele-import-grille.xlsx">Modèle Excel (.xlsx)</a><button class="btn ghost" data-act="grid-tpl">Modèle CSV</button>
+    <label class="filebtn btn">Choisir le fichier CSV<input type="file" accept=".csv,text/csv" data-import-grid hidden></label></div>${prev}`;
+}
 function vAChallenge(){
   const c = DB.challenge;
   const demo = [["Nantes", "Groupe 1 · Lumière", 148200], ["Lyon", "Les Lunetiers", 141900], ["Lille", "Optique Nord", 139400], ["Toulouse", "Groupe 4", 131800], ["Paris Sud", "Vision 14", 127300], ["Nancy", "Groupe 2", 118600]];
@@ -1712,10 +1753,22 @@ function groupStats(g){
 }
 /* ----- Évaluation des livrables ----- */
 const rubric = did => DB.rubrics[did] || [];
-const rubLocked = did => DB.groups.filter(g => (evalOf(g.id, did) || {}).done).length;
+const curV = did => (DB.rubN || {})[did] || 1;
+const oldRubs = did => { DB.rubOld = DB.rubOld || {}; return DB.rubOld[did] = DB.rubOld[did] || []; };
+const evalV = e => (e && e.v) || 1;
+const gradeMode = () => DB.settings.gradeMode || "both";
+const hasECF = () => gradeMode() !== "note", hasNote = () => gradeMode() !== "ecf";
+const rubricFor = (did, e) => { if (e && evalV(e) !== curV(did)){ const o = oldRubs(did).find(x => x.v === evalV(e)); if (o) return o.items; } return rubric(did); };
+const usedBy = (did, v) => DB.groups.filter(g => { const e = evalOf(g.id, did); return e && e.done && evalV(e) === v; }).length;
+function startNewVersion(d){
+  oldRubs(d).push({v:curV(d), date:today(), items:clone(DB.rubrics[d])});
+  DB.rubN = DB.rubN || {}; DB.rubN[d] = curV(d) + 1;
+}
+const rubLocked = did => usedBy(did, curV(did));
+const scoreBits = sc => (hasNote() ? `<b>${note20(sc.note)}</b>` : "") + (hasECF() ? ` <span class="pill ${sc.ecf ? "ok" : "bad"}">ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}</span>` : "");
 const evalOf = (gid, did) => (DB.evals[gid] || {})[did];
 function evalScore(gid, did){
-  const e = evalOf(gid, did), r = rubric(did); if (!e || !r.length) return null;
+  const e = evalOf(gid, did), r = rubricFor(did, e); if (!e || !r.length) return null;
   const max = r.reduce((a, c) => a + (+c.max || 0), 0), got = r.reduce((a, c) => a + Math.min(+c.max || 0, +(e.pts[c.id] || 0)), 0);
   const ecf = r.every(c => e.res[c.id] === "S");
   return {note:max ? Math.round(got / max * 40) / 2 : 0, ecf, done:e.done};
@@ -1741,13 +1794,13 @@ function cohortTable(c){
 function exportCohort(cid){
   const c = cohortById(cid), rows = cohortTable(c), D3 = DELIVS();
   const H = ["Groupe", "Membres", "Trimestres joués", "Résultat cumulé (€)", "Rang dans la cohorte", "Chiffre d'affaires cumulé (€)", "Part de marché du dernier trimestre (%)", "Satisfaction client (/100)"];
-  D3.forEach(d => H.push(`${d.label} : statut`, `${d.label} : note /20`, `${d.label} : ECF`));
+  D3.forEach(d => H.push(`${d.label} : statut`, ...(hasNote() ? [`${d.label} : note /20`] : []), ...(hasECF() ? [`${d.label} : ECF`] : [])));
   S.periods.slice(1).forEach(pp => H.push(`Bilan de séance ${pp}`));
   const q = v => { const t = String(v == null ? "" : v); return /[;"\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
   const fr = v => String(Math.round(v * 10) / 10).replace(".", ",");
   const lines = [H.map(q).join(";")].concat(rows.map(({g, r, rank}) => {
     const p = groupStats(g), cells = [g.name, g.members.map(id => fullName(studentById(id))).join(", "), r.played, Math.round(r.cum), rank, Math.round(r.ca), fr(r.share * 100), r.sat];
-    D3.forEach(d => { const sc = evalScore(g.id, d.id); cells.push(p.steps[d.id], sc ? fr(sc.note) : "", sc ? (sc.ecf ? "satisfait" : "non satisfait") : ""); });
+    D3.forEach(d => { const sc = evalScore(g.id, d.id); cells.push(p.steps[d.id]); if (hasNote()) cells.push(sc ? fr(sc.note) : ""); if (hasECF()) cells.push(sc ? (sc.ecf ? "satisfait" : "non satisfait") : ""); });
     S.periods.slice(1).forEach((pp, i) => cells.push(r.bilans[i + 1] || ""));
     return cells.map(q).join(";");
   }));
@@ -1778,7 +1831,7 @@ function vFHome(){
     ${gs.map(g => { const p = groupStats(g); return `<tr><td style="text-align:left"><b>${esc(g.name)}</b></td><td style="text-align:left;white-space:normal">${g.members.map(id => studentById(id).prenom).join(", ")}</td><td>${p.played}/6</td><td>${decisionPill(p)}</td>
       ${DELIVS().map(d => `<td>${p.steps[d.id] === "déposé" ? `<button class="btn sm" data-act="eval-step" data-g="${g.id}" data-s="${d.id}" title="Le groupe a déposé ce livrable : clique pour l'évaluer avec la grille">Évaluer le dépôt</button>` : stepPill(p.steps[d.id]) + (evalScore(g.id, d.id) ? `<br><span class="hint">${note20(evalScore(g.id, d.id).note)}</span>` : "")}</td>`).join("")}
       <td>${p.last}</td><td><button class="back" data-act="write-group" data-g="${g.id}">Écrire au groupe</button></td></tr>`; }).join("")}</tbody></table></div>` : `<p class="hint">Pas encore de groupes. <button class="back" data-go="f-groups">Constituer les groupes</button></p>`}</section>`; }).join("")}
-  ${indivCard()}`;
+  ${indivCard()}${iaBox("L'IA résumerait la séance et signalerait les groupes en difficulté, à partir des chiffres calculés par l'application. Vous gardez la main : elle prépare, vous décidez.")}`;
 }
 let F_IND = null;
 function indivCard(){
@@ -1795,41 +1848,78 @@ function vFEval(){
   const coh = myCohorts(); if (!F_EV.c || !coh.some(c => c.id === F_EV.c)) F_EV.c = coh[0].id;
   const gs = DB.groups.filter(g => g.cohort === F_EV.c);
   if (!gs.some(g => g.id === F_EV.g)) F_EV.g = gs.length ? gs[0].id : null;
-  const D3 = DELIVS(), d = D3.find(x => x.id === F_EV.d) || D3[0], r = rubric(d.id);
+  const D3 = DELIVS(), d = D3.find(x => x.id === F_EV.d) || D3[0];
   const sel = `<div class="formgrid"><label>Cohorte<select id="evC">${coh.map(c => `<option value="${c.id}" ${c.id === F_EV.c ? "selected" : ""}>${c.classe} (${c.campus})</option>`).join("")}</select></label>
     <label>Livrable<select id="evD">${D3.map(x => `<option value="${x.id}" ${x.id === d.id ? "selected" : ""}>${x.label}</option>`).join("")}</select></label>
     <label>Groupe<select id="evG">${gs.map(g => `<option value="${g.id}" ${g.id === F_EV.g ? "selected" : ""}>${esc(g.name)} · ${groupStats(g).steps[d.id]}</option>`).join("")}</select></label></div>`;
   if (!F_EV.g) return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites.") + `<section class="card">${sel}<p class="hint">Cette cohorte n'a pas encore de groupes.</p></section>`;
   const g = DB.groups.find(x => x.id === F_EV.g), e = evalOf(g.id, d.id) || {res:{}, pts:{}, comment:""}, st = groupStats(g).steps[d.id];
   const dep = (DB.deposits[g.id] || {})[d.id], locked = !!e.done, can = !!dep || locked, dis = locked || !can ? "disabled" : "";
-  const max = r.reduce((a, c) => a + (+c.max || 0), 0);
-  return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites. L'ECF se prononce en « satisfait » ou « non satisfait » ; les points donnent la note de contrôle continu.") + `
+  const r = rubricFor(d.id, evalOf(g.id, d.id)), max = r.reduce((a, c) => a + (+c.max || 0), 0), showBloc = r.some(c => c.bloc), gv = evalOf(g.id, d.id) ? evalV(evalOf(g.id, d.id)) : curV(d.id);
+  const sub = {both:"L'ECF se prononce en « satisfait » ou « non satisfait » ; les points donnent la note de contrôle continu.", ecf:"Chaque critère reçoit « satisfait » ou « non satisfait » ; l'avis global donne l'ECF.", note:"Chaque critère reçoit des points ; le total donne la note sur 20."}[gradeMode()];
+  return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites. " + sub) + `
   <section class="card">${sel}</section>
   <section class="card"><div class="row" style="justify-content:space-between"><h2>${esc(g.name)} · ${d.label}</h2>${stepPill(st)}</div>
     <p class="hint">Membres : ${g.members.map(id => esc(fullName(studentById(id)))).join(", ")}</p>
     ${dep ? `<p class="depot"><b>Dépôt du groupe :</b> <a href="${dep.data}" download="${esc(dep.name)}">${esc(dep.name)}</a> · ${fileKo(dep.size)} · déposé le ${dep.when}</p>` : `<p class="hint demo-note">Le groupe n'a rien déposé pour ce livrable : il n'y a rien à évaluer.</p>`}
+    ${dep && !locked ? iaBox("L'IA proposerait un premier retour à partir de la grille. Vous le relisez, vous le corrigez et vous décidez de la note : l'IA ne note jamais seule.") : ""}
     ${locked ? `<p class="hint demo-note">Évaluation validée : elle est en lecture seule. Pour la modifier, rouvrez-la ; l'action est inscrite à l'historique.</p>` : ""}
-    <div class="tablebox"><table class="rubric"><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>ECF</th><th>Points</th></tr></thead><tbody>
-    ${r.map(c => `<tr><td style="text-align:left;white-space:normal">${esc(c.label)}</td><td><span class="pill">${c.bloc}</span></td>
-      <td><div class="seg"><label><input type="radio" name="ev-${c.id}" value="S" data-evres="${c.id}" ${dis} ${e.res[c.id] === "S" ? "checked" : ""}> Satisfait</label><label><input type="radio" name="ev-${c.id}" value="NS" data-evres="${c.id}" ${dis} ${e.res[c.id] === "NS" ? "checked" : ""}> Non satisfait</label></div></td>
-      <td><input type="number" min="0" max="${c.max}" step="0.5" value="${e.pts[c.id] ?? ""}" data-evpts="${c.id}" aria-label="Points : ${esc(c.label)}" ${dis} style="width:70px"> / ${c.max}</td></tr>`).join("")}
+    <p class="hint">Grille utilisée : <b>version ${gv}</b>${gv !== curV(d.id) ? " (une version plus récente existe : elle s'applique aux évaluations commencées ensuite)" : ""}.</p>
+    <div class="tablebox"><table class="rubric"><thead><tr><th style="text-align:left">Critère</th>${showBloc ? "<th>Bloc</th>" : ""}${hasECF() ? "<th>ECF</th>" : ""}${hasNote() ? "<th>Points</th>" : ""}</tr></thead><tbody>
+    ${r.map(c => `<tr><td style="text-align:left;white-space:normal">${esc(c.label)}</td>${showBloc ? `<td>${c.bloc ? `<span class="pill">${esc(c.bloc)}</span>` : ""}</td>` : ""}
+      ${hasECF() ? `<td><div class="seg"><label><input type="radio" name="ev-${c.id}" value="S" data-evres="${c.id}" ${dis} ${e.res[c.id] === "S" ? "checked" : ""}> Satisfait</label><label><input type="radio" name="ev-${c.id}" value="NS" data-evres="${c.id}" ${dis} ${e.res[c.id] === "NS" ? "checked" : ""}> Non satisfait</label></div></td>` : ""}
+      ${hasNote() ? `<td><input type="number" min="0" max="${c.max}" step="0.5" value="${e.pts[c.id] ?? ""}" data-evpts="${c.id}" aria-label="Points : ${esc(c.label)}" ${dis} style="width:70px"> / ${c.max}</td>` : ""}</tr>`).join("")}
     </tbody></table></div>
     <div class="evsum" id="evSum"></div>
     <label class="field"><span>Retour au groupe (visible par les étudiants après validation)</span><textarea id="evCom" rows="3" maxlength="800" ${dis}>${esc(e.comment || "")}</textarea></label>
     <div class="row">${locked ? `<button class="btn ghost" data-act="eval-reopen">Rouvrir l'évaluation</button>` : can ? `<button class="btn" data-act="eval-save" data-done="1">Valider le livrable et publier la note</button><button class="btn ghost" data-act="eval-save" data-done="">Enregistrer le brouillon</button>` : ""}</div>
     ${(e.log || []).length ? `<h3>Historique</h3><ul class="mini">${e.log.slice().reverse().map(l => `<li><b>${l.t}</b> · ${esc(l.by)} · ${esc(l.action)}</li>`).join("")}</ul>` : ""}
-    <p class="hint">Total sur ${max} points, ramené sur 20. L'ECF n'est satisfaite que si tous les critères le sont.</p></section>`;
+    <p class="hint">${hasNote() ? `Total sur ${max} points, ramené sur 20. ` : ""}${hasECF() ? "L'ECF n'est satisfaite que si tous les critères le sont." : ""}</p></section>`;
 }
 function evalLive(){
   const box = $("evSum"); if (!box) return;
-  const r = rubric(F_EV.d); let got = 0, max = 0, all = true, any = false;
+  const r = rubricFor(F_EV.d, evalOf(F_EV.g, F_EV.d)); let got = 0, max = 0, all = true, any = false;
   r.forEach(c => { max += +c.max || 0; const v = $("main").querySelector(`[data-evpts="${c.id}"]`); got += Math.min(+c.max || 0, Math.max(0, +(v && v.value) || 0));
     const chk = $("main").querySelector(`[data-evres="${c.id}"]:checked`); if (!chk || chk.value !== "S") all = false; if (chk) any = true; });
   const n = max ? Math.round(got / max * 40) / 2 : 0;
-  box.innerHTML = `<b>${note20(n)}</b><span>${String(got).replace(".", ",")} points sur ${max}</span><span class="pill ${all ? "ok" : (any ? "bad" : "")}">ECF ${all ? "satisfaite" : (any ? "non satisfaite" : "à compléter")}</span>`;
+  box.innerHTML = (hasNote() ? `<b>${note20(n)}</b><span>${String(got).replace(".", ",")} points sur ${max}</span>` : "") + (hasECF() ? `<span class="pill ${all ? "ok" : (any ? "bad" : "")}">ECF ${all ? "satisfaite" : (any ? "non satisfaite" : "à compléter")}</span>` : "");
 }
 /* ----- Formateur : fiche de débriefing imprimable ----- */
 let F_DEB = null;
+let F_JURY = null;
+const eurFr = v => eur.format(Math.round(v));
+function juryQuestions(g, r, rows, avg){
+  const q = [], p = groupStats(g), D = DELIVS();
+  q.push(`Votre résultat cumulé est de ${eurFr(r.cum)}, pour une moyenne de ${eurFr(avg)} dans la cohorte. Quels choix expliquent cet écart ?`);
+  q.push(`Votre part de marché est de ${dec1.format(r.share * 100)} % au dernier trimestre joué. Quelles décisions y ont contribué, selon vous ?`);
+  q.push(`La satisfaction client est de ${r.sat} sur 100 au dernier trimestre. Quelle décision a le plus pesé sur ce chiffre ?`);
+  r.bilans.forEach((t, i) => { if (i && t) q.push(`Au ${S.periods[i]}, vous écrivez : « ${t} » ` + (i < r.played ? "Quel effet avez-vous observé dans vos chiffres le trimestre suivant ?" : "Qu'est-ce qui motive ce choix ?")); });
+  D.forEach(d => { const st = p.steps[d.id]; if (st === "en retard") q.push(`Le livrable « ${d.label} » est en retard. Que s'est-il passé, et qu'avez-vous prévu pour le rattraper ?`); });
+  return q;
+}
+function vFJury(){
+  const coh = myCohorts(), groups = DB.groups.filter(g => coh.some(c => c.id === g.cohort));
+  if (!F_JURY || !groups.some(g => g.id === F_JURY)) F_JURY = (groups.find(g => g.id === "G2") || groups[0] || {}).id;
+  const g = groups.find(x => x.id === F_JURY);
+  if (!g) return head("Préparer le jury", "Fiche de préparation pour la soutenance ou le pitch d'un groupe.") + `<section class="card"><p class="hint">Aucun groupe à présenter pour l'instant.</p></section>`;
+  const rows = cohortTable(cohortById(g.cohort)), r = groupResults(g), rank = rows.find(x => x.g.id === g.id).rank, avg = rows.reduce((a, x) => a + x.r.cum, 0) / rows.length, p = groupStats(g);
+  const notes = r.bilans.map((t, i) => i && t ? `<li><b>${S.periods[i]}</b> : ${esc(t)}</li>` : "").join("");
+  const qs = juryQuestions(g, r, rows, avg);
+  return head("Préparer le jury", "Avant une soutenance ou un pitch, une fiche pour le jury : résumé des résultats, choix marquants et questions possibles.") + `
+  <section class="card"><div class="row" style="justify-content:space-between"><label class="row" style="gap:8px">Groupe <select id="juryG">${groups.map(x => `<option value="${x.id}" ${x.id === g.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label><span class="pill">Exemple de fiche, version complète</span></div>
+  <p class="hint">Cet exemple est écrit à la main à partir des données fictives du groupe. Aucune IA n'est appelée dans la démonstration.</p></section>
+  <section class="card jury"><div class="row" style="justify-content:space-between"><h2>${esc(g.name)} · fiche pour le jury</h2><span class="pill warn">Générée par IA, à vérifier</span></div>
+    <p class="hint">Membres : ${g.members.map(id => esc(fullName(studentById(id)))).join(", ")}</p>
+    <h3>Résumé des résultats</h3>
+    <div class="kpis"><div class="kpi"><span>Résultat cumulé</span><strong>${eurFr(r.cum)}</strong></div><div class="kpi"><span>Chiffre d'affaires cumulé</span><strong>${eurFr(r.ca)}</strong></div><div class="kpi"><span>Part de marché</span><strong>${dec1.format(r.share * 100)} %</strong></div><div class="kpi"><span>Satisfaction client</span><strong>${r.sat}/100</strong></div><div class="kpi"><span>Rang dans la cohorte</span><strong>${rank} sur ${rows.length}</strong></div></div>
+    <p class="hint">Trimestres joués : ${r.played}. Livrables : ${DELIVS().map(d => `${esc(d.label)} (${p.steps[d.id]})`).join(" ; ")}.</p>
+    <h3>Choix marquants</h3>${notes ? `<ul class="deb-list">${notes}</ul>` : `<p class="hint">Le groupe n'a pas encore rédigé de bilan de séance.</p>`}
+    <h3>Questions que le jury peut poser</h3><ol class="steps-list">${qs.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+    <p class="hint demo-note">Les chiffres sont calculés par l'application. Les questions s'appuient sur des faits : la fiche ne contient ni note ni avis sur la valeur d'un choix.</p>
+  </section>
+  <section class="card"><h2>Comment cela fonctionnera</h2><ul class="mini"><li>L'IA prépare la fiche ; elle ne juge pas et ne note pas.</li><li>Un appel par groupe et par livrable, compté dans le budget d'IA de votre école.</li><li>La fiche est réservée au formateur et au jury : l'étudiant ne la voit pas.</li><li>Vous relisez et vous corrigez la fiche avant de l'imprimer ou de l'enregistrer en PDF.</li></ul>
+  <div class="row"><button class="btn ghost" data-act="print-guide">Imprimer cette fiche</button></div></section>` + iaBox("Dans la version complète, cette fiche serait générée par l'IA à partir des chiffres calculés par l'application. Elle ne note jamais : le jury et le formateur décident.");
+}
 function vFDebrief(){
   const coh = myCohorts(); if (!F_DEB || !coh.some(c => c.id === F_DEB)) F_DEB = coh[0].id;
   const c = cohortById(F_DEB), rows = cohortTable(c);
@@ -1837,7 +1927,7 @@ function vFDebrief(){
     `<div class="row"><button class="btn" data-act="print-guide">Imprimer ou enregistrer en PDF</button><button class="btn ghost" data-act="export-cohort" data-c="${c.id}">Exporter (tableur)</button><button class="btn ghost" data-go="f-home">Retour au suivi</button></div>`) +
   (rows.length ? rows.map(({g, r, rank}) => `<section class="card debrief"><div class="row" style="justify-content:space-between"><h2>${rank}. ${esc(g.name)}</h2><span class="hint">${g.members.map(id => esc(fullName(studentById(id)))).join(", ")}</span></div>
     <div class="kpis"><div class="kpi"><span>Résultat cumulé</span><strong>${eur.format(r.cum)}</strong></div><div class="kpi"><span>Chiffre d'affaires cumulé</span><strong>${eur.format(r.ca)}</strong></div><div class="kpi"><span>Part de marché</span><strong>${pct(r.share)}</strong></div><div class="kpi"><span>Satisfaction client</span><strong>${r.sat}/100</strong></div></div>
-    <h3>Livrables</h3><ul class="deb-list">${DELIVS().map(d => { const sc = evalScore(g.id, d.id), e = evalOf(g.id, d.id); return `<li><b>${d.label}</b> : ${groupStats(g).steps[d.id]}${sc ? ` · ${note20(sc.note)} · ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}` : ""}${e && e.comment ? `<br><span class="hint">${esc(e.comment)}</span>` : ""}</li>`; }).join("")}</ul>
+    <h3>Livrables</h3><ul class="deb-list">${DELIVS().map(d => { const sc = evalScore(g.id, d.id), e = evalOf(g.id, d.id); return `<li><b>${d.label}</b> : ${groupStats(g).steps[d.id]}${sc ? ` · ${[hasNote() ? note20(sc.note) : "", hasECF() ? "ECF " + (sc.ecf ? "satisfaite" : "non satisfaite") : ""].filter(Boolean).join(" · ")}` : ""}${e && e.comment ? `<br><span class="hint">${esc(e.comment)}</span>` : ""}</li>`; }).join("")}</ul>
     <h3>Bilans de séance</h3>${r.bilans.slice(1).some(Boolean) ? `<ul class="deb-list">${r.bilans.map((t, i) => i && t ? `<li><b>${S.periods[i]}</b> : ${esc(t)}</li>` : "").join("")}</ul>` : `<p class="hint">Aucun bilan rédigé pour l'instant.</p>`}
     <p class="hint">Questions pour le débriefing : qu'aviez-vous annoncé, qu'avez-vous obtenu, et qu'est-ce qui explique l'écart ?</p></section>`).join("") : `<section class="card"><p class="hint">Cette cohorte n'a pas encore de groupes.</p></section>`) +
   demoNote("Démonstration : le Groupe 1 suit la partie jouée dans l'espace étudiant ; les résultats des autres groupes sont simulés.");
@@ -1939,13 +2029,13 @@ function vProg(){
   </div>
   ${countdown()}
   <section class="card"><h2>Livrables et validations</h2><div class="tablebox"><table><thead><tr><th style="text-align:left">Étape</th><th>Date limite</th><th>Statut</th><th>Note</th></tr></thead><tbody>
-  ${DELIVS().map(d => { const s = p ? p.steps[d.id] : "à venir", sc = g && s === "validé" ? evalScore(g.id, d.id) : null; return `<tr><td style="text-align:left">${d.label}</td><td>${fmtDate(d.date)}</td><td>${stepPill(s)}${s === "validé" ? ` <span class="hint">par ${esc(fullName(tr))}</span>` : ""}</td><td>${sc && sc.done ? `<b>${note20(sc.note)}</b> <span class="pill ${sc.ecf ? "ok" : "bad"}">ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}</span>` : "–"}</td></tr>`; }).join("")}
+  ${DELIVS().map(d => { const s = p ? p.steps[d.id] : "à venir", sc = g && s === "validé" ? evalScore(g.id, d.id) : null; return `<tr><td style="text-align:left">${d.label}</td><td>${fmtDate(d.date)}</td><td>${stepPill(s)}${s === "validé" ? ` <span class="hint">par ${esc(fullName(tr))}</span>` : ""}</td><td>${sc && sc.done ? scoreBits(sc) : "–"}</td></tr>`; }).join("")}
   </tbody></table></div><p class="hint">Quand ta formatrice valide une étape, elle passe en vert ici, avec ta note et son retour.</p></section>
   <section class="card"><h2>Déposer un livrable</h2><p class="hint">Un seul fichier par livrable, 1 Mo au maximum dans la démonstration. Tu peux le remplacer tant qu'il n'est pas validé.</p>
   ${g ? `<ul class="msglist">${DELIVS().map(d => { const dep = (DB.deposits[g.id] || {})[d.id], s = p.steps[d.id]; return `<li><div class="row" style="justify-content:space-between"><b>${d.label}</b>${stepPill(s)}</div>
     <span class="hint">${dep ? `Déposé : ${esc(dep.name)} · ${fileKo(dep.size)} · le ${dep.when}` : `Rien de déposé · date limite le ${fmtDate(d.date)}`}</span>
     ${s === "validé" ? `<span class="hint">Livrable validé : il ne se remplace plus.</span>` : `<label class="filebtn btn sm">${dep ? "Remplacer le fichier" : "Déposer un fichier"}<input type="file" data-deposit="${d.id}" hidden></label>`}</li>`; }).join("")}</ul>` : `<p class="hint">Tu n'as pas encore de groupe : ta formatrice te placera dans un groupe avant le premier dépôt.</p>`}
-  ${g ? DELIVS().map(d => { const e = evalOf(g.id, d.id); if (!e || !e.done) return ""; return `<div class="feedback"><b>${d.label} · retour de ta formatrice</b>${e.comment ? `<p>${esc(e.comment)}</p>` : ""}<ul>${rubric(d.id).map(c => `<li class="${e.res[c.id] === "S" ? "ok" : "bad"}">${esc(c.label)} : ${e.res[c.id] === "S" ? "satisfait" : "non satisfait"} · ${String(e.pts[c.id] ?? 0).replace(".", ",")}/${c.max}</li>`).join("")}</ul></div>`; }).join("") : ""}</section>
+  ${g ? DELIVS().map(d => { const e = evalOf(g.id, d.id); if (!e || !e.done) return ""; return `<div class="feedback"><b>${d.label} · retour de ta formatrice</b>${e.comment ? `<p>${esc(e.comment)}</p>` : ""}<ul>${rubricFor(d.id, e).map(c => `<li class="${hasECF() ? (e.res[c.id] === "S" ? "ok" : "bad") : ""}">${esc(c.label)}${c.bloc ? " (" + esc(c.bloc) + ")" : ""} : ${[hasECF() ? (e.res[c.id] === "S" ? "satisfait" : "non satisfait") : "", hasNote() ? String(e.pts[c.id] ?? 0).replace(".", ",") + "/" + c.max : ""].filter(Boolean).join(" · ")}</li>`).join("")}</ul><p class="hint">Grille : version ${evalV(e)}.</p></div>`; }).join("") : ""}</section>
   <section class="card"><h2>Calendrier des décisions</h2><div class="tablebox"><table><tbody>${DB.deadlines.filter(d => !d.deliv).map(d => `<tr><td style="text-align:left">${d.label}</td><td>${fmtDate(d.date)} à 17 h</td></tr>`).join("")}</tbody></table></div></section>`;
 }
 /* Compte à rebours : prochain livrable et prochaine décision */
@@ -1964,8 +2054,8 @@ function studentMessages(){
   return DB.messages.filter(m => m.to === s.cohort || (g && m.to === g.id) || m.to === ME_STUDENT);
 }
 
-const ADMIN_VIEWS = {"a-home":vAHome, "a-trainers":vATrainers, "a-list":vAList, "a-students":vAStudents, "a-case":vACase, "a-challenge":vAChallenge, "a-data":vAData,
-  "f-home":vFHome, "f-eval":vFEval, "f-debrief":vFDebrief, "f-groups":vFGroups, "f-students":vFStudents, "f-msg":vFMsg, "f-emails":vFEmails, "f-tasks":vFTasks,
+const ADMIN_VIEWS = {"a-home":() => vAHome() + iaBox("L'IA synthétiserait la consommation et les points d'attention de l'année pour votre école, à partir des nombres calculés par l'application."), "a-trainers":vATrainers, "a-list":vAList, "a-students":vAStudents, "a-case":() => vACase() + iaBox("L'IA vous aiderait à rédiger des critères d'évaluation à partir de votre référentiel. Vous relisez, vous modifiez et vous validez la grille : le formateur décide de chaque note."), "a-challenge":vAChallenge, "a-data":vAData,
+  "f-home":vFHome, "f-eval":vFEval, "f-jury":vFJury, "f-debrief":vFDebrief, "f-groups":vFGroups, "f-students":vFStudents, "f-msg":vFMsg, "f-emails":vFEmails, "f-tasks":vFTasks,
   "prog":vProg, "guide":vGuide};
 
 /* ----- Actions ----- */
@@ -2045,21 +2135,28 @@ const ACT = {
   "eval-save": el => {
     const dep = (DB.deposits[F_EV.g] || {})[F_EV.d], cur = evalOf(F_EV.g, F_EV.d);
     if (!dep && !(cur && cur.done)) return toast("Aucun dépôt à évaluer : le groupe n'a rien déposé pour ce livrable.");
-    const r = rubric(F_EV.d), res = {}, pts = {};
-    r.forEach(c => { const chk = $("main").querySelector(`[data-evres="${c.id}"]:checked`); if (chk) res[c.id] = chk.value; const v = $("main").querySelector(`[data-evpts="${c.id}"]`).value; if (v !== "") pts[c.id] = Math.min(+c.max, Math.max(0, +v)); });
+    const r = rubricFor(F_EV.d, cur), res = {}, pts = {};
+    r.forEach(c => { const chk = $("main").querySelector(`[data-evres="${c.id}"]:checked`); if (chk) res[c.id] = chk.value; const pe = $("main").querySelector(`[data-evpts="${c.id}"]`), v = pe ? pe.value : ""; if (v !== "") pts[c.id] = Math.min(+c.max, Math.max(0, +v)); });
     const done = !!el.dataset.done;
-    if (done && r.some(c => !res[c.id] || pts[c.id] == null)) return toast("Pour valider, renseignez l'ECF et les points de chaque critère.");
+    if (done && r.some(c => (hasECF() && !res[c.id]) || (hasNote() && pts[c.id] == null))) return toast(`Pour valider, renseignez ${hasECF() && hasNote() ? "l'ECF et les points" : hasECF() ? "l'ECF" : "les points"} de chaque critère.`);
     const log = ((cur && cur.log) || []).concat(done ? [{t:stamp(), by:fullName(trainerById(ME_TRAINER)), action:"Validé"}] : []);
-    (DB.evals[F_EV.g] = DB.evals[F_EV.g] || {})[F_EV.d] = {res, pts, comment:$("evCom").value.trim(), by:ME_TRAINER, date:today(), done, log};
+    (DB.evals[F_EV.g] = DB.evals[F_EV.g] || {})[F_EV.d] = {res, pts, comment:$("evCom").value.trim(), by:ME_TRAINER, date:today(), done, log, v:evalV(cur && cur.v ? cur : {v:curV(F_EV.d)})};
     if (done) DB.progress[F_EV.g] = DB.progress[F_EV.g] || {pending:true, steps:{d1:"à venir", d2:"à venir", d3:"à venir"}, last:"jamais"}, DB.progress[F_EV.g].steps[F_EV.d] = "validé";
     saveDB(); render();
     const sc = evalScore(F_EV.g, F_EV.d);
-    toast(done ? `Livrable validé : ${note20(sc.note)}, ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}. Le groupe voit sa note et votre retour.` : "Brouillon enregistré : le groupe ne voit rien tant que vous n'avez pas validé.");
+    toast(done ? `Livrable validé${hasNote() ? " : " + note20(sc.note) : ""}${hasECF() ? (hasNote() ? ", " : " : ") + "ECF " + (sc.ecf ? "satisfaite" : "non satisfaite") : ""}. Le groupe voit son résultat et votre retour.` : "Brouillon enregistré : le groupe ne voit rien tant que vous n'avez pas validé.");
   },
   "export-cohort": el => exportCohort(el.dataset.c),
   "debrief": el => { F_DEB = el.dataset.c; go("f-debrief"); },
-  "rub-add": el => { if (rubLocked(el.dataset.d)) return toast("Grille verrouillée : des notes sont déjà publiées."); const r = DB.rubrics[el.dataset.d]; r.push({id:"c" + Date.now().toString(36), bloc:BLOCS[1], label:"Nouveau critère", max:2}); saveDB(); render(); },
-  "rub-del": el => { if (rubLocked(el.dataset.d)) return toast("Grille verrouillée : des notes sont déjà publiées."); DB.rubrics[el.dataset.d] = DB.rubrics[el.dataset.d].filter(c => c.id !== el.dataset.id); saveDB(); render(); },
+  "rub-newver": el => { const d = el.dataset.d; confirmBox("Créer une nouvelle version de la grille", `<p>La version ${curV(d)} est archivée telle quelle. Les ${usedBy(d, curV(d))} notes publiées avec elle gardent cette version.</p><p class="hint">La version ${curV(d) + 1} part des mêmes critères. Vous pouvez les modifier ; elle s'applique aux évaluations commencées ensuite.</p>`, `Créer la version ${curV(d) + 1}`, () => { startNewVersion(d); saveDB(); render(); toast(`Version ${curV(d)} de la grille créée.`); }); },
+  "grid-tpl": () => download("modele-import-grille.csv", "\ufeff" + [HEAD_GRID, ["Analyse des résultats chiffrés", "Bloc 1", "6"], ["Justification des choix", "Bloc 2", "8"], ["Clarté de l'écrit", "", "6"]].map(r => r.join(";")).join("\r\n"), "text/csv;charset=utf-8"),
+  "grid-cancel": () => { PENDING_GRID = null; render(); },
+  "grid-confirm": () => { const p = PENDING_GRID; if (!p || !p.res.ok.length) return; const d = A_RUB, was = rubLocked(d);
+    if (was) startNewVersion(d);
+    DB.rubrics[d] = p.res.ok.map((v, i) => ({id:"c" + (i + 1), bloc:v.bloc, label:v.label, max:v.max}));
+    PENDING_GRID = null; saveDB(); render(); toast(was ? `Grille importée : version ${curV(d)} créée, les notes déjà données ne changent pas.` : "Grille importée : elle remplace les critères de ce livrable."); },
+  "rub-add": el => { if (rubLocked(el.dataset.d)) return toast("Des notes sont publiées avec cette version : créez une nouvelle version."); const r = DB.rubrics[el.dataset.d]; r.push({id:"c" + Date.now().toString(36), bloc:r.length ? r[r.length - 1].bloc : "", label:"Nouveau critère", max:2}); saveDB(); render(); },
+  "rub-del": el => { if (rubLocked(el.dataset.d)) return toast("Des notes sont publiées avec cette version : créez une nouvelle version."); DB.rubrics[el.dataset.d] = DB.rubrics[el.dataset.d].filter(c => c.id !== el.dataset.id); saveDB(); render(); },
   "write-group": el => { F_TARGET = el.dataset.g; go("f-msg"); },
   "write-student": el => { F_TARGET = el.dataset.id; go("f-msg"); },
   "add-group": () => { const n = DB.groups.filter(g => g.cohort === F_COHORT).length + 1; DB.groups.push({id:"G" + Date.now().toString(36), cohort:F_COHORT, name:"Groupe " + n, members:[]}); saveDB(); render(); },
@@ -2162,6 +2259,7 @@ function bindAdmin(m){
   if ($("evC")) $("evC").onchange = e => { F_EV.c = e.target.value; F_EV.g = null; render(); };
   if ($("evD")) $("evD").onchange = e => { F_EV.d = e.target.value; render(); };
   if ($("evG")) $("evG").onchange = e => { F_EV.g = e.target.value; render(); };
+  const jg = m.querySelector("#juryG"); if (jg) jg.onchange = () => { F_JURY = jg.value; render(); };
   m.querySelectorAll("[data-evres], [data-evpts]").forEach(el => el.oninput = el.onchange = evalLive);
   m.querySelectorAll("[data-evpts]").forEach(el => el.addEventListener("change", () => {
     const max = +el.max, v = el.value === "" ? null : Number(el.value); if (v == null) return;
@@ -2173,8 +2271,16 @@ function bindAdmin(m){
     if (rubLocked(d)){ render(); return; }
     if (k === "max"){ const v = Number(el.value); if (el.value.trim() === "" || !isFinite(v) || v < 0 || v > 20){ toast("Les points d'un critère vont de 0 à 20."); render(); return; } c.max = v; }
     else if (k === "label"){ if (!el.value.trim()){ toast("Le libellé du critère ne peut pas être vide."); render(); return; } c.label = el.value.trim(); }
-    else c[k] = el.value;
+    else c[k] = el.value.trim().slice(0, 40);
     saveDB(); render(); });
+  if ($("gmode")) $("gmode").onchange = e => { DB.settings.gradeMode = e.target.value; saveDB(); render(); toast("Mode d'évaluation enregistré : les écrans du formateur et de l'étudiant le suivent."); };
+  m.querySelectorAll("[data-import-grid]").forEach(inp => inp.onchange = () => {
+    const f = inp.files[0]; if (!f) return; const rd = new FileReader();
+    rd.onload = () => { const txt = String(rd.result);
+      const res = /\.xlsx?$/i.test(f.name) || txt.startsWith("PK") ? {ok:[], errors:[], headerError:"Ce fichier est un classeur Excel. Enregistrez-le d'abord au format CSV : « Fichier », « Enregistrer sous », puis le format « " + CSV_FORMAT + " »."} : checkGrid(parseCSV(txt));
+      PENDING_GRID = {name:f.name, res}; render(); };
+    rd.readAsText(f, "utf-8");
+  });
   if ($("fIndCoh")) $("fIndCoh").onchange = e => { F_IND = e.target.value; render(); };
   if ($("fCoh")) $("fCoh").onchange = e => { F_COHORT = e.target.value; render(); };
   if ($("tQ")){ const q = $("tQ"); q.oninput = () => { T_Q = q.value; const pos = q.selectionStart; render(); const n = $("tQ"); n.focus(); n.setSelectionRange(pos, pos); }; }
@@ -2673,7 +2779,7 @@ function viewBilan(){
   const body = G.bilanTab ? {indic:bIndic, marche:bMarche, ventes:bVentes, equipe:bEquipe, comptes:bComptes, classement:bClassement}[G.bilanTab](r, p, h.forecast, i) : `<div class="tiles">${bilanTiles(i)}</div>`;
   return `<div class="top"><div><h1>Bilan du ${S.periods[i]}</h1><p>${S.periodLabels[i]} · ${S.events[i].title}</p></div>
   <label>Trimestre <select id="bilanSel">${G.history.map((x, k) => `<option value="${k}" ${k === i ? "selected" : ""}>${S.periods[k]}</option>`).join("")}</select></label></div>
-  ${G.bilanTab ? `<div class="row"><button class="back" data-btab="__home">← Toutes les analyses</button></div>${tabsHtml(BILAN_TABS, G.bilanTab, "btab")}` : ""}${body}`;
+  ${G.bilanTab ? `<div class="row"><button class="back" data-btab="__home">← Toutes les analyses</button></div>${tabsHtml(BILAN_TABS, G.bilanTab, "btab")}` : ""}${body}${!G.bilanTab || G.bilanTab === "indic" ? iaBox("L'IA t'expliquerait tes chiffres en langage simple. Elle ne prend jamais tes décisions à ta place.") : ""}`;
 }
 function bIndic(r, p, f){
   const k = [
