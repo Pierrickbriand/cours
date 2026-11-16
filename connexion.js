@@ -13,7 +13,7 @@ function montrer(){
 document.getElementById('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(CLE);}catch(e){}});
 montrer();
 if(/(^|[?&])acces=requis(&|$)/.test(location.search)) msg('Votre accès a expiré ou ne couvre pas ce cours. Saisissez à nouveau votre code.',true);
-var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
+var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','e-mail requis':'Pour ce cours, saisissez aussi votre adresse e-mail : celle que votre école a transmise.','e-mail inconnu':'Cette adresse ne figure pas dans la liste de ce cours. Saisissez celle que votre école a transmise, ou prévenez votre formateur.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
 function ouvrir(token,cours){
   try{sessionStorage.setItem(CLE,JSON.stringify(cours));}catch(e){}
   var g=document.createElement('form');g.method='post';g.action='/auth';g.style.display='none';
@@ -37,6 +37,7 @@ f.addEventListener('submit',function(e){
   envoyer(0).then(function(r){
     ok.removeAttribute('aria-busy');
     if(r&&r.ok&&r.token&&Array.isArray(r.cours)&&r.cours.length){ouvrir(String(r.token),r.cours.filter(function(c){return c&&SLUG.test(String(c.slug||''));}));return;}
+    if(r&&(r.err==='e-mail requis'||r.err==='e-mail inconnu')){try{document.getElementById('email').focus();}catch(e){}}
     msg((r&&ERR[r.err])||'La connexion a échoué. Réessayez dans un instant.',true);
   }).catch(function(){ok.removeAttribute('aria-busy');msg('Le service ne répond pas. Réessayez dans un instant.',true);});
 });
