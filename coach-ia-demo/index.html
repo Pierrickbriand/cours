@@ -417,6 +417,7 @@ tr.total td{border-top:2px solid var(--marine)}
 @media (prefers-reduced-motion: reduce){.role-card{transition:none}}
 td.gestes{min-width:150px;white-space:normal}td.gestes .back{display:block;margin:3px 0;text-align:left;white-space:normal;line-height:1.3}
 .iabox{display:block;margin:16px 0;padding:10px 14px;border:1px dashed #b7c3d6;border-radius:12px;background:rgba(255,255,255,.55);color:#51607a;font-size:.85rem;line-height:1.5}.iabox b{display:block;color:var(--marine);font-size:.8rem;letter-spacing:.02em;margin-bottom:2px}
+.od-alert{margin:0 0 14px;padding:12px 16px;border-radius:12px;border:1px solid #e0a3a3;background:#fdeeee;color:#7a1f1f;font-size:.92rem;line-height:1.5}
 </style>
 </head>
 <body>
@@ -697,6 +698,11 @@ function simulatePeriod(state, d, i, opts){
   const units = S.categories.reduce((a, c) => a + cats[c.id].sales, 0);
   const lostRate = (lostStaff + lostStock) / Math.max(1, units + lostStaff + lostStock);
   let satisfaction = 60 + 18 * trainingEff + 20 * (Math.min(coverage, 1.15) - 0.85) - 60 * lostRate + (has("vitrine") ? 3 : 0);
+  // Prix très au-dessus de la référence : la satisfaction baisse progressivement (aucun effet jusqu'à +20 % d'écart en moyenne pondérée par les ventes)
+  let pNum = 0, pDen = 0;
+  for (const c of S.categories){ const x = cats[c.id]; pNum += x.sales * (d.price[c.id] / c.ref); pDen += x.sales; }
+  const priceExcess = pDen > 0 ? Math.max(0, pNum / pDen - 1.2) : 0;
+  satisfaction -= 25 * (1 - Math.exp(-priceExcess / 0.8));
   satisfaction = Math.round(clamp(satisfaction, 20, 97));
   next.reputation = clamp(0.75 * state.reputation + 0.25 * (satisfaction / 70), 0.75, 1.25);
   next.cumResult = state.cumResult + result;
@@ -1394,7 +1400,7 @@ function defaultDB(){
     ]
   };
 }
-const VERSION = "0.15";
+const VERSION = "0.16";
 const MEM = {};
 const store = {
   get(k){ for (const f of [() => localStorage, () => sessionStorage]){ try{ const v = f().getItem(k); if (v != null) return v; }catch(e){} } return MEM[k] != null ? MEM[k] : null; },
@@ -2460,7 +2466,7 @@ function render(){
   $("main").innerHTML = views[G.view]() + `<footer class="credit"><span>Démonstration · version ${VERSION}</span><span>© 2026 Pierrick Briand. Tous droits réservés.</span></footer>`;
   bindView();
   bindAdmin($("main"));
-  updateQ(); saveGame();
+  updateQ(); odBanner(); saveGame();
   if (window.hideHelp) window.hideHelp();
   applyHelp($("main"));
   typoFix($("main"));
@@ -2732,12 +2738,21 @@ function derivedInvest(){
   const f = forecast();
   return `<p>Trésorerie prévue en fin de trimestre : <b class="${f.overdraft > 0 ? "down" : ""}">${eur.format(f.cashEnd - f.overdraft)}</b>${f.overdraft > 0 ? ` : un découvert de ${eur.format(f.overdraft)} serait ouvert automatiquement au taux de ${dec1.format(S.finance.overdraftRate * 100)} %.` : "."}</p>`;
 }
+const OVERDRAFT_ALERT = 50000;
+const overdraftText = (od, prevu) => `Découvert ${prevu ? "prévu " : ""}de ${eur.format(od)} : il te coûte ${dec1.format(S.finance.overdraftRate * 100)} % par trimestre, soit environ ${eur.format(od * S.finance.overdraftRate)} d'intérêts qui réduisent ton résultat. Plus il grossit, plus ton magasin est fragile. Revois tes prix, tes achats ou tes charges. Tu peux continuer la partie : cette alerte ne bloque rien.`;
+function odBanner(){
+  const m = $("main"); if (!m || ROLE !== "etudiant" || !["dash", "bilan", "plan"].includes(G.view)) return;
+  const od = G.state.overdraft; if (!(od > OVERDRAFT_ALERT) || m.querySelector(".od-alert")) return;
+  const d = document.createElement("div"); d.className = "alert bad od-alert"; d.setAttribute("role", "alert"); d.textContent = typoStr(overdraftText(od, false));
+  m.insertBefore(d, m.firstChild);
+}
 function alertsFor(f){
   const a = [];
   if (f.result < 0) a.push(["bad", `Résultat prévu négatif : ${eur.format(f.result)}.`]);
   const up = (S.events[played()].costUp) || {};
   S.categories.forEach(c => { const p = G.draft.price[c.id], cost = c.cost * (up[c.id] || 1); if (p < cost) a.push(["bad", `${c.name} : vente à perte, le prix (${eur.format(p)}) est sous le coût (${eur.format(cost)}).`]); });
-  if (f.overdraft > 0) a.push(["bad", `Trésorerie insuffisante : découvert prévu de ${eur.format(f.overdraft)}.`]);
+  if (f.overdraft > OVERDRAFT_ALERT) a.push(["bad", overdraftText(f.overdraft, true)]);
+  else if (f.overdraft > 0) a.push(["bad", `Trésorerie insuffisante : découvert prévu de ${eur.format(f.overdraft)}.`]);
   STOCK_CATS.forEach(c => { const x = f.cats[c.id]; if (x.lostStock > 0) a.push(["warn", `${c.name} : rupture probable de ${num.format(x.lostStock)} ${c.unit}.`]); else if (x.stockEnd > x.sales * 0.6 && x.stockEnd > 40) a.push(["warn", `${c.name} : il resterait ${num.format(x.stockEnd)} ${c.unit} en stock : de la trésorerie immobilisée et 3 % de frais de stock par trimestre.`]); });
   if (f.lostStaff > 0) a.push(["warn", `Équipe trop juste : ${num.format(f.lostStaff)} ventes perdues faute de personnel.`]);
   if (f.needAll / f.staffHours < 0.7) a.push(["warn", `Ton équipe ne serait occupée qu'à ${pct0(f.needAll / f.staffHours)}.`]);
