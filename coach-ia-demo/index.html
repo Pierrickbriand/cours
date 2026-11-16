@@ -1394,7 +1394,7 @@ function defaultDB(){
     ]
   };
 }
-const VERSION = "0.14";
+const VERSION = "0.15";
 const MEM = {};
 const store = {
   get(k){ for (const f of [() => localStorage, () => sessionStorage]){ try{ const v = f().getItem(k); if (v != null) return v; }catch(e){} } return MEM[k] != null ? MEM[k] : null; },
