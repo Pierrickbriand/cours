@@ -415,6 +415,7 @@ tr.total td{border-top:2px solid var(--marine)}
 .side button:focus-visible,.side a:focus-visible,.entry button:focus-visible{outline:3px solid #fff!important;outline-offset:2px}
 @media (max-width:860px){.event{flex-direction:column;gap:4px}.event b{white-space:normal}}
 @media (prefers-reduced-motion: reduce){.role-card{transition:none}}
+td.gestes{min-width:150px;white-space:normal}td.gestes .back{display:block;margin:3px 0;text-align:left;white-space:normal;line-height:1.3}
 </style>
 </head>
 <body>
@@ -863,7 +864,7 @@ if (typeof module !== "undefined") module.exports = {SCENARIO, DEFAULT_DECISION,
 <script>
 /* ===== Modes d'emploi par rôle (source unique : application et PDF) ===== */
 /* Intitulé du format CSV dans Excel : un seul endroit à changer (à confirmer dans l'Excel de Pierrick) */
-const CSV_FORMAT = "CSV UTF-8 (délimité par des virgules)";
+const CSV_FORMAT = "CSV UTF-8";
 const CSV_NOTE = "Malgré ce nom, Excel en français y met des points-virgules ; l'application accepte le point-virgule et la virgule.";;
 const GUIDES = {
   etudiant: {
@@ -1391,7 +1392,7 @@ function defaultDB(){
     ]
   };
 }
-const VERSION = "0.11.1";
+const VERSION = "0.11.2";
 const MEM = {};
 const store = {
   get(k){ for (const f of [() => localStorage, () => sessionStorage]){ try{ const v = f().getItem(k); if (v != null) return v; }catch(e){} } return MEM[k] != null ? MEM[k] : null; },
@@ -1597,7 +1598,7 @@ function stuRows(){
   if (!l.length) return `<tr><td colspan="8" class="hint">Aucun étudiant ne correspond à cette recherche.</td></tr>`;
   return l.map(x => { const c = cohortOf(x.cohort) || {}, g = groupOf(x.id), me = x.id === ME_STUDENT;
     return `<tr><td style="text-align:left">${esc(x.nom)}</td><td style="text-align:left">${esc(x.prenom)}</td><td style="text-align:left">${esc(x.email)}</td><td>${esc(c.classe || x.cohort)}</td><td>${g ? esc(g.name) : "Sans groupe"}</td><td>${esc(x.lastLogin || "jamais")}</td><td>${esc(c.close || "–")}</td>
-    <td style="text-align:left;white-space:nowrap">${me ? `<span class="hint">Compte de démonstration</span>` : `<button class="back" data-act="stu-move" data-id="${x.id}" aria-label="Changer de cohorte : ${esc(fullName(x))}">Changer de cohorte</button> <button class="back" data-act="stu-mail" data-id="${x.id}" aria-label="Corriger l'adresse e-mail : ${esc(fullName(x))}">Corriger l'adresse e-mail</button> <button class="back" data-act="stu-remove" data-id="${x.id}" aria-label="Retirer de la simulation : ${esc(fullName(x))}">Retirer de la simulation</button>`}</td></tr>`; }).join("");
+    <td class="gestes" style="text-align:left">${me ? `<span class="hint">Compte de démonstration</span>` : `<button class="back" data-act="stu-move" data-id="${x.id}" aria-label="Changer de cohorte : ${esc(fullName(x))}">Changer de cohorte</button> <button class="back" data-act="stu-mail" data-id="${x.id}" aria-label="Corriger l'adresse e-mail : ${esc(fullName(x))}">Corriger l'adresse e-mail</button> <button class="back" data-act="stu-remove" data-id="${x.id}" aria-label="Retirer de la simulation : ${esc(fullName(x))}">Retirer de la simulation</button>`}</td></tr>`; }).join("");
 }
 function vAList(){
   return head("Étudiants", "Tous les étudiants de la simulation : retrouvez un compte, changez de cohorte, corrigez une adresse ou retirez un étudiant.") + `
@@ -1915,9 +1916,7 @@ function vFTasks(){
 }
 
 /* ====== MODE D'EMPLOI PAR RÔLE ====== */
-const GUIDE_PDF = JEU === "iso"
-  ? {etudiant:"guides/guide-etudiant.pdf", formateur:"guides/guide-formateur.pdf", admin:"guides/guide-administrateur.pdf"}
-  : {etudiant:"guides/guide-etudiant.pdf"};
+const GUIDE_PDF = {etudiant:"guides/guide-etudiant.pdf", formateur:"guides/guide-formateur.pdf", admin:"guides/guide-administrateur.pdf"};
 function vGuide(){
   const g = GUIDES[ROLE];
   const pdf = GUIDE_PDF[ROLE];
