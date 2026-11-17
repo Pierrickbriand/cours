@@ -13,7 +13,7 @@ function montrer(){
 document.getElementById('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(CLE);}catch(e){}});
 montrer();
 if(/(^|[?&])acces=requis(&|$)/.test(location.search)) msg('Votre accès a expiré ou ne couvre pas ce cours. Saisissez à nouveau votre code.',true);
-var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','e-mail requis':'Pour ce cours, saisissez aussi votre adresse e-mail : celle que votre école a transmise.','e-mail inconnu':'Cette adresse ne figure pas dans la liste de ce cours. Saisissez celle que votre école a transmise, ou prévenez votre formateur.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
+var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','e-mail requis':'Pour ce cours, saisissez aussi votre adresse e-mail : celle que votre école a transmise.','e-mail inconnu':'Cette adresse ne figure pas dans la liste de ce cours. Saisissez celle que votre école a transmise, ou prévenez votre formateur.','compte requis':'Ce cours utilise un compte par e-mail. Ouvrez « Mon compte » (lien ci-dessous), saisissez votre adresse et suivez les étapes.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
 function ouvrir(token,cours){
   try{sessionStorage.setItem(CLE,JSON.stringify(cours));}catch(e){}
   var g=document.createElement('form');g.method='post';g.action='/auth';g.style.display='none';

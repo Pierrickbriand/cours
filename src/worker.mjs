@@ -7,6 +7,7 @@ const MAX_LIFETIME = 24 * 3600; // un jeton plus long que 24 h est refusé, mêm
 const CLOCK_SKEW = 60;
 const PUBLIC_PATHS = new Set([
   "/", "/index.html", "/connexion", "/connexion.html", "/connexion.js",
+  "/compte", "/compte.html", "/compte.js",
   "/mentions", "/mentions.html", "/style.css", "/script.js",
 ]);
 // Ressources du site public (images, polices) : un seul dossier, jamais un cours.
@@ -88,6 +89,7 @@ function protect(response) {
 }
 
 function safeNext(next, session) {
+  if (next === "/compte") return next; // page « Mon compte » : publique, elle gère elle-même l'état de la session
   if (typeof next === "string" && /^\/[a-z0-9-]{1,80}\/?$/i.test(next)) {
     const slug = next.split("/")[1].toLowerCase();
     if (session.scope.includes("*") || session.scope.includes(slug)) return next;

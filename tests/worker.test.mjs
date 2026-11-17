@@ -37,7 +37,7 @@ test("la page d'accueil publique reste accessible sans jeton", async () => {
 });
 
 test("pages et ressources du site public : accessibles sans jeton", async () => {
-  for (const p of ["/connexion", "/connexion.html", "/mentions.html", "/style.css", "/script.js", "/connexion.js", "/assets/portrait.webp"]) {
+  for (const p of ["/connexion", "/connexion.html", "/mentions.html", "/style.css", "/script.js", "/connexion.js", "/compte", "/compte.html", "/compte.js", "/assets/portrait.webp"]) {
     assert.equal((await get(p)).status, 200, p);
   }
 });
@@ -204,4 +204,18 @@ test("secret manquant : tout est refusé", async () => {
     { ...env, TOKEN_SECRET: undefined }
   );
   assert.equal(await leaked(res), false);
+});
+
+test("après connexion, « next » peut renvoyer vers la page publique /compte", async () => {
+  const token = mint(valid(["cours-test"]));
+  const res = await worker.fetch(new Request(ORIGIN + "/auth", { method: "POST", body: new URLSearchParams({ t: token, next: "/compte" }) }), env);
+  assert.equal(res.status, 303);
+  assert.equal(res.headers.get("Location"), "/compte");
+});
+
+test("une preuve d'adresse (p1) n'ouvre aucun cours", async () => {
+  const body = b64url(JSON.stringify({ em: "a@b.fr", iat: now(), exp: now() + 1800 }));
+  const sig = createHmac("sha256", SECRET).update("p1." + body).digest("base64url");
+  const res = await get("/cours-test/", `p1.${body}.${sig}`);
+  assert.equal(res.status, 401);
 });
