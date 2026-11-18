@@ -37,7 +37,7 @@ function montrerCompte(){
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
   cours.forEach(function(c){var x=c.livrable,ns=Array.isArray(c.notes)?c.notes:[];if(!(x&&x.intitule)&&!ns.length)return;
     var li=el('li'); li.appendChild(el('strong','',String(c.titre||c.slug).slice(0,120)));
-    if(x&&x.intitule) li.appendChild(el('span',x.envoye?'ok':'',(x.envoye?'✓ ':'')+String(x.intitule).slice(0,120)+' : '+(x.envoye?'envoyé au formateur':'pas encore finalisé')));
+    if(x&&x.intitule&&!x.evalue) li.appendChild(el('span',x.envoye?'ok':'',(x.envoye?'✓ ':'')+String(x.intitule).slice(0,120)+' : '+(x.envoye?'envoyé au formateur':'pas encore finalisé')));
     ns.slice(0,10).forEach(function(n){
       var d=el('details','note'),s=el('summary','',String(n.livrable||'Note').slice(0,120)+' : '+nb(n.note)+' / '+nb(n.sur)); d.appendChild(s);
       var det=Array.isArray(n.detail)?n.detail:[]; if(det.length){var t=el('table','crit');det.slice(0,30).forEach(function(r){var tr=el('tr');tr.appendChild(el('td','',String(r.critere||'').slice(0,160)));tr.appendChild(el('td','pt',(r.points===null||r.points===undefined?'–':nb(r.points))+(r.max===null||r.max===undefined?'':' / '+nb(r.max))));t.appendChild(tr);});d.appendChild(t);}
