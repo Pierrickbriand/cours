@@ -23,6 +23,7 @@ function ouvrir(token,cours,suite){
   var b=document.createElement('input');b.type='hidden';b.name='next';b.value=suite;g.appendChild(b);
   document.body.appendChild(g);g.submit();
 }
+function memoriser(r){try{if(r&&/^[A-Z0-9]{6,12}$/.test(String(r.code||'')))localStorage.setItem('suivi-compte',JSON.stringify({c:String(r.code),t:Date.now()}));}catch(e){}}
 function propres(l){return (Array.isArray(l)?l:[]).filter(function(c){return c&&SLUG.test(String(c.slug||''));});}
 function montrerCompte(){
   var st=lire(CLE_COMPTE)||{}, cours=propres(lire(CLE_COURS)), ul=$('liste');
@@ -59,7 +60,7 @@ $('f-code').addEventListener('submit',function(e){
   appel({action:'compte_verifier',email:adresse,code:code}).then(function(r){
     occupe('ok-code',false);
     if(r&&r.ok&&r.preuve){
-      ecrire(CLE_COMPTE,{preuve:r.preuve,prenom:r.prenom||'',nom:r.nom||'',t:Date.now()});
+      ecrire(CLE_COMPTE,{preuve:r.preuve,prenom:r.prenom||'',nom:r.nom||'',t:Date.now()});memoriser(r);
       var cours=propres(r.cours);
       if(r.token&&cours.length) ouvrir(String(r.token),cours,'/compte'); else {ecrire(CLE_COURS,[]);montrerCompte();}
       return;
@@ -78,13 +79,13 @@ $('f-ajout').addEventListener('submit',function(e){
   appel({action:'compte_inscrire',preuve:st.preuve,classe:classe,prenom:prenom,nom:nom}).then(function(r){
     occupe('ok-ajout',false);
     if(r&&r.ok&&r.token&&r.ajoute&&SLUG.test(String(r.ajoute))){
-      ecrire(CLE_COMPTE,{preuve:r.preuve||st.preuve,prenom:r.prenom||prenom,nom:r.nom||nom,t:st.t});
+      ecrire(CLE_COMPTE,{preuve:r.preuve||st.preuve,prenom:r.prenom||prenom,nom:r.nom||nom,t:st.t});memoriser(r);
       ouvrir(String(r.token),propres(r.cours),'/'+r.ajoute+'/');return;
     }
     msg((r&&ERR[r.err])||'L’inscription a échoué. Réessayez.',true);
   }).catch(function(){occupe('ok-ajout',false);msg('Le service ne répond pas. Réessayez dans un instant.',true);});
 });
-$('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(CLE_COURS);sessionStorage.removeItem(CLE_COMPTE);}catch(e){}});
+$('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(CLE_COURS);sessionStorage.removeItem(CLE_COMPTE);localStorage.removeItem('suivi-compte');}catch(e){}});
 // Lien « ?classe=CODE » : le code est déjà rempli.
 var q=/[?&]classe=([A-Za-z0-9]{6,10})/.exec(location.search); if(q)$('classe').value=q[1].toUpperCase();
 var st0=lire(CLE_COMPTE);
