@@ -416,6 +416,8 @@ tr.total td{border-top:2px solid var(--marine)}
 @media (max-width:860px){.event{flex-direction:column;gap:4px}.event b{white-space:normal}}
 @media (prefers-reduced-motion: reduce){.role-card{transition:none}}
 td.gestes{min-width:150px;white-space:normal}td.gestes .back{display:block;margin:3px 0;text-align:left;white-space:normal;line-height:1.3}
+.iabox{display:block;margin:16px 0;padding:10px 14px;border:1px dashed #b7c3d6;border-radius:12px;background:rgba(255,255,255,.55);color:#51607a;font-size:.85rem;line-height:1.5}.iabox b{display:block;color:var(--marine);font-size:.8rem;letter-spacing:.02em;margin-bottom:2px}
+.od-alert{margin:0 0 14px;padding:12px 16px;border-radius:12px;border:1px solid #e0a3a3;background:#fdeeee;color:#7a1f1f;font-size:.92rem;line-height:1.5}
 </style>
 </head>
 <body>
@@ -449,15 +451,15 @@ td.gestes{min-width:150px;white-space:normal}td.gestes .back{display:block;margi
 </button>
 <aside class="drawer" id="drawer" aria-label="Coach IA">
   <header>
-    <div><h2>Ton coach</h2><span class="pill" id="mode">Analyses préprogrammées</span> <span class="pill" id="qCount"></span></div>
+    <div><h2>Votre coach</h2><span class="pill" id="mode">Analyses préprogrammées</span> <span class="pill" id="qCount"></span></div>
     <button class="close" id="coachClose" aria-label="Fermer le coach">×</button>
   </header>
   <div class="thread" id="thread"></div>
   <footer>
     <div class="chips" id="chips"></div>
     <form class="ask" id="askform">
-      <label for="ask" class="sr">Ta question au coach</label>
-      <input id="ask" placeholder="Pose ta question au coach…" autocomplete="off">
+      <label for="ask" class="sr">Votre question au coach</label>
+      <input id="ask" placeholder="Posez votre question au coach…" autocomplete="off">
       <button class="btn" type="submit">Envoyer</button>
     </form>
   </footer>
@@ -491,7 +493,7 @@ const SCENARIO = {
     {id:"rdv", name:"Prise de rendez-vous en ligne", cost:7000, effect:"+10 % d'efficacité de la communication digitale"}
   ],
   events: [
-    {title:"Reprise du magasin", text:"Ton équipe reprend Lumière Optique. Ce premier trimestre a été joué avec les réglages de l'ancien gérant : analyse-le avant de décider.", potential:1, costUp:{}, comp:{}},
+    {title:"Reprise du magasin", text:"Votre équipe reprend Lumière Optique. Ce premier trimestre a été joué avec les réglages de l'ancien gérant : analysez-le avant de décider.", potential:1, costUp:{}, comp:{}},
     {title:"Retour des beaux jours", text:"Les ventes de solaires redémarrent. Une enquête locale indique que les clients comparent davantage les prix en ligne pour les lentilles.", potential:1, costUp:{}, comp:{}, lentElas:2.6 / 2.2},
     {title:"Été et promotion concurrente", text:"Pic des solaires. OptiPrix, l'enseigne discount, lance « 2e monture à 1 € » tout le trimestre. Les solaires encore en stock fin septembre perdront 20 % de leur valeur.", potential:1, costUp:{}, comp:{optiprix:{mont:1.35}}},
     {title:"Rentrée et fin d'année", text:"Rentrée scolaire puis fin d'année : les clients utilisent leurs droits mutuelle avant le 31 décembre. C'est le pic de l'année pour les montures.", potential:1.08, costUp:{}, comp:{}},
@@ -517,14 +519,14 @@ const SCENARIO = {
       "<b>Atelier</b> : ajustages et réparations, peu rentables seuls mais très bons pour la fidélité."],
     attachLow:a => `Seulement ${a} des montures vendues repartent avec des verres. C'est la plus grosse part du panier.`,
     attachLowQ:"Qu'est-ce qui pousse un client à faire ses verres ailleurs ?",
-    compSummary:"OptiPrix joue le prix bas, Maison Verlaine le haut de gamme, le centre mutualiste la fidélité des adhérents, et Optique du Marché te ressemble.",
+    compSummary:"OptiPrix joue le prix bas, Maison Verlaine le haut de gamme, le centre mutualiste la fidélité des adhérents, et Optique du Marché vous ressemble.",
     team:"Équipe Lumière Optique"
   },
   competitors: [
     {id:"optiprix", name:"OptiPrix", profile:"Enseigne discount, prix bas, gros volumes", priceIdx:0.78, quality:1.0, fixed:86500, margin:0.6, hours:60},
     {id:"verlaine", name:"Maison Verlaine", profile:"Opticien indépendant haut de gamme, conseil personnalisé", priceIdx:1.25, quality:1.25, fixed:79000, margin:0.66, hours:44},
     {id:"mutua", name:"Centre optique mutualiste", profile:"Réseau de mutuelle, tiers payant, clientèle fidèle", priceIdx:0.92, quality:1.05, fixed:82000, margin:0.62, hours:48},
-    {id:"centre", name:"Optique du Marché", profile:"Concurrent local de même taille que toi", priceIdx:1.0, quality:0.95, fixed:74500, margin:0.63, hours:48}
+    {id:"centre", name:"Optique du Marché", profile:"Concurrent local de même taille que vous", priceIdx:1.0, quality:0.95, fixed:74500, margin:0.63, hours:48}
   ]
 };
 
@@ -696,6 +698,11 @@ function simulatePeriod(state, d, i, opts){
   const units = S.categories.reduce((a, c) => a + cats[c.id].sales, 0);
   const lostRate = (lostStaff + lostStock) / Math.max(1, units + lostStaff + lostStock);
   let satisfaction = 60 + 18 * trainingEff + 20 * (Math.min(coverage, 1.15) - 0.85) - 60 * lostRate + (has("vitrine") ? 3 : 0);
+  // Prix très au-dessus de la référence : la satisfaction baisse progressivement (aucun effet jusqu'à +20 % d'écart en moyenne pondérée par les ventes)
+  let pNum = 0, pDen = 0;
+  for (const c of S.categories){ const x = cats[c.id]; pNum += x.sales * (d.price[c.id] / c.ref); pDen += x.sales; }
+  const priceExcess = pDen > 0 ? Math.max(0, pNum / pDen - 1.2) : 0;
+  satisfaction -= 25 * (1 - Math.exp(-priceExcess / 0.8));
   satisfaction = Math.round(clamp(satisfaction, 20, 97));
   next.reputation = clamp(0.75 * state.reputation + 0.25 * (satisfaction / 70), 0.75, 1.25);
   next.cumResult = state.cumResult + result;
@@ -750,14 +757,14 @@ const SCENARIOS = {
     },
     staff:{opt:"Employés métiers de bouche", cons:"Employés libre-service"},
     investments:{vitrine:["Réaménagement du magasin", "+6 % d'attractivité sur tous les rayons"], mesure:["Vitrine réfrigérée pour le rayon frais", "+8 points d'achats au rayon frais par panier"], rdv:["Commande en ligne et retrait en magasin", "+10 % d'efficacité de la communication digitale"]},
-    comps:[["Prix Malin", "Enseigne de hard-discount, prix bas, choix restreint"], ["Le Comptoir Gourmand", "Épicerie fine, produits locaux, prix élevés"], ["Drive de l'hypermarché", "Commande en ligne, prix serrés, clientèle motorisée"], ["Proxi Centre", "Supérette de même taille que toi, dans la rue voisine"]],
+    comps:[["Prix Malin", "Enseigne de hard-discount, prix bas, choix restreint"], ["Le Comptoir Gourmand", "Épicerie fine, produits locaux, prix élevés"], ["Drive de l'hypermarché", "Commande en ligne, prix serrés, clientèle motorisée"], ["Proxi Centre", "Supérette de même taille que vous, dans la rue voisine"]],
     events:[
-      ["Reprise de la supérette", "Ton équipe reprend Le Panier du Quartier. Ce premier trimestre a été joué avec les réglages de l'ancien gérant : analyse-le avant de décider."],
+      ["Reprise de la supérette", "Votre équipe reprend Le Panier du Quartier. Ce premier trimestre a été joué avec les réglages de l'ancien gérant : analysez-le avant de décider."],
       ["Retour des beaux jours", "Le rayon saisonnier redémarre. Une enquête locale montre que les clients comparent davantage les prix des boissons avec le drive."],
       ["Été et promotion du hard-discount", "Pic du rayon saisonnier. Prix Malin lance une grande opération sur l'épicerie tout le trimestre. Les produits saisonniers encore en stock fin septembre perdront 20 % de leur valeur."],
       ["Rentrée et fêtes de fin d'année", "Rentrée scolaire puis repas de fêtes : c'est le pic de l'année pour l'épicerie et le rayon frais."],
       ["Hausse des prix des produits frais", "Les fournisseurs du rayon frais augmentent leurs prix de 8 %. La consommation ralentit en début d'année."],
-      ["Le drive agrandit sa zone", "Le drive de l'hypermarché livre désormais ton quartier et devient plus attractif pour les familles."]
+      ["Le drive agrandit sa zone", "Le drive de l'hypermarché livre désormais votre quartier et devient plus attractif pour les familles."]
     ],
     words:{
       shopType:"supérette de proximité", mainOne:"panier", mainMany:"paniers d'épicerie", attachedMany:"achats au rayon frais",
@@ -778,7 +785,7 @@ const SCENARIOS = {
         "<b>Services de proximité</b> : relais colis, livraison à domicile. Peu rentables seuls mais très bons pour la fidélité."],
       attachLow:a => `Seulement ${a} des paniers d'épicerie s'accompagnent d'un achat au rayon frais. C'est la meilleure marge du magasin.`,
       attachLowQ:"Qu'est-ce qui pousse un client à acheter ses produits frais ailleurs ?",
-      compSummary:"Prix Malin joue le prix bas, Le Comptoir Gourmand le haut de gamme, le drive la commodité pour les familles, et Proxi Centre te ressemble.",
+      compSummary:"Prix Malin joue le prix bas, Le Comptoir Gourmand le haut de gamme, le drive la commodité pour les familles, et Proxi Centre vous ressemble.",
       team:"Équipe du Panier du Quartier"
     }
   },
@@ -793,9 +800,9 @@ const SCENARIOS = {
     },
     staff:{opt:"Conseillères de mode", cons:"Vendeurs"},
     investments:{vitrine:["Rénovation de la vitrine", "+6 % d'attractivité sur toutes les catégories"], mesure:["Cabines d'essayage rénovées et miroir connecté", "+8 points d'accessoires vendus par vêtement"], rdv:["Retrait en boutique des commandes en ligne", "+10 % d'efficacité de la communication digitale"]},
-    comps:[["Fast Mode", "Enseigne de mode à petits prix, renouvellement rapide"], ["Boutique Céleste", "Créatrice indépendante haut de gamme, conseil personnalisé"], ["Grand magasin du centre", "Grand choix de marques, cartes de fidélité"], ["Comptoir du Style", "Boutique de même taille que toi"]],
+    comps:[["Fast Mode", "Enseigne de mode à petits prix, renouvellement rapide"], ["Boutique Céleste", "Créatrice indépendante haut de gamme, conseil personnalisé"], ["Grand magasin du centre", "Grand choix de marques, cartes de fidélité"], ["Comptoir du Style", "Boutique de même taille que vous"]],
     events:[
-      ["Reprise de la boutique", "Ton équipe reprend Atelier Saison. Ce premier trimestre a été joué avec les réglages de l'ancien gérant : analyse-le avant de décider."],
+      ["Reprise de la boutique", "Votre équipe reprend Atelier Saison. Ce premier trimestre a été joué avec les réglages de l'ancien gérant : analysez-le avant de décider."],
       ["Arrivée de la collection d'été", "La collection d'été démarre. Une enquête locale montre que les clients comparent davantage les prix des basiques en ligne."],
       ["Soldes d'été et promotion concurrente", "Pic de la collection d'été. Fast Mode lance « 2e article à – 50 % » tout le trimestre. La collection d'été encore en stock fin septembre perdra 20 % de sa valeur."],
       ["Rentrée et fêtes de fin d'année", "Rentrée puis cadeaux de fin d'année : c'est le pic de l'année pour les vêtements et les accessoires."],
@@ -821,7 +828,7 @@ const SCENARIOS = {
         "<b>Retouches</b> : peu rentables seules mais très bonnes pour la fidélité."],
       attachLow:a => `Seulement ${a} accessoire par vêtement vendu. C'est la meilleure marge de la boutique.`,
       attachLowQ:"Qu'est-ce qui pousse une cliente à acheter ses accessoires ailleurs ?",
-      compSummary:"Fast Mode joue le prix bas, Boutique Céleste le haut de gamme, le grand magasin le choix et la fidélité, et Comptoir du Style te ressemble.",
+      compSummary:"Fast Mode joue le prix bas, Boutique Céleste le haut de gamme, le grand magasin le choix et la fidélité, et Comptoir du Style vous ressemble.",
       team:"Équipe Atelier Saison"
     }
   }
@@ -869,45 +876,45 @@ const CSV_NOTE = "Malgré ce nom, Excel en français y met des points-virgules ;
 const GUIDES = {
   etudiant: {
     title: "Guide de l'étudiant",
-    sub: "Piloter ton magasin pendant six trimestres, avec un coach qui te fait réfléchir sans donner les réponses.",
+    sub: "Piloter votre magasin pendant six trimestres, avec un coach qui vous fait réfléchir sans donner les réponses.",
     cover: "e-dash",
     sections: [
-      {t:"Le principe", sub:"Ce que tu vas faire", p:[
-        "Ton équipe reprend un magasin et le dirige pendant six trimestres, face à quatre concurrents simulés. À chaque trimestre, vous prenez vos décisions, vous les validez, puis vous analysez les résultats.",
+      {t:"Le principe", sub:"Ce que vous allez faire", p:[
+        "Votre équipe reprend un magasin et le dirige pendant six trimestres, face à quatre concurrents simulés. À chaque trimestre, vous prenez vos décisions, vous les validez, puis vous analysez les résultats.",
         "L'objectif : le meilleur résultat cumulé à la fin du sixième trimestre, sans mettre la trésorerie dans le rouge.",
-        "Le coach IA t'aide à lire tes chiffres et à justifier tes choix. Il ne te dit jamais quoi saisir."]},
-      {t:"Se connecter", sub:"Ton adresse e-mail et ton code", shot:"e-login", steps:[
-        "<b>Ouvre la page de connexion</b> du site, donnée par ton formateur.",
-        "<b>Adresse e-mail</b> : celle que ton école a transmise.",
-        "<b>Code</b> : ton code personnel, reçu par e-mail, ou le code de classe écrit au tableau. Avec le code de classe, tu écris aussi ton adresse e-mail.",
-        "<b>Code refusé ou oublié</b> : demande à ton formateur. Il t'en envoie un nouveau par e-mail.", "<b>Changer de rôle</b> : bouton en haut de l'écran (démonstration)."],
-        tip:"Ton accès reste ouvert jusqu'à la date de clôture de ta cohorte. Ensuite, il se ferme automatiquement."},
+        "Le coach IA vous aide à lire vos chiffres et à justifier vos choix. Il ne vous dit jamais quoi saisir."]},
+      {t:"Se connecter", sub:"Votre adresse e-mail et votre code", shot:"e-login", steps:[
+        "<b>Ouvrez la page de connexion</b> du site, donnée par votre formateur.",
+        "<b>Adresse e-mail</b> : celle que votre école a transmise.",
+        "<b>Code</b> : votre code personnel, reçu par e-mail, ou le code de classe écrit au tableau. Avec le code de classe, vous écrivez aussi votre adresse e-mail.",
+        "<b>Code refusé ou oublié</b> : demandez à votre formateur. Il vous en envoie un nouveau par e-mail.", "<b>Changer de rôle</b> : bouton en haut de l'écran (démonstration)."],
+        tip:"Votre accès reste ouvert jusqu'à la date de clôture de votre cohorte. Ensuite, il se ferme automatiquement."},
       {t:"Le tableau de bord", sub:"Le point de départ de chaque séance", shot:"e-dash", p:[
-        "En haut : l'événement du trimestre à préparer. Lis-le toujours en premier, il change la donne.",
+        "En haut : l'événement du trimestre à préparer. Lisez-le toujours en premier, il change la donne.",
         "Les six indicateurs résument la situation : résultat, chiffre d'affaires, part de marché, satisfaction des clients, trésorerie.",
-        "La feuille de route présente les sept étapes du plan sous forme de cartes. Un badge indique ce qui est fait, à faire ou à revoir.", "Un mot souligné en pointillé cache une définition : passe la souris dessus, puis clique sur « Voir un exemple » pour un cas chiffré."]},
-      {t:"Préparer le trimestre", sub:"Les sept cartes du plan d'action", shot:"e-plan", p:["Clique sur une carte pour l'ouvrir. En bas de chaque étape, le bouton « Étape suivante » mène à la suivante, jusqu'à « Vérifier et valider ». Les onglets en haut permettent aussi de revenir en arrière."], steps:[
+        "La feuille de route présente les sept étapes du plan sous forme de cartes. Un badge indique ce qui est fait, à faire ou à revoir.", "Un mot souligné en pointillé cache une définition : passez la souris dessus, puis cliquez sur « Voir un exemple » pour un cas chiffré."]},
+      {t:"Préparer le trimestre", sub:"Les sept cartes du plan d'action", shot:"e-plan", p:["Cliquez sur une carte pour l'ouvrir. En bas de chaque étape, le bouton « Étape suivante » mène à la suivante, jusqu'à « Vérifier et valider ». Les onglets en haut permettent aussi de revenir en arrière."], steps:[
         "<b>Lire le contexte</b> : l'événement, les coûts du trimestre, ce que font les concurrents.",
-        "<b>Fixer mes prix</b> : comparer ton coût d'achat, le prix des concurrents et la position que tu vises.",
-        "<b>Passer mes commandes</b> : la demande estimée et le stock prévu t'évitent les ruptures.",
+        "<b>Fixer mes prix</b> : comparer votre coût d'achat, le prix des concurrents et la position que vous visez.",
+        "<b>Passer mes commandes</b> : la demande estimée et le stock prévu vous évitent les ruptures.",
         "<b>Régler ma communication</b>, puis <b>organiser mon équipe</b> : assez d'heures pour servir les clients, sans payer pour rien.",
         "<b>Investir et financer</b>, puis <b>vérifier et valider</b> : le prévisionnel se met à jour à chaque réglage."]},
       {t:"Le bilan de séance et la validation", sub:"Expliquer vos choix avant de valider", shot:"e-synth", p:[
-        "La dernière étape affiche le résultat prévu et les points de vigilance. Clique sur « Demander l'avis du coach » pour une relecture.",
-        "Avant de valider, ton équipe rédige son <b>bilan de séance</b>, obligatoire : deux ou trois lignes sur votre stratégie et vos choix. Sans lui, la validation est refusée. Le coach compare ensuite ce que vous avez annoncé à ce que vous avez obtenu. Ton formateur le lit pour le débriefing.",
+        "La dernière étape affiche le résultat prévu et les points de vigilance. Cliquez sur « Demander l'avis du coach » pour une relecture.",
+        "Avant de valider, votre équipe rédige son <b>bilan de séance</b>, obligatoire : deux ou trois lignes sur votre stratégie et vos choix. Sans lui, la validation est refusée. Le coach compare ensuite ce que vous avez annoncé à ce que vous avez obtenu. Votre formateur le lit pour le débriefing.",
         "Le bouton « Valider le trimestre » enregistre les décisions et calcule le trimestre. Dans la version complète, les décisions sont aussi verrouillées à la date limite."]},
       {t:"Lire le bilan du trimestre", sub:"Comprendre ce qui s'est passé", shot:"e-bilan", p:[
         "Le bilan se lit en six cartes : indicateurs, concurrence, ventes et stocks, équipe, comptes, classement.",
-        "Commence par trois chiffres : le résultat, les ventes perdues et l'écart entre le prévu et le réalisé. Les ventes perdues montrent ce que tu aurais pu gagner ; l'écart montre si tu comprends ton marché."]},
+        "Commencez par trois chiffres : le résultat, les ventes perdues et l'écart entre le prévu et le réalisé. Les ventes perdues montrent ce que vous auriez pu gagner ; l'écart montre si vous comprenez votre marché."]},
       {t:"Le coach IA", sub:"Un partenaire de réflexion", shot:"e-coach", p:[
-        "Le bouton « Coach IA », en bas à droite, ouvre le coach depuis n'importe quel écran. Il commente chaque trimestre et répond à tes questions à partir de TES chiffres.",
-        "Il termine toujours par une question : réponds-y avec ton équipe, c'est là que tu progresses.",
-        "Tu disposes d'un nombre de questions par trimestre, affiché dans « Mon avancement »."]},
-      {t:"Mon avancement et les messages", sub:"Savoir où tu en es", shot:"e-prog", p:[
-        "<b>Mon avancement</b> montre les trimestres joués, les livrables et leur statut. Quand ton formateur valide une étape, elle passe en vert.",
-        "<b>Messages</b> réunit les annonces de ton formateur, pour toute la cohorte ou pour ton seul groupe, et les bilans de séance de ton équipe. Un badge signale les messages non lus.",
+        "Le bouton « Coach IA », en bas à droite, ouvre le coach depuis n'importe quel écran. Il commente chaque trimestre et répond à vos questions à partir de VOS chiffres.",
+        "Il termine toujours par une question : répondez-y avec votre équipe, c'est là que vous progressez.",
+        "Vous disposez d'un nombre de questions par trimestre, affiché dans « Mon avancement »."]},
+      {t:"Mon avancement et les messages", sub:"Savoir où vous en êtes", shot:"e-prog", p:[
+        "<b>Mon avancement</b> montre les trimestres joués, les livrables et leur statut. Quand votre formateur valide une étape, elle passe en vert.",
+        "<b>Messages</b> réunit les annonces de votre formateur, pour toute la cohorte ou pour votre seul groupe, et les bilans de séance de votre équipe. Un badge signale les messages non lus.",
         "<b>Calendrier</b> rappelle les dates limites des décisions et des livrables."],
-        tip:"Garde une ligne stratégique : à quel client t'adresses-tu, et pourquoi viendrait-il chez toi plutôt qu'ailleurs ?"}
+        tip:"Gardez une ligne stratégique : à quel client vous adressez-vous, et pourquoi viendrait-il chez vous plutôt qu'ailleurs ?"}
     ]
   },
   formateur: {
@@ -996,7 +1003,7 @@ const HELP = [
    d:"Total des ventes du trimestre, hors taxes : nombre d'articles vendus multiplié par leur prix de vente.",
    x:["Au T1, Lumière Optique a vendu 351 montures, 282 paires de verres, des solaires, des lentilles et des services d'atelier.",
       "Additionnées, ces ventes font un chiffre d'affaires de 159 298 €.",
-      "Attention : ce n'est pas ce que le magasin gagne. Il faut encore payer les marchandises, l'équipe, le loyer et les autres charges. Pour savoir ce qui reste, regarde le résultat."]},
+      "Attention : ce n'est pas ce que le magasin gagne. Il faut encore payer les marchandises, l'équipe, le loyer et les autres charges. Pour savoir ce qui reste, regardez le résultat."]},
   {k:"cogs", v:["Coût des ventes"], t:"Coût des ventes",
    d:"Ce qu'ont coûté, chez les fournisseurs, les articles vendus pendant le trimestre.",
    x:["Une monture achetée 55 € et revendue 150 € coûte 55 € au moment de la vente.",
@@ -1009,19 +1016,19 @@ const HELP = [
       "Dans l'optique, une marge brute de 55 à 65 % est habituelle. Baisser fortement les prix la fait fondre très vite."]},
   {k:"cout", v:["Coût d'achat"], t:"Coût d'achat",
    d:"Prix payé au fournisseur pour un article, avant de le revendre au client.",
-   x:["Une monture te coûte 55 € chez le fournisseur, une paire de verres 85 €.",
+   x:["Une monture vous coûte 55 € chez le fournisseur, une paire de verres 85 €.",
       "Ce coût peut changer : au T5, les verriers augmentent leurs tarifs de 8 %. Une paire de verres passe alors de 85 € à 91,80 €.",
-      "Si tu ne modifies pas ton prix de vente, ta marge sur chaque paire baisse d'autant."]},
-  {k:"marge", v:["Ta marge"], t:"Marge par article",
+      "Si vous ne modifiez pas votre prix de vente, votre marge sur chaque paire baisse d'autant."]},
+  {k:"marge", v:["Votre marge"], t:"Marge par article",
    d:"Prix de vente moins coût d'achat : ce que rapporte un article vendu, avant les autres charges.",
-   x:["Une monture vendue 150 € et achetée 55 € te rapporte 95 €.",
-      "Si tu la vends 135 €, elle ne rapporte plus que 80 €. Il faut alors en vendre davantage pour gagner autant.",
-      "Une marge élevée ne suffit pas : encore faut-il que les clients achètent à ce prix. Compare toujours avec les prix des concurrents."]},
+   x:["Une monture vendue 150 € et achetée 55 € vous rapporte 95 €.",
+      "Si vous la vendez 135 €, elle ne rapporte plus que 80 €. Il faut alors en vendre davantage pour gagner autant.",
+      "Une marge élevée ne suffit pas : encore faut-il que les clients achètent à ce prix. Comparez toujours avec les prix des concurrents."]},
   {k:"pconc", v:["Prix concurrents"], t:"Prix des concurrents",
-   d:"Prix de vente moyen pratiqué par tes quatre concurrents pour le même type d'article.",
-   x:["Les concurrents vendent en moyenne leurs montures 148 €, et toi 150 € : tu es au prix du marché.",
+   d:"Prix de vente moyen pratiqué par vos quatre concurrents pour le même type d'article.",
+   x:["Les concurrents vendent en moyenne leurs montures 148 €, et vous 150 € : vous êtes au prix du marché.",
       "OptiPrix vend beaucoup moins cher, Maison Verlaine beaucoup plus cher. La moyenne gomme ces écarts.",
-      "Trop au-dessus de la moyenne, tu perds des clients. Trop en dessous, tu gagnes des clients mais chaque vente rapporte moins."]},
+      "Trop au-dessus de la moyenne, vous perdez des clients. Trop en dessous, vous gagnez des clients mais chaque vente rapporte moins."]},
   {k:"res", v:["Résultat cumulé", "Résultat prévu", "Résultat"], t:"Résultat",
    d:"Ce que le magasin gagne réellement : chiffre d'affaires moins toutes les charges. C'est le critère du classement.",
    x:["Au T1 : 101 352 € de marge brute, moins 37 000 € d'équipe, 40 000 € de loyer et de charges fixes, 6 000 € de communication et de formation.",
@@ -1033,15 +1040,15 @@ const HELP = [
       "Il reste 18 352 €. Cet excédent montre si le magasin est rentable dans son fonctionnement de tous les jours.",
       "Un excédent faible ou négatif signale un problème de fond : prix trop bas, équipe trop nombreuse ou trop de dépenses."]},
   {k:"pdm", v:["Part de marché"], t:"Part de marché",
-   d:"Part des clients de la ville qui achètent chez toi plutôt que chez tes quatre concurrents.",
+   d:"Part des clients de la ville qui achètent chez vous plutôt que chez vos quatre concurrents.",
    x:["Au T1, Lumière Optique réalise 21,9 % des ventes de la ville : un peu plus d'un client sur cinq.",
       "Avec cinq magasins, une part de 20 % correspond à la moyenne.",
-      "Elle monte si tes prix, ton service ou ta communication attirent davantage. Elle baisse si un concurrent devient plus attractif, comme le centre mutualiste au T6."]},
+      "Elle monte si vos prix, votre service ou votre communication attirent davantage. Elle baisse si un concurrent devient plus attractif, comme le centre mutualiste au T6."]},
   {k:"satis", v:["Satisfaction client", "Satisfaction"], t:"Satisfaction client",
    d:"Note sur 100 de l'expérience des clients : temps d'attente, conseil, disponibilité des produits.",
    x:["Au T1, la satisfaction est de 75 sur 100.",
       "Elle baisse quand l'équipe est débordée, quand les produits manquent ou quand le magasin ouvre peu d'heures.",
-      "Elle compte pour la suite : des clients satisfaits reviennent et en parlent, ce qui améliore ta réputation aux trimestres suivants."]},
+      "Elle compte pour la suite : des clients satisfaits reviennent et en parlent, ce qui améliore votre réputation aux trimestres suivants."]},
   {k:"treso", v:["Trésorerie"], t:"Trésorerie",
    d:"Argent disponible sur le compte du magasin à la fin du trimestre.",
    x:["À la fin du T1, Lumière Optique dispose de 51 139 €.",
@@ -1049,7 +1056,7 @@ const HELP = [
       "Elle ne doit pas descendre sous 5 000 €. En dessous, la banque accorde un découvert, qui coûte 3 % d'intérêts par trimestre."]},
   {k:"decouvert", v:["Découvert"], t:"Découvert",
    d:"Argent avancé par la banque quand la trésorerie descend sous 5 000 €. Il coûte cher.",
-   x:["Imagine une trésorerie qui tomberait à – 10 000 € après une très grosse commande.",
+   x:["Imaginez une trésorerie qui tomberait à – 10 000 € après une très grosse commande.",
       "La banque avance automatiquement 15 000 € pour revenir au minimum de 5 000 €.",
       "Ce découvert coûte 3 % par trimestre, soit 450 € d'intérêts. Un emprunt, à 1,2 %, revient beaucoup moins cher quand on prévoit le besoin."]},
   {k:"emprunt", v:["Emprunt"], t:"Emprunt",
@@ -1058,10 +1065,10 @@ const HELP = [
       "Il coûte 720 € d'intérêts par trimestre : 60 000 € multipliés par 1,2 %.",
       "Emprunter sert à financer un investissement ou à passer un trimestre difficile sans découvert. Rembourser réduit les intérêts, mais diminue la trésorerie."]},
   {k:"previ", v:["Prévisionnel"], t:"Prévisionnel",
-   d:"Estimation du trimestre calculée avec tes décisions actuelles, avant de valider. Le résultat réel peut s'en écarter.",
+   d:"Estimation du trimestre calculée avec vos décisions actuelles, avant de valider. Le résultat réel peut s'en écarter.",
    x:["Au T2, avec les réglages de départ, le prévisionnel annonce 21 168 € de résultat.",
-      "Si tu baisses le prix des montures à 135 €, il se recalcule tout de suite : 25 montures de plus, mais un résultat presque identique.",
-      "Le résultat réel s'écarte un peu du prévisionnel, car le marché réserve toujours des surprises. Un écart important doit t'interroger."]},
+      "Si vous baissez le prix des montures à 135 €, il se recalcule tout de suite : 25 montures de plus, mais un résultat presque identique.",
+      "Le résultat réel s'écarte un peu du prévisionnel, car le marché réserve toujours des surprises. Un écart important doit vous interroger."]},
   {k:"perdus", v:["Ventes perdues", "rupture"], t:"Ventes perdues",
    d:"Clients venus acheter mais repartis sans rien : produit manquant (rupture) ou équipe trop occupée pour les servir.",
    x:["Au T2, avec seulement 80 paires de solaires commandées, le prévisionnel annonce une rupture de 15 paires.",
@@ -1076,7 +1083,7 @@ const HELP = [
    d:"Perte de valeur d'un stock invendu. Ici, les solaires restants fin septembre perdent 20 % de leur valeur.",
    x:["Les solaires se vendent surtout au printemps et en été.",
       "S'il reste 100 paires achetées 34 € à la fin du T3, leur valeur passe de 3 400 € à 2 720 €.",
-      "La perte de 680 € est retirée du résultat. Pour l'éviter, réduis tes commandes de solaires avant la fin de l'été."]},
+      "La perte de 680 € est retirée du résultat. Pour l'éviter, réduisez vos commandes de solaires avant la fin de l'été."]},
   {k:"amort", v:["Amortissements"], t:"Amortissements",
    d:"Part du prix d'un investissement comptée chaque trimestre comme une charge, pendant sa durée d'utilisation.",
    x:["Une nouvelle vitrine coûte 15 000 €. Elle va servir pendant deux ans, soit huit trimestres.",
@@ -1089,7 +1096,7 @@ const HELP = [
       "Chaque euro de résultat s'y ajoute. Après le T1 et ses 17 118 € de résultat, les capitaux propres atteignent 68 278 €."]},
   {k:"fdc", v:["Fonds de commerce"], t:"Fonds de commerce",
    d:"Valeur du magasin en tant qu'affaire : son emplacement, son nom, sa clientèle. Il a été acheté à la reprise.",
-   x:["En reprenant Lumière Optique, ton équipe a payé 60 000 € pour le fonds de commerce.",
+   x:["En reprenant Lumière Optique, votre équipe a payé 60 000 € pour le fonds de commerce.",
       "Elle achète surtout une clientèle déjà installée et un emplacement en centre-ville.",
       "Cette valeur figure à l'actif du bilan. Elle ne baisse pas d'un trimestre à l'autre dans la simulation."]},
   {k:"panier", v:["Panier moyen"], t:"Panier moyen",
@@ -1101,7 +1108,7 @@ const HELP = [
    d:"Heures de travail nécessaires pour servir les clients, comparées aux heures disponibles de l'équipe.",
    x:["Au T1, servir les clients demandait 843 heures. L'équipe de trois personnes en offrait 960.",
       "L'occupation est donc de 88 % : l'équipe est bien utilisée, sans être débordée.",
-      "Au-delà de 100 %, des clients repartent sans être servis. En dessous de 70 %, tu paies des heures qui ne servent pas."]},
+      "Au-delà de 100 %, des clients repartent sans être servis. En dessous de 70 %, vous payez des heures qui ne servent pas."]},
   {k:"verrmont", v:["paires de verres par monture"], t:"Verres vendus par monture",
    d:"Nombre moyen de paires de verres vendues avec chaque monture. Un bon conseil et un bon équipement l'augmentent.",
    x:["Au T1, Lumière Optique a vendu 351 montures et 282 paires de verres, soit 0,80 paire par monture.",
@@ -1116,7 +1123,7 @@ const HELP = [
    d:"Deux ou trois lignes où l'équipe note sa stratégie et ses choix avant de valider. Il est obligatoire.",
    x:["Exemple : « Nous visons les familles. Nous baissons un peu le prix des verres et ajoutons une conseillère pour mieux servir. »",
       "Après le calcul du trimestre, le coach compare ce que vous avez annoncé à ce que vous avez obtenu.",
-      "Ton formateur s'en sert au débriefing : il montre votre raisonnement, pas seulement vos chiffres."]},
+      "Votre formateur s'en sert au débriefing : il montre votre raisonnement, pas seulement vos chiffres."]},
   {k:"charge", v:["coût chargé"], t:"Coût chargé",
    d:"Ce que coûte un salarié à l'entreprise : salaire brut plus cotisations patronales.",
    x:["Un opticien diplômé coûte 13 500 € par trimestre au magasin, soit 4 500 € par mois.",
@@ -1272,6 +1279,7 @@ const ADMIN_NAV = {
     {id:"f-home", label:"Suivi des groupes", icon:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>'},
     {id:"f-groups", label:"Mes groupes", icon:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14a5 5 0 0 1 5 6"/>'},
     {id:"f-eval", label:"Évaluer les livrables", icon:'<path d="M9 11l3 3 8-8"/><path d="M4 4h10M4 9h5M4 14h5M4 19h16"/>'},
+    {id:"f-jury", label:"Préparer le jury", icon:'<path d="M4 20h16M6 20V9l6-5 6 5v11"/><path d="M10 20v-5h4v5"/>'},
     {id:"f-students", label:"Mes étudiants", icon:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/>'},
     {id:"f-msg", label:"Messages", icon:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
     {id:"f-emails", label:"Modèles d'e-mails", icon:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'},
@@ -1364,9 +1372,9 @@ function defaultDB(){
     evals:{G2:{d1:{res:{c1:"S", c2:"S", c3:"NS", c4:"S", c5:"S"}, pts:{c1:5, c2:3, c3:1.5, c4:3, c5:2}, comment:"Diagnostic solide sur les chiffres. L'analyse de l'équipe reste trop rapide : reprenez la charge de travail par catégorie.", by:"F-01", date:"02/12/2026", done:true, log:[{t:"02/12/2026 11:05", by:"Claire MARTIN", action:"Validé"}]}}},
     templates:[
       {id:"t1", name:"Relance la veille d'une échéance", trigger:"La veille de chaque échéance, à 18 h", subject:"Rappel : {etape} à rendre demain", body:"Bonjour {prenom},\n\nPetit rappel : « {etape} » est attendu demain, {date}.\n\nBon courage à toute l'équipe,\n{formateur}"},
-      {id:"t2", name:"Bienvenue et identifiants", trigger:"Quand un formateur prend la cohorte", subject:"Ton accès à la simulation Coach IA", body:"Bonjour {prenom},\n\nTon compte est prêt. Identifiant : {email}. Code personnel : {code}.\n\n{formateur}"},
-      {id:"t3", name:"Nouveau code personnel", trigger:"Quand un code est renvoyé à un étudiant", subject:"Ton nouveau code personnel", body:"Bonjour {prenom},\n\nVoici ton nouveau code personnel : {code}.\n\n{formateur}"},
-      {id:"t4", name:"Bilan de séance manquant", trigger:"Deux jours après la fin d'un trimestre", subject:"Ton bilan de séance du {trimestre}", body:"Bonjour {prenom},\n\nTon équipe n'a pas encore rédigé son bilan de séance du {trimestre}. Deux ou trois lignes suffisent : il servira au débriefing.\n\n{formateur}"}
+      {id:"t2", name:"Bienvenue et identifiants", trigger:"Quand un formateur prend la cohorte", subject:"Votre accès à la simulation Coach IA", body:"Bonjour {prenom},\n\nVotre compte est prêt. Identifiant : {email}. Code personnel : {code}.\n\n{formateur}"},
+      {id:"t3", name:"Nouveau code personnel", trigger:"Quand un code est renvoyé à un étudiant", subject:"Votre nouveau code personnel", body:"Bonjour {prenom},\n\nVoici votre nouveau code personnel : {code}.\n\n{formateur}"},
+      {id:"t4", name:"Bilan de séance manquant", trigger:"Deux jours après la fin d'un trimestre", subject:"Votre bilan de séance du {trimestre}", body:"Bonjour {prenom},\n\nVotre équipe n'a pas encore rédigé son bilan de séance du {trimestre}. Deux ou trois lignes suffisent : il servira au débriefing.\n\n{formateur}"}
     ],
     scheduled:[{id:"s1", template:"t1", to:"NAN-REM-A", when:"2027-01-14T18:00"}],
     tasks:[
@@ -1392,7 +1400,7 @@ function defaultDB(){
     ]
   };
 }
-const VERSION = "0.11.2";
+const VERSION = "0.17";
 const MEM = {};
 const store = {
   get(k){ for (const f of [() => localStorage, () => sessionStorage]){ try{ const v = f().getItem(k); if (v != null) return v; }catch(e){} } return MEM[k] != null ? MEM[k] : null; },
@@ -1430,6 +1438,9 @@ function stepPill(s){
   return `<span class="pill ${cls}">${s}</span>`;
 }
 function head(title, sub, extra){ return `<div class="top"><div><h1>${title}</h1><p>${sub}</p></div>${extra || ""}</div>`; }
+/* Encadré « version complète » : même aspect partout, jamais présenté comme actif */
+function iaBox(t){ return `<aside class="iabox"><b>Avec l'IA, dans la version complète</b><span>${t}</span></aside>`; }
+function fullBox(titre, t){ return `<aside class="iabox"><b>${titre} : dans la version complète</b><span>${t}</span></aside>`; }
 function demoNote(t){ return `<p class="hint demo-note">${t}</p>`; }
 function download(name, content, type){
   const blob = new Blob([content], {type}); const a = document.createElement("a");
@@ -1640,17 +1651,53 @@ function vACase(){
     ${DB.deadlines.map(d => `<tr class="${d.deliv ? "sub" : ""}"><td style="text-align:left">${d.label}</td><td><input type="date" value="${d.date}" data-deadline="${d.id}" style="width:150px"></td></tr>`).join("")}
   </tbody></table></div><p class="hint">Les décisions sont verrouillées et calculées à 17 h le jour indiqué. Les relances partent la veille.</p></section></div>
   <section class="card"><div class="row" style="justify-content:space-between"><h2>Grille d'évaluation des livrables</h2><label class="row" style="gap:8px">Livrable <select id="rubD">${DELIVS().map(d => `<option value="${d.id}" ${d.id === A_RUB ? "selected" : ""}>${d.label}</option>`).join("")}</select></label></div>
-    ${rubLocked(A_RUB) ? `<p class="hint demo-note"><b>Grille verrouillée.</b> ${rubLocked(A_RUB)} note${rubLocked(A_RUB) > 1 ? "s sont publiées" : " est publiée"} avec cette grille : la modifier changerait les notes déjà données. Une nouvelle version de grille, sans effet sur les notes passées, reste à prévoir.</p>` : ""}<p class="hint">Exemple de grille à remplacer par les critères de votre référentiel (TP REM : blocs BC01, BC02, BC03). Chaque critère reçoit « satisfait » ou « non satisfait » pour l'ECF, et des points pour la note de contrôle continu. Les formateurs de tous les sites évaluent avec cette grille.</p>
-    <div class="tablebox"><table><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>Points</th><th></th></tr></thead><tbody>
+    <p class="hint">Exemple de grille à remplacer par les critères de votre référentiel. Les blocs sont facultatifs : nommez-les comme vous voulez, ou laissez la colonne vide. Les formateurs de tous les sites évaluent avec cette grille.</p>
+    <label class="field"><span>Ce que la grille donne</span><select id="gmode"><option value="both" ${gradeMode() === "both" ? "selected" : ""}>Un avis « satisfait » ou « non satisfait » et une note sur 20</option><option value="note" ${gradeMode() === "note" ? "selected" : ""}>Une note sur 20 seulement</option><option value="ecf" ${gradeMode() === "ecf" ? "selected" : ""}>Un avis « satisfait » ou « non satisfait » seulement</option></select></label>
+    <p class="hint"><b>Version ${curV(A_RUB)}</b> de la grille.${rubLocked(A_RUB) ? ` ${rubLocked(A_RUB)} note${rubLocked(A_RUB) > 1 ? "s sont publiées" : " est publiée"} avec elle : elle ne se modifie plus. Créez une nouvelle version pour changer les critères ; les notes déjà données ne bougent pas.` : " Aucune note n'est encore publiée avec cette version : vous pouvez la modifier librement."}</p>
+    <div class="tablebox"><table><thead><tr><th style="text-align:left">Critère</th><th>Bloc (facultatif)</th><th>Points</th><th></th></tr></thead><tbody>
     ${rubric(A_RUB).map(c => `<tr><td style="text-align:left"><input value="${esc(c.label)}" data-rub="${A_RUB}|${c.id}|label" aria-label="Libellé du critère" maxlength="160" style="width:100%" ${rubLocked(A_RUB) ? "disabled" : ""}></td>
-      <td><select data-rub="${A_RUB}|${c.id}|bloc" aria-label="Bloc du critère" ${rubLocked(A_RUB) ? "disabled" : ""}>${BLOCS.map(b => `<option ${b === c.bloc ? "selected" : ""}>${b}</option>`).join("")}</select></td>
+      <td><input value="${esc(c.bloc || "")}" list="blocList" data-rub="${A_RUB}|${c.id}|bloc" aria-label="Bloc du critère" maxlength="40" style="width:130px" ${rubLocked(A_RUB) ? "disabled" : ""}></td>
       <td><input type="number" min="0" max="20" step="0.5" value="${c.max}" data-rub="${A_RUB}|${c.id}|max" aria-label="Points du critère" style="width:70px" ${rubLocked(A_RUB) ? "disabled" : ""}></td>
       <td>${rubLocked(A_RUB) ? "" : `<button class="back" data-act="rub-del" data-d="${A_RUB}" data-id="${c.id}">Retirer</button>`}</td></tr>`).join("")}
-    </tbody></table></div>
-    <div class="row">${rubLocked(A_RUB) ? "" : `<button class="btn ghost" data-act="rub-add" data-d="${A_RUB}">Ajouter un critère</button>`}<span class="hint">Total : ${rubric(A_RUB).reduce((a, c) => a + (+c.max || 0), 0)} points, ramenés sur 20.</span></div></section>
+    </tbody></table></div><datalist id="blocList">${[...new Set(rubric(A_RUB).map(c => c.bloc).filter(Boolean).concat(BLOCS))].map(b => `<option value="${esc(b)}">`).join("")}</datalist>
+    <div class="row">${rubLocked(A_RUB) ? `<button class="btn" data-act="rub-newver" data-d="${A_RUB}">Créer une nouvelle version</button>` : `<button class="btn ghost" data-act="rub-add" data-d="${A_RUB}">Ajouter un critère</button>`}<span class="hint">Total : ${rubric(A_RUB).reduce((a, c) => a + (+c.max || 0), 0)} points, ramenés sur 20.</span></div>
+    ${oldRubs(A_RUB).length ? `<h3>Versions précédentes</h3><div class="tablebox"><table><thead><tr><th>Version</th><th>Archivée le</th><th>Critères</th><th>Notes données</th></tr></thead><tbody>${oldRubs(A_RUB).map(o => `<tr><td>${o.v}</td><td>${esc(o.date)}</td><td>${o.items.length}</td><td>${usedBy(A_RUB, o.v)}</td></tr>`).join("")}</tbody></table></div>` : ""}
+    <h3>Importer la grille par fichier</h3>${gridImportBlock()}
+    ${fullBox("Grille propre à un site", "Par défaut, une seule grille sert à tous les sites. Dans la version complète, l'administrateur pourra donner une grille propre à un site.")}
+  </section>
   <div class="row"><button class="btn" data-act="save-frame">Enregistrer le cadre</button></div>`;
 }
-let A_RUB = "d1";
+let A_RUB = "d1", PENDING_GRID = null;
+const HEAD_GRID = ["Critère", "Bloc", "Points"];
+function checkGrid(rows){
+  const out = {ok:[], errors:[], headerError:""};
+  if (!rows.length){ out.headerError = "Le fichier est vide."; return out; }
+  const h = rows[0].map(norm), ix = HEAD_GRID.map(e => h.indexOf(norm(e)));
+  const missing = HEAD_GRID.filter((e, i) => ix[i] < 0 && e !== "Bloc");
+  if (missing.length){ out.headerError = `Colonnes introuvables : ${missing.join(", ")}. La première ligne doit contenir : ${HEAD_GRID.join(" ; ")}.`; return out; }
+  rows.slice(1).forEach((r, k) => {
+    const cell = i => ix[i] < 0 ? "" : String(r[ix[i]] || "").trim();
+    if (r.every(x => !String(x || "").trim())) return;
+    const v = {label:cell(0), bloc:cell(1), pts:cell(2)}, pb = [], line = k + 2, n = Number(v.pts.replace(",", "."));
+    if (!v.label) pb.push("critère vide"); else if (v.label.length > 160) pb.push("critère de plus de 160 caractères");
+    if (v.bloc.length > 40) pb.push("bloc de plus de 40 caractères");
+    if (v.pts === "" || !isFinite(n) || n <= 0 || n > 20) pb.push("points : un nombre de 0,5 à 20");
+    v.max = n; if (pb.length) out.errors.push({line, v, pb}); else out.ok.push(v);
+  });
+  if (out.ok.length > 30) out.headerError = "Une grille compte 30 critères au plus.";
+  if (!out.ok.length && !out.errors.length) out.headerError = "Aucun critère dans le fichier.";
+  return out;
+}
+function gridImportBlock(){
+  const p = PENDING_GRID;
+  const prev = !p ? "" : p.res.headerError ? `<div class="import-res bad"><b>Import impossible.</b> ${esc(p.res.headerError)}</div>` : `<div class="import-res"><b>${p.res.ok.length} critère${p.res.ok.length > 1 ? "s" : ""} prêt${p.res.ok.length > 1 ? "s" : ""}</b>${p.res.errors.length ? ` · <span class="down">${p.res.errors.length} ligne${p.res.errors.length > 1 ? "s" : ""} à corriger</span>` : ""} · fichier « ${esc(p.name)} »
+    ${p.res.errors.length ? `<ul class="alerts">${p.res.errors.slice(0, 20).map(e => `<li class="bad">Ligne ${e.line} (${esc(e.v.label || "?")}) : ${e.pb.join(", ")}.</li>`).join("")}</ul>${p.res.errors.length > 20 ? `<p class="hint">… et ${p.res.errors.length - 20} autres lignes à corriger.</p>` : ""}` : ""}
+    ${p.res.ok.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>Points</th></tr></thead><tbody>${p.res.ok.map(v => `<tr><td style="text-align:left">${esc(v.label)}</td><td>${esc(v.bloc)}</td><td>${String(v.max).replace(".", ",")}</td></tr>`).join("")}</tbody></table></div><p class="hint">${rubLocked(A_RUB) ? "Des notes sont publiées : l'import créera une nouvelle version de la grille." : "L'import remplacera les critères actuels de ce livrable."}</p>` : ""}
+    <div class="row">${p.res.ok.length && !p.res.errors.length ? `<button class="btn" data-act="grid-confirm">Appliquer cette grille</button>` : ""}<button class="btn ghost" data-act="grid-cancel">Annuler</button></div></div>`;
+  return `<p class="hint">Un fichier CSV avec trois colonnes : <code>Critère</code> ; <code>Bloc</code> (facultatif) ; <code>Points</code>. Rien n'est enregistré avant votre confirmation.</p>
+    <div class="row"><a class="btn ghost" href="modele-import-grille.xlsx" download="modele-import-grille.xlsx">Modèle Excel (.xlsx)</a><button class="btn ghost" data-act="grid-tpl">Modèle CSV</button>
+    <label class="filebtn btn">Choisir le fichier CSV<input type="file" accept=".csv,text/csv" data-import-grid hidden></label></div>${prev}`;
+}
 function vAChallenge(){
   const c = DB.challenge;
   const demo = [["Nantes", "Groupe 1 · Lumière", 148200], ["Lyon", "Les Lunetiers", 141900], ["Lille", "Optique Nord", 139400], ["Toulouse", "Groupe 4", 131800], ["Paris Sud", "Vision 14", 127300], ["Nancy", "Groupe 2", 118600]];
@@ -1712,10 +1759,22 @@ function groupStats(g){
 }
 /* ----- Évaluation des livrables ----- */
 const rubric = did => DB.rubrics[did] || [];
-const rubLocked = did => DB.groups.filter(g => (evalOf(g.id, did) || {}).done).length;
+const curV = did => (DB.rubN || {})[did] || 1;
+const oldRubs = did => { DB.rubOld = DB.rubOld || {}; return DB.rubOld[did] = DB.rubOld[did] || []; };
+const evalV = e => (e && e.v) || 1;
+const gradeMode = () => DB.settings.gradeMode || "both";
+const hasECF = () => gradeMode() !== "note", hasNote = () => gradeMode() !== "ecf";
+const rubricFor = (did, e) => { if (e && evalV(e) !== curV(did)){ const o = oldRubs(did).find(x => x.v === evalV(e)); if (o) return o.items; } return rubric(did); };
+const usedBy = (did, v) => DB.groups.filter(g => { const e = evalOf(g.id, did); return e && e.done && evalV(e) === v; }).length;
+function startNewVersion(d){
+  oldRubs(d).push({v:curV(d), date:today(), items:clone(DB.rubrics[d])});
+  DB.rubN = DB.rubN || {}; DB.rubN[d] = curV(d) + 1;
+}
+const rubLocked = did => usedBy(did, curV(did));
+const scoreBits = sc => (hasNote() ? `<b>${note20(sc.note)}</b>` : "") + (hasECF() ? ` <span class="pill ${sc.ecf ? "ok" : "bad"}">ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}</span>` : "");
 const evalOf = (gid, did) => (DB.evals[gid] || {})[did];
 function evalScore(gid, did){
-  const e = evalOf(gid, did), r = rubric(did); if (!e || !r.length) return null;
+  const e = evalOf(gid, did), r = rubricFor(did, e); if (!e || !r.length) return null;
   const max = r.reduce((a, c) => a + (+c.max || 0), 0), got = r.reduce((a, c) => a + Math.min(+c.max || 0, +(e.pts[c.id] || 0)), 0);
   const ecf = r.every(c => e.res[c.id] === "S");
   return {note:max ? Math.round(got / max * 40) / 2 : 0, ecf, done:e.done};
@@ -1741,13 +1800,13 @@ function cohortTable(c){
 function exportCohort(cid){
   const c = cohortById(cid), rows = cohortTable(c), D3 = DELIVS();
   const H = ["Groupe", "Membres", "Trimestres joués", "Résultat cumulé (€)", "Rang dans la cohorte", "Chiffre d'affaires cumulé (€)", "Part de marché du dernier trimestre (%)", "Satisfaction client (/100)"];
-  D3.forEach(d => H.push(`${d.label} : statut`, `${d.label} : note /20`, `${d.label} : ECF`));
+  D3.forEach(d => H.push(`${d.label} : statut`, ...(hasNote() ? [`${d.label} : note /20`] : []), ...(hasECF() ? [`${d.label} : ECF`] : [])));
   S.periods.slice(1).forEach(pp => H.push(`Bilan de séance ${pp}`));
   const q = v => { const t = String(v == null ? "" : v); return /[;"\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
   const fr = v => String(Math.round(v * 10) / 10).replace(".", ",");
   const lines = [H.map(q).join(";")].concat(rows.map(({g, r, rank}) => {
     const p = groupStats(g), cells = [g.name, g.members.map(id => fullName(studentById(id))).join(", "), r.played, Math.round(r.cum), rank, Math.round(r.ca), fr(r.share * 100), r.sat];
-    D3.forEach(d => { const sc = evalScore(g.id, d.id); cells.push(p.steps[d.id], sc ? fr(sc.note) : "", sc ? (sc.ecf ? "satisfait" : "non satisfait") : ""); });
+    D3.forEach(d => { const sc = evalScore(g.id, d.id); cells.push(p.steps[d.id]); if (hasNote()) cells.push(sc ? fr(sc.note) : ""); if (hasECF()) cells.push(sc ? (sc.ecf ? "satisfait" : "non satisfait") : ""); });
     S.periods.slice(1).forEach((pp, i) => cells.push(r.bilans[i + 1] || ""));
     return cells.map(q).join(";");
   }));
@@ -1778,7 +1837,7 @@ function vFHome(){
     ${gs.map(g => { const p = groupStats(g); return `<tr><td style="text-align:left"><b>${esc(g.name)}</b></td><td style="text-align:left;white-space:normal">${g.members.map(id => studentById(id).prenom).join(", ")}</td><td>${p.played}/6</td><td>${decisionPill(p)}</td>
       ${DELIVS().map(d => `<td>${p.steps[d.id] === "déposé" ? `<button class="btn sm" data-act="eval-step" data-g="${g.id}" data-s="${d.id}" title="Le groupe a déposé ce livrable : clique pour l'évaluer avec la grille">Évaluer le dépôt</button>` : stepPill(p.steps[d.id]) + (evalScore(g.id, d.id) ? `<br><span class="hint">${note20(evalScore(g.id, d.id).note)}</span>` : "")}</td>`).join("")}
       <td>${p.last}</td><td><button class="back" data-act="write-group" data-g="${g.id}">Écrire au groupe</button></td></tr>`; }).join("")}</tbody></table></div>` : `<p class="hint">Pas encore de groupes. <button class="back" data-go="f-groups">Constituer les groupes</button></p>`}</section>`; }).join("")}
-  ${indivCard()}`;
+  ${indivCard()}${iaBox("L'IA résumerait la séance et signalerait les groupes en difficulté, à partir des chiffres calculés par l'application. Vous gardez la main : elle prépare, vous décidez.")}`;
 }
 let F_IND = null;
 function indivCard(){
@@ -1795,41 +1854,78 @@ function vFEval(){
   const coh = myCohorts(); if (!F_EV.c || !coh.some(c => c.id === F_EV.c)) F_EV.c = coh[0].id;
   const gs = DB.groups.filter(g => g.cohort === F_EV.c);
   if (!gs.some(g => g.id === F_EV.g)) F_EV.g = gs.length ? gs[0].id : null;
-  const D3 = DELIVS(), d = D3.find(x => x.id === F_EV.d) || D3[0], r = rubric(d.id);
+  const D3 = DELIVS(), d = D3.find(x => x.id === F_EV.d) || D3[0];
   const sel = `<div class="formgrid"><label>Cohorte<select id="evC">${coh.map(c => `<option value="${c.id}" ${c.id === F_EV.c ? "selected" : ""}>${c.classe} (${c.campus})</option>`).join("")}</select></label>
     <label>Livrable<select id="evD">${D3.map(x => `<option value="${x.id}" ${x.id === d.id ? "selected" : ""}>${x.label}</option>`).join("")}</select></label>
     <label>Groupe<select id="evG">${gs.map(g => `<option value="${g.id}" ${g.id === F_EV.g ? "selected" : ""}>${esc(g.name)} · ${groupStats(g).steps[d.id]}</option>`).join("")}</select></label></div>`;
   if (!F_EV.g) return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites.") + `<section class="card">${sel}<p class="hint">Cette cohorte n'a pas encore de groupes.</p></section>`;
   const g = DB.groups.find(x => x.id === F_EV.g), e = evalOf(g.id, d.id) || {res:{}, pts:{}, comment:""}, st = groupStats(g).steps[d.id];
   const dep = (DB.deposits[g.id] || {})[d.id], locked = !!e.done, can = !!dep || locked, dis = locked || !can ? "disabled" : "";
-  const max = r.reduce((a, c) => a + (+c.max || 0), 0);
-  return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites. L'ECF se prononce en « satisfait » ou « non satisfait » ; les points donnent la note de contrôle continu.") + `
+  const r = rubricFor(d.id, evalOf(g.id, d.id)), max = r.reduce((a, c) => a + (+c.max || 0), 0), showBloc = r.some(c => c.bloc), gv = evalOf(g.id, d.id) ? evalV(evalOf(g.id, d.id)) : curV(d.id);
+  const sub = {both:"L'ECF se prononce en « satisfait » ou « non satisfait » ; les points donnent la note de contrôle continu.", ecf:"Chaque critère reçoit « satisfait » ou « non satisfait » ; l'avis global donne l'ECF.", note:"Chaque critère reçoit des points ; le total donne la note sur 20."}[gradeMode()];
+  return head("Évaluer les livrables", "La grille est fixée par l'administration ISO pour tous les sites. " + sub) + `
   <section class="card">${sel}</section>
   <section class="card"><div class="row" style="justify-content:space-between"><h2>${esc(g.name)} · ${d.label}</h2>${stepPill(st)}</div>
     <p class="hint">Membres : ${g.members.map(id => esc(fullName(studentById(id)))).join(", ")}</p>
     ${dep ? `<p class="depot"><b>Dépôt du groupe :</b> <a href="${dep.data}" download="${esc(dep.name)}">${esc(dep.name)}</a> · ${fileKo(dep.size)} · déposé le ${dep.when}</p>` : `<p class="hint demo-note">Le groupe n'a rien déposé pour ce livrable : il n'y a rien à évaluer.</p>`}
+    ${dep && !locked ? iaBox("L'IA proposerait un premier retour à partir de la grille. Vous le relisez, vous le corrigez et vous décidez de la note : l'IA ne note jamais seule.") : ""}
     ${locked ? `<p class="hint demo-note">Évaluation validée : elle est en lecture seule. Pour la modifier, rouvrez-la ; l'action est inscrite à l'historique.</p>` : ""}
-    <div class="tablebox"><table class="rubric"><thead><tr><th style="text-align:left">Critère</th><th>Bloc</th><th>ECF</th><th>Points</th></tr></thead><tbody>
-    ${r.map(c => `<tr><td style="text-align:left;white-space:normal">${esc(c.label)}</td><td><span class="pill">${c.bloc}</span></td>
-      <td><div class="seg"><label><input type="radio" name="ev-${c.id}" value="S" data-evres="${c.id}" ${dis} ${e.res[c.id] === "S" ? "checked" : ""}> Satisfait</label><label><input type="radio" name="ev-${c.id}" value="NS" data-evres="${c.id}" ${dis} ${e.res[c.id] === "NS" ? "checked" : ""}> Non satisfait</label></div></td>
-      <td><input type="number" min="0" max="${c.max}" step="0.5" value="${e.pts[c.id] ?? ""}" data-evpts="${c.id}" aria-label="Points : ${esc(c.label)}" ${dis} style="width:70px"> / ${c.max}</td></tr>`).join("")}
+    <p class="hint">Grille utilisée : <b>version ${gv}</b>${gv !== curV(d.id) ? " (une version plus récente existe : elle s'applique aux évaluations commencées ensuite)" : ""}.</p>
+    <div class="tablebox"><table class="rubric"><thead><tr><th style="text-align:left">Critère</th>${showBloc ? "<th>Bloc</th>" : ""}${hasECF() ? "<th>ECF</th>" : ""}${hasNote() ? "<th>Points</th>" : ""}</tr></thead><tbody>
+    ${r.map(c => `<tr><td style="text-align:left;white-space:normal">${esc(c.label)}</td>${showBloc ? `<td>${c.bloc ? `<span class="pill">${esc(c.bloc)}</span>` : ""}</td>` : ""}
+      ${hasECF() ? `<td><div class="seg"><label><input type="radio" name="ev-${c.id}" value="S" data-evres="${c.id}" ${dis} ${e.res[c.id] === "S" ? "checked" : ""}> Satisfait</label><label><input type="radio" name="ev-${c.id}" value="NS" data-evres="${c.id}" ${dis} ${e.res[c.id] === "NS" ? "checked" : ""}> Non satisfait</label></div></td>` : ""}
+      ${hasNote() ? `<td><input type="number" min="0" max="${c.max}" step="0.5" value="${e.pts[c.id] ?? ""}" data-evpts="${c.id}" aria-label="Points : ${esc(c.label)}" ${dis} style="width:70px"> / ${c.max}</td>` : ""}</tr>`).join("")}
     </tbody></table></div>
     <div class="evsum" id="evSum"></div>
     <label class="field"><span>Retour au groupe (visible par les étudiants après validation)</span><textarea id="evCom" rows="3" maxlength="800" ${dis}>${esc(e.comment || "")}</textarea></label>
     <div class="row">${locked ? `<button class="btn ghost" data-act="eval-reopen">Rouvrir l'évaluation</button>` : can ? `<button class="btn" data-act="eval-save" data-done="1">Valider le livrable et publier la note</button><button class="btn ghost" data-act="eval-save" data-done="">Enregistrer le brouillon</button>` : ""}</div>
     ${(e.log || []).length ? `<h3>Historique</h3><ul class="mini">${e.log.slice().reverse().map(l => `<li><b>${l.t}</b> · ${esc(l.by)} · ${esc(l.action)}</li>`).join("")}</ul>` : ""}
-    <p class="hint">Total sur ${max} points, ramené sur 20. L'ECF n'est satisfaite que si tous les critères le sont.</p></section>`;
+    <p class="hint">${hasNote() ? `Total sur ${max} points, ramené sur 20. ` : ""}${hasECF() ? "L'ECF n'est satisfaite que si tous les critères le sont." : ""}</p></section>`;
 }
 function evalLive(){
   const box = $("evSum"); if (!box) return;
-  const r = rubric(F_EV.d); let got = 0, max = 0, all = true, any = false;
+  const r = rubricFor(F_EV.d, evalOf(F_EV.g, F_EV.d)); let got = 0, max = 0, all = true, any = false;
   r.forEach(c => { max += +c.max || 0; const v = $("main").querySelector(`[data-evpts="${c.id}"]`); got += Math.min(+c.max || 0, Math.max(0, +(v && v.value) || 0));
     const chk = $("main").querySelector(`[data-evres="${c.id}"]:checked`); if (!chk || chk.value !== "S") all = false; if (chk) any = true; });
   const n = max ? Math.round(got / max * 40) / 2 : 0;
-  box.innerHTML = `<b>${note20(n)}</b><span>${String(got).replace(".", ",")} points sur ${max}</span><span class="pill ${all ? "ok" : (any ? "bad" : "")}">ECF ${all ? "satisfaite" : (any ? "non satisfaite" : "à compléter")}</span>`;
+  box.innerHTML = (hasNote() ? `<b>${note20(n)}</b><span>${String(got).replace(".", ",")} points sur ${max}</span>` : "") + (hasECF() ? `<span class="pill ${all ? "ok" : (any ? "bad" : "")}">ECF ${all ? "satisfaite" : (any ? "non satisfaite" : "à compléter")}</span>` : "");
 }
 /* ----- Formateur : fiche de débriefing imprimable ----- */
 let F_DEB = null;
+let F_JURY = null;
+const eurFr = v => eur.format(Math.round(v));
+function juryQuestions(g, r, rows, avg){
+  const q = [], p = groupStats(g), D = DELIVS();
+  q.push(`Votre résultat cumulé est de ${eurFr(r.cum)}, pour une moyenne de ${eurFr(avg)} dans la cohorte. Quels choix expliquent cet écart ?`);
+  q.push(`Votre part de marché est de ${dec1.format(r.share * 100)} % au dernier trimestre joué. Quelles décisions y ont contribué, selon vous ?`);
+  q.push(`La satisfaction client est de ${r.sat} sur 100 au dernier trimestre. Quelle décision a le plus pesé sur ce chiffre ?`);
+  r.bilans.forEach((t, i) => { if (i && t) q.push(`Au ${S.periods[i]}, vous écrivez : « ${t} » ` + (i < r.played ? "Quel effet avez-vous observé dans vos chiffres le trimestre suivant ?" : "Qu'est-ce qui motive ce choix ?")); });
+  D.forEach(d => { const st = p.steps[d.id]; if (st === "en retard") q.push(`Le livrable « ${d.label} » est en retard. Que s'est-il passé, et qu'avez-vous prévu pour le rattraper ?`); });
+  return q;
+}
+function vFJury(){
+  const coh = myCohorts(), groups = DB.groups.filter(g => coh.some(c => c.id === g.cohort));
+  if (!F_JURY || !groups.some(g => g.id === F_JURY)) F_JURY = (groups.find(g => g.id === "G2") || groups[0] || {}).id;
+  const g = groups.find(x => x.id === F_JURY);
+  if (!g) return head("Préparer le jury", "Fiche de préparation pour la soutenance ou le pitch d'un groupe.") + `<section class="card"><p class="hint">Aucun groupe à présenter pour l'instant.</p></section>`;
+  const rows = cohortTable(cohortById(g.cohort)), r = groupResults(g), rank = rows.find(x => x.g.id === g.id).rank, avg = rows.reduce((a, x) => a + x.r.cum, 0) / rows.length, p = groupStats(g);
+  const notes = r.bilans.map((t, i) => i && t ? `<li><b>${S.periods[i]}</b> : ${esc(t)}</li>` : "").join("");
+  const qs = juryQuestions(g, r, rows, avg);
+  return head("Préparer le jury", "Avant une soutenance ou un pitch, une fiche pour le jury : résumé des résultats, choix marquants et questions possibles.") + `
+  <section class="card"><div class="row" style="justify-content:space-between"><label class="row" style="gap:8px">Groupe <select id="juryG">${groups.map(x => `<option value="${x.id}" ${x.id === g.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label><span class="pill">Exemple de fiche, version complète</span></div>
+  <p class="hint">Cet exemple est écrit à la main à partir des données fictives du groupe. Aucune IA n'est appelée dans la démonstration.</p></section>
+  <section class="card jury"><div class="row" style="justify-content:space-between"><h2>${esc(g.name)} · fiche pour le jury</h2><span class="pill warn">Générée par IA, à vérifier</span></div>
+    <p class="hint">Membres : ${g.members.map(id => esc(fullName(studentById(id)))).join(", ")}</p>
+    <h3>Résumé des résultats</h3>
+    <div class="kpis"><div class="kpi"><span>Résultat cumulé</span><strong>${eurFr(r.cum)}</strong></div><div class="kpi"><span>Chiffre d'affaires cumulé</span><strong>${eurFr(r.ca)}</strong></div><div class="kpi"><span>Part de marché</span><strong>${dec1.format(r.share * 100)} %</strong></div><div class="kpi"><span>Satisfaction client</span><strong>${r.sat}/100</strong></div><div class="kpi"><span>Rang dans la cohorte</span><strong>${rank} sur ${rows.length}</strong></div></div>
+    <p class="hint">Trimestres joués : ${r.played}. Livrables : ${DELIVS().map(d => `${esc(d.label)} (${p.steps[d.id]})`).join(" ; ")}.</p>
+    <h3>Choix marquants</h3>${notes ? `<ul class="deb-list">${notes}</ul>` : `<p class="hint">Le groupe n'a pas encore rédigé de bilan de séance.</p>`}
+    <h3>Questions que le jury peut poser</h3><ol class="steps-list">${qs.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+    <p class="hint demo-note">Les chiffres sont calculés par l'application. Les questions s'appuient sur des faits : la fiche ne contient ni note ni avis sur la valeur d'un choix.</p>
+  </section>
+  <section class="card"><h2>Comment cela fonctionnera</h2><ul class="mini"><li>L'IA prépare la fiche ; elle ne juge pas et ne note pas.</li><li>Un appel par groupe et par livrable, compté dans le budget d'IA de votre école.</li><li>La fiche est réservée au formateur et au jury : l'étudiant ne la voit pas.</li><li>Vous relisez et vous corrigez la fiche avant de l'imprimer ou de l'enregistrer en PDF.</li></ul>
+  <div class="row"><button class="btn ghost" data-act="print-guide">Imprimer cette fiche</button></div></section>` + iaBox("Dans la version complète, cette fiche serait générée par l'IA à partir des chiffres calculés par l'application. Elle ne note jamais : le jury et le formateur décident.");
+}
 function vFDebrief(){
   const coh = myCohorts(); if (!F_DEB || !coh.some(c => c.id === F_DEB)) F_DEB = coh[0].id;
   const c = cohortById(F_DEB), rows = cohortTable(c);
@@ -1837,7 +1933,7 @@ function vFDebrief(){
     `<div class="row"><button class="btn" data-act="print-guide">Imprimer ou enregistrer en PDF</button><button class="btn ghost" data-act="export-cohort" data-c="${c.id}">Exporter (tableur)</button><button class="btn ghost" data-go="f-home">Retour au suivi</button></div>`) +
   (rows.length ? rows.map(({g, r, rank}) => `<section class="card debrief"><div class="row" style="justify-content:space-between"><h2>${rank}. ${esc(g.name)}</h2><span class="hint">${g.members.map(id => esc(fullName(studentById(id)))).join(", ")}</span></div>
     <div class="kpis"><div class="kpi"><span>Résultat cumulé</span><strong>${eur.format(r.cum)}</strong></div><div class="kpi"><span>Chiffre d'affaires cumulé</span><strong>${eur.format(r.ca)}</strong></div><div class="kpi"><span>Part de marché</span><strong>${pct(r.share)}</strong></div><div class="kpi"><span>Satisfaction client</span><strong>${r.sat}/100</strong></div></div>
-    <h3>Livrables</h3><ul class="deb-list">${DELIVS().map(d => { const sc = evalScore(g.id, d.id), e = evalOf(g.id, d.id); return `<li><b>${d.label}</b> : ${groupStats(g).steps[d.id]}${sc ? ` · ${note20(sc.note)} · ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}` : ""}${e && e.comment ? `<br><span class="hint">${esc(e.comment)}</span>` : ""}</li>`; }).join("")}</ul>
+    <h3>Livrables</h3><ul class="deb-list">${DELIVS().map(d => { const sc = evalScore(g.id, d.id), e = evalOf(g.id, d.id); return `<li><b>${d.label}</b> : ${groupStats(g).steps[d.id]}${sc ? ` · ${[hasNote() ? note20(sc.note) : "", hasECF() ? "ECF " + (sc.ecf ? "satisfaite" : "non satisfaite") : ""].filter(Boolean).join(" · ")}` : ""}${e && e.comment ? `<br><span class="hint">${esc(e.comment)}</span>` : ""}</li>`; }).join("")}</ul>
     <h3>Bilans de séance</h3>${r.bilans.slice(1).some(Boolean) ? `<ul class="deb-list">${r.bilans.map((t, i) => i && t ? `<li><b>${S.periods[i]}</b> : ${esc(t)}</li>` : "").join("")}</ul>` : `<p class="hint">Aucun bilan rédigé pour l'instant.</p>`}
     <p class="hint">Questions pour le débriefing : qu'aviez-vous annoncé, qu'avez-vous obtenu, et qu'est-ce qui explique l'écart ?</p></section>`).join("") : `<section class="card"><p class="hint">Cette cohorte n'a pas encore de groupes.</p></section>`) +
   demoNote("Démonstration : le Groupe 1 suit la partie jouée dans l'espace étudiant ; les résultats des autres groupes sont simulés.");
@@ -1934,18 +2030,18 @@ function vProg(){
   return head("Mon avancement", `${g ? esc(g.name) + " · " : ""}${caseById(DB.settings.caseId).title} · formatrice : ${esc(fullName(tr))}`) + `
   <div class="kpis">
     <div class="kpi"><span>Trimestres joués</span><strong>${played()}/${N}</strong><em>${finished() ? "partie terminée" : "trimestre " + S.periods[played()] + " en préparation"}</em></div>
-    <div class="kpi"><span>Bilans de séance</span><strong>${bilans}</strong><em>rédigés par ton équipe</em></div>
+    <div class="kpi"><span>Bilans de séance</span><strong>${bilans}</strong><em>rédigés par votre équipe</em></div>
     <div class="kpi"><span>Questions au coach</span><strong>${qUsed()}/${DB.api.capStudent}</strong><em>sur ce trimestre</em></div>
   </div>
   ${countdown()}
   <section class="card"><h2>Livrables et validations</h2><div class="tablebox"><table><thead><tr><th style="text-align:left">Étape</th><th>Date limite</th><th>Statut</th><th>Note</th></tr></thead><tbody>
-  ${DELIVS().map(d => { const s = p ? p.steps[d.id] : "à venir", sc = g && s === "validé" ? evalScore(g.id, d.id) : null; return `<tr><td style="text-align:left">${d.label}</td><td>${fmtDate(d.date)}</td><td>${stepPill(s)}${s === "validé" ? ` <span class="hint">par ${esc(fullName(tr))}</span>` : ""}</td><td>${sc && sc.done ? `<b>${note20(sc.note)}</b> <span class="pill ${sc.ecf ? "ok" : "bad"}">ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}</span>` : "–"}</td></tr>`; }).join("")}
-  </tbody></table></div><p class="hint">Quand ta formatrice valide une étape, elle passe en vert ici, avec ta note et son retour.</p></section>
-  <section class="card"><h2>Déposer un livrable</h2><p class="hint">Un seul fichier par livrable, 1 Mo au maximum dans la démonstration. Tu peux le remplacer tant qu'il n'est pas validé.</p>
+  ${DELIVS().map(d => { const s = p ? p.steps[d.id] : "à venir", sc = g && s === "validé" ? evalScore(g.id, d.id) : null; return `<tr><td style="text-align:left">${d.label}</td><td>${fmtDate(d.date)}</td><td>${stepPill(s)}${s === "validé" ? ` <span class="hint">par ${esc(fullName(tr))}</span>` : ""}</td><td>${sc && sc.done ? scoreBits(sc) : "–"}</td></tr>`; }).join("")}
+  </tbody></table></div><p class="hint">Quand votre formatrice valide une étape, elle passe en vert ici, avec votre note et son retour.</p></section>
+  <section class="card"><h2>Déposer un livrable</h2><p class="hint">Un seul fichier par livrable, 1 Mo au maximum dans la démonstration. Vous pouvez le remplacer tant qu'il n'est pas validé.</p>
   ${g ? `<ul class="msglist">${DELIVS().map(d => { const dep = (DB.deposits[g.id] || {})[d.id], s = p.steps[d.id]; return `<li><div class="row" style="justify-content:space-between"><b>${d.label}</b>${stepPill(s)}</div>
     <span class="hint">${dep ? `Déposé : ${esc(dep.name)} · ${fileKo(dep.size)} · le ${dep.when}` : `Rien de déposé · date limite le ${fmtDate(d.date)}`}</span>
-    ${s === "validé" ? `<span class="hint">Livrable validé : il ne se remplace plus.</span>` : `<label class="filebtn btn sm">${dep ? "Remplacer le fichier" : "Déposer un fichier"}<input type="file" data-deposit="${d.id}" hidden></label>`}</li>`; }).join("")}</ul>` : `<p class="hint">Tu n'as pas encore de groupe : ta formatrice te placera dans un groupe avant le premier dépôt.</p>`}
-  ${g ? DELIVS().map(d => { const e = evalOf(g.id, d.id); if (!e || !e.done) return ""; return `<div class="feedback"><b>${d.label} · retour de ta formatrice</b>${e.comment ? `<p>${esc(e.comment)}</p>` : ""}<ul>${rubric(d.id).map(c => `<li class="${e.res[c.id] === "S" ? "ok" : "bad"}">${esc(c.label)} : ${e.res[c.id] === "S" ? "satisfait" : "non satisfait"} · ${String(e.pts[c.id] ?? 0).replace(".", ",")}/${c.max}</li>`).join("")}</ul></div>`; }).join("") : ""}</section>
+    ${s === "validé" ? `<span class="hint">Livrable validé : il ne se remplace plus.</span>` : `<label class="filebtn btn sm">${dep ? "Remplacer le fichier" : "Déposer un fichier"}<input type="file" data-deposit="${d.id}" hidden></label>`}</li>`; }).join("")}</ul>` : `<p class="hint">Vous n'avez pas encore de groupe : votre formatrice vous placera dans un groupe avant le premier dépôt.</p>`}
+  ${g ? DELIVS().map(d => { const e = evalOf(g.id, d.id); if (!e || !e.done) return ""; return `<div class="feedback"><b>${d.label} · retour de votre formatrice</b>${e.comment ? `<p>${esc(e.comment)}</p>` : ""}<ul>${rubricFor(d.id, e).map(c => `<li class="${hasECF() ? (e.res[c.id] === "S" ? "ok" : "bad") : ""}">${esc(c.label)}${c.bloc ? " (" + esc(c.bloc) + ")" : ""} : ${[hasECF() ? (e.res[c.id] === "S" ? "satisfait" : "non satisfait") : "", hasNote() ? String(e.pts[c.id] ?? 0).replace(".", ",") + "/" + c.max : ""].filter(Boolean).join(" · ")}</li>`).join("")}</ul><p class="hint">Grille : version ${evalV(e)}.</p></div>`; }).join("") : ""}</section>
   <section class="card"><h2>Calendrier des décisions</h2><div class="tablebox"><table><tbody>${DB.deadlines.filter(d => !d.deliv).map(d => `<tr><td style="text-align:left">${d.label}</td><td>${fmtDate(d.date)} à 17 h</td></tr>`).join("")}</tbody></table></div></section>`;
 }
 /* Compte à rebours : prochain livrable et prochaine décision */
@@ -1964,8 +2060,8 @@ function studentMessages(){
   return DB.messages.filter(m => m.to === s.cohort || (g && m.to === g.id) || m.to === ME_STUDENT);
 }
 
-const ADMIN_VIEWS = {"a-home":vAHome, "a-trainers":vATrainers, "a-list":vAList, "a-students":vAStudents, "a-case":vACase, "a-challenge":vAChallenge, "a-data":vAData,
-  "f-home":vFHome, "f-eval":vFEval, "f-debrief":vFDebrief, "f-groups":vFGroups, "f-students":vFStudents, "f-msg":vFMsg, "f-emails":vFEmails, "f-tasks":vFTasks,
+const ADMIN_VIEWS = {"a-home":() => vAHome() + iaBox("L'IA synthétiserait la consommation et les points d'attention de l'année pour votre école, à partir des nombres calculés par l'application."), "a-trainers":vATrainers, "a-list":vAList, "a-students":vAStudents, "a-case":() => vACase() + iaBox("L'IA vous aiderait à rédiger des critères d'évaluation à partir de votre référentiel. Vous relisez, vous modifiez et vous validez la grille : le formateur décide de chaque note."), "a-challenge":vAChallenge, "a-data":vAData,
+  "f-home":vFHome, "f-eval":vFEval, "f-jury":vFJury, "f-debrief":vFDebrief, "f-groups":vFGroups, "f-students":vFStudents, "f-msg":vFMsg, "f-emails":vFEmails, "f-tasks":vFTasks,
   "prog":vProg, "guide":vGuide};
 
 /* ----- Actions ----- */
@@ -2045,21 +2141,28 @@ const ACT = {
   "eval-save": el => {
     const dep = (DB.deposits[F_EV.g] || {})[F_EV.d], cur = evalOf(F_EV.g, F_EV.d);
     if (!dep && !(cur && cur.done)) return toast("Aucun dépôt à évaluer : le groupe n'a rien déposé pour ce livrable.");
-    const r = rubric(F_EV.d), res = {}, pts = {};
-    r.forEach(c => { const chk = $("main").querySelector(`[data-evres="${c.id}"]:checked`); if (chk) res[c.id] = chk.value; const v = $("main").querySelector(`[data-evpts="${c.id}"]`).value; if (v !== "") pts[c.id] = Math.min(+c.max, Math.max(0, +v)); });
+    const r = rubricFor(F_EV.d, cur), res = {}, pts = {};
+    r.forEach(c => { const chk = $("main").querySelector(`[data-evres="${c.id}"]:checked`); if (chk) res[c.id] = chk.value; const pe = $("main").querySelector(`[data-evpts="${c.id}"]`), v = pe ? pe.value : ""; if (v !== "") pts[c.id] = Math.min(+c.max, Math.max(0, +v)); });
     const done = !!el.dataset.done;
-    if (done && r.some(c => !res[c.id] || pts[c.id] == null)) return toast("Pour valider, renseignez l'ECF et les points de chaque critère.");
+    if (done && r.some(c => (hasECF() && !res[c.id]) || (hasNote() && pts[c.id] == null))) return toast(`Pour valider, renseignez ${hasECF() && hasNote() ? "l'ECF et les points" : hasECF() ? "l'ECF" : "les points"} de chaque critère.`);
     const log = ((cur && cur.log) || []).concat(done ? [{t:stamp(), by:fullName(trainerById(ME_TRAINER)), action:"Validé"}] : []);
-    (DB.evals[F_EV.g] = DB.evals[F_EV.g] || {})[F_EV.d] = {res, pts, comment:$("evCom").value.trim(), by:ME_TRAINER, date:today(), done, log};
+    (DB.evals[F_EV.g] = DB.evals[F_EV.g] || {})[F_EV.d] = {res, pts, comment:$("evCom").value.trim(), by:ME_TRAINER, date:today(), done, log, v:evalV(cur && cur.v ? cur : {v:curV(F_EV.d)})};
     if (done) DB.progress[F_EV.g] = DB.progress[F_EV.g] || {pending:true, steps:{d1:"à venir", d2:"à venir", d3:"à venir"}, last:"jamais"}, DB.progress[F_EV.g].steps[F_EV.d] = "validé";
     saveDB(); render();
     const sc = evalScore(F_EV.g, F_EV.d);
-    toast(done ? `Livrable validé : ${note20(sc.note)}, ECF ${sc.ecf ? "satisfaite" : "non satisfaite"}. Le groupe voit sa note et votre retour.` : "Brouillon enregistré : le groupe ne voit rien tant que vous n'avez pas validé.");
+    toast(done ? `Livrable validé${hasNote() ? " : " + note20(sc.note) : ""}${hasECF() ? (hasNote() ? ", " : " : ") + "ECF " + (sc.ecf ? "satisfaite" : "non satisfaite") : ""}. Le groupe voit son résultat et votre retour.` : "Brouillon enregistré : le groupe ne voit rien tant que vous n'avez pas validé.");
   },
   "export-cohort": el => exportCohort(el.dataset.c),
   "debrief": el => { F_DEB = el.dataset.c; go("f-debrief"); },
-  "rub-add": el => { if (rubLocked(el.dataset.d)) return toast("Grille verrouillée : des notes sont déjà publiées."); const r = DB.rubrics[el.dataset.d]; r.push({id:"c" + Date.now().toString(36), bloc:BLOCS[1], label:"Nouveau critère", max:2}); saveDB(); render(); },
-  "rub-del": el => { if (rubLocked(el.dataset.d)) return toast("Grille verrouillée : des notes sont déjà publiées."); DB.rubrics[el.dataset.d] = DB.rubrics[el.dataset.d].filter(c => c.id !== el.dataset.id); saveDB(); render(); },
+  "rub-newver": el => { const d = el.dataset.d; confirmBox("Créer une nouvelle version de la grille", `<p>La version ${curV(d)} est archivée telle quelle. Les ${usedBy(d, curV(d))} notes publiées avec elle gardent cette version.</p><p class="hint">La version ${curV(d) + 1} part des mêmes critères. Vous pouvez les modifier ; elle s'applique aux évaluations commencées ensuite.</p>`, `Créer la version ${curV(d) + 1}`, () => { startNewVersion(d); saveDB(); render(); toast(`Version ${curV(d)} de la grille créée.`); }); },
+  "grid-tpl": () => download("modele-import-grille.csv", "\ufeff" + [HEAD_GRID, ["Analyse des résultats chiffrés", "Bloc 1", "6"], ["Justification des choix", "Bloc 2", "8"], ["Clarté de l'écrit", "", "6"]].map(r => r.join(";")).join("\r\n"), "text/csv;charset=utf-8"),
+  "grid-cancel": () => { PENDING_GRID = null; render(); },
+  "grid-confirm": () => { const p = PENDING_GRID; if (!p || !p.res.ok.length) return; const d = A_RUB, was = rubLocked(d);
+    if (was) startNewVersion(d);
+    DB.rubrics[d] = p.res.ok.map((v, i) => ({id:"c" + (i + 1), bloc:v.bloc, label:v.label, max:v.max}));
+    PENDING_GRID = null; saveDB(); render(); toast(was ? `Grille importée : version ${curV(d)} créée, les notes déjà données ne changent pas.` : "Grille importée : elle remplace les critères de ce livrable."); },
+  "rub-add": el => { if (rubLocked(el.dataset.d)) return toast("Des notes sont publiées avec cette version : créez une nouvelle version."); const r = DB.rubrics[el.dataset.d]; r.push({id:"c" + Date.now().toString(36), bloc:r.length ? r[r.length - 1].bloc : "", label:"Nouveau critère", max:2}); saveDB(); render(); },
+  "rub-del": el => { if (rubLocked(el.dataset.d)) return toast("Des notes sont publiées avec cette version : créez une nouvelle version."); DB.rubrics[el.dataset.d] = DB.rubrics[el.dataset.d].filter(c => c.id !== el.dataset.id); saveDB(); render(); },
   "write-group": el => { F_TARGET = el.dataset.g; go("f-msg"); },
   "write-student": el => { F_TARGET = el.dataset.id; go("f-msg"); },
   "add-group": () => { const n = DB.groups.filter(g => g.cohort === F_COHORT).length + 1; DB.groups.push({id:"G" + Date.now().toString(36), cohort:F_COHORT, name:"Groupe " + n, members:[]}); saveDB(); render(); },
@@ -2108,12 +2211,12 @@ function bindAdmin(m){
   m.querySelectorAll("[data-go]").forEach(b => b.onclick = () => go(b.dataset.go));
   m.querySelectorAll("[data-deposit]").forEach(inp => inp.onchange = () => {
     const f = inp.files[0]; if (!f) return; const g = groupOf(ME_STUDENT), did = inp.dataset.deposit;
-    if (!g) return toast("Tu n'as pas encore de groupe.");
-    if (f.size === 0) return toast("Ce fichier est vide : choisis-en un autre.");
+    if (!g) return toast("Vous n'avez pas encore de groupe.");
+    if (f.size === 0) return toast("Ce fichier est vide : choisissez-en un autre.");
     if (f.size > 1048576) return toast("Ce fichier dépasse 1 Mo : réduis-le avant de le déposer.");
     const rd = new FileReader();
     rd.onload = () => { (DB.deposits[g.id] = DB.deposits[g.id] || {})[did] = {name:f.name, size:f.size, when:stamp(), data:String(rd.result)};
-      saveDB(); render(); toast(`Livrable déposé : ${f.name} (${fileKo(f.size)}). Ta formatrice le voit dans son espace.`); };
+      saveDB(); render(); toast(`Livrable déposé : ${f.name} (${fileKo(f.size)}). Votre formatrice le voit dans son espace.`); };
     rd.readAsDataURL(f);
   });
   m.querySelectorAll("[data-import]").forEach(inp => inp.onchange = () => {
@@ -2162,6 +2265,7 @@ function bindAdmin(m){
   if ($("evC")) $("evC").onchange = e => { F_EV.c = e.target.value; F_EV.g = null; render(); };
   if ($("evD")) $("evD").onchange = e => { F_EV.d = e.target.value; render(); };
   if ($("evG")) $("evG").onchange = e => { F_EV.g = e.target.value; render(); };
+  const jg = m.querySelector("#juryG"); if (jg) jg.onchange = () => { F_JURY = jg.value; render(); };
   m.querySelectorAll("[data-evres], [data-evpts]").forEach(el => el.oninput = el.onchange = evalLive);
   m.querySelectorAll("[data-evpts]").forEach(el => el.addEventListener("change", () => {
     const max = +el.max, v = el.value === "" ? null : Number(el.value); if (v == null) return;
@@ -2173,8 +2277,16 @@ function bindAdmin(m){
     if (rubLocked(d)){ render(); return; }
     if (k === "max"){ const v = Number(el.value); if (el.value.trim() === "" || !isFinite(v) || v < 0 || v > 20){ toast("Les points d'un critère vont de 0 à 20."); render(); return; } c.max = v; }
     else if (k === "label"){ if (!el.value.trim()){ toast("Le libellé du critère ne peut pas être vide."); render(); return; } c.label = el.value.trim(); }
-    else c[k] = el.value;
+    else c[k] = el.value.trim().slice(0, 40);
     saveDB(); render(); });
+  if ($("gmode")) $("gmode").onchange = e => { DB.settings.gradeMode = e.target.value; saveDB(); render(); toast("Mode d'évaluation enregistré : les écrans du formateur et de l'étudiant le suivent."); };
+  m.querySelectorAll("[data-import-grid]").forEach(inp => inp.onchange = () => {
+    const f = inp.files[0]; if (!f) return; const rd = new FileReader();
+    rd.onload = () => { const txt = String(rd.result);
+      const res = /\.xlsx?$/i.test(f.name) || txt.startsWith("PK") ? {ok:[], errors:[], headerError:"Ce fichier est un classeur Excel. Enregistrez-le d'abord au format CSV : « Fichier », « Enregistrer sous », puis le format « " + CSV_FORMAT + " »."} : checkGrid(parseCSV(txt));
+      PENDING_GRID = {name:f.name, res}; render(); };
+    rd.readAsText(f, "utf-8");
+  });
   if ($("fIndCoh")) $("fIndCoh").onchange = e => { F_IND = e.target.value; render(); };
   if ($("fCoh")) $("fCoh").onchange = e => { F_COHORT = e.target.value; render(); };
   if ($("tQ")){ const q = $("tQ"); q.oninput = () => { T_Q = q.value; const pos = q.selectionStart; render(); const n = $("tQ"); n.focus(); n.setSelectionRange(pos, pos); }; }
@@ -2271,7 +2383,7 @@ const ANNOUNCES = [
   {at:4, get to(){ return S.words.team; }, title:"Avant de préparer le T5", text:"Le marché change ce trimestre. Relisez le contexte avant de toucher à vos prix, et notez dans votre bilan de séance comment vous comptez réagir. Date limite : jeudi 12 h."}
 ];
 const visibleAnnounces = () => ANNOUNCES.filter(a => played() >= a.at).map(a => ({...a, when:S.periods[a.at]}))
-  .concat((typeof studentMessages === "function" ? studentMessages() : []).map(m => ({title:m.title, text:m.text, to:m.to === ME_STUDENT ? "Toi seul (message personnel)" : "Ton groupe ou ta cohorte", when:m.date, live:true})));
+  .concat((typeof studentMessages === "function" ? studentMessages() : []).map(m => ({title:m.title, text:m.text, to:m.to === ME_STUDENT ? "Vous seul (message personnel)" : "Votre groupe ou votre cohorte", when:m.date, live:true})));
 const unreadAnnounces = () => Math.max(0, visibleAnnounces().length - G.readMsgs);
 
 let G;
@@ -2354,7 +2466,7 @@ function render(){
   $("main").innerHTML = views[G.view]() + `<footer class="credit"><span>Démonstration · version ${VERSION}</span><span>© 2026 Pierrick Briand. Tous droits réservés.</span></footer>`;
   bindView();
   bindAdmin($("main"));
-  updateQ(); saveGame();
+  updateQ(); odBanner(); saveGame();
   if (window.hideHelp) window.hideHelp();
   applyHelp($("main"));
   typoFix($("main"));
@@ -2405,15 +2517,15 @@ function viewDash(){
   <div class="top"><div><h1>Tableau de bord</h1><p>${S.store}, ${S.place}. Objectif : le meilleur résultat cumulé à la fin du ${S.periods[N - 1]}.</p></div>
   ${finished() ? "" : `<button class="btn" data-goplan="__home">Préparer le ${S.periods[n]}</button>`}</div>
   ${ev ? `<div class="event"><b>${S.periods[n]} · ${ev.title}</b><span>${ev.text}</span></div>` : finalHtml()}
-  ${n === 1 ? `<div class="takeover"><b>Bienvenue : ton équipe reprend le magasin.</b><span>Le T1 (janvier à mars) a été joué par l'ancien gérant, avec ses réglages. Les chiffres ci-dessous sont les siens. Commence par lire son bilan, puis prépare le T2 : ce sont tes premières décisions.</span><button class="btn ghost" data-bilan-t1="1">Lire le bilan du T1</button></div>` : ""}
+  ${n === 1 ? `<div class="takeover"><b>Bienvenue : votre équipe reprend le magasin.</b><span>Le T1 (janvier à mars) a été joué par l'ancien gérant, avec ses réglages. Les chiffres ci-dessous sont les siens. Commencez par lire son bilan, puis préparez le T2 : ce sont vos premières décisions.</span><button class="btn ghost" data-bilan-t1="1">Lire le bilan du T1</button></div>` : ""}
   ${typeof countdown === "function" && !finished() ? countdown() : ""}
-  ${unreadAnnounces() ? `<button class="newmsg" data-view-go="msg"><b>Nouveau message de ta formatrice</b><span>${esc(visibleAnnounces().slice(-1)[0].title)}</span></button>` : ""}
+  ${unreadAnnounces() ? `<button class="newmsg" data-view-go="msg"><b>Nouveau message de votre formatrice</b><span>${esc(visibleAnnounces().slice(-1)[0].title)}</span></button>` : ""}
   <div class="kpis">${kpis.map(([l, v, d]) => `<div class="kpi"><span>${l}</span><strong>${v}</strong>${d}</div>`).join("")}</div>
-  ${finished() ? "" : `<section class="stack"><div class="row" style="justify-content:space-between"><h2 style="font-size:1.05rem">Ta feuille de route pour le ${S.periods[n]}</h2><span class="hint">Une carte par étape, dans l'ordre que tu veux</span></div><div class="tiles">${planTiles()}</div></section>`}
+  ${finished() ? "" : `<section class="stack"><div class="row" style="justify-content:space-between"><h2 style="font-size:1.05rem">Votre feuille de route pour le ${S.periods[n]}</h2><span class="hint">Une carte par étape, dans l'ordre que vous voulez</span></div><div class="tiles">${planTiles()}</div></section>`}
   <div class="grid2">
     <section class="card"><h2>Résultat cumulé face à la concurrence</h2>${cumChart()}</section>
     <section class="card">
-      ${finished() ? `<h2>Et maintenant ?</h2><p class="hint">Relis le bilan de chaque trimestre et prépare ton débriefing avec le coach.</p>` : `<h2>Le coach</h2><p class="hint">Il commente chaque trimestre et répond à tes questions, sans te donner les réponses.</p>`}
+      ${finished() ? `<h2>Et maintenant ?</h2><p class="hint">Relisez le bilan de chaque trimestre et préparez votre débriefing avec le coach.</p>` : `<h2>Le coach</h2><p class="hint">Il commente chaque trimestre et répond à vos questions, sans vous donner les réponses.</p>`}
       ${lastCoach ? `<h3>Dernier message du coach</h3><p class="hint" style="white-space:pre-wrap">${esc(lastCoach.content.slice(0, 260))}${lastCoach.content.length > 260 ? "…" : ""}</p><button class="btn ghost" data-opencoach="1">Ouvrir le coach</button>` : ""}
     </section>
   </div>`;
@@ -2424,7 +2536,7 @@ function finalHtml(){
   const pos = ranking.findIndex(x => x.me) + 1;
   return `<section class="final"><h2>Bilan de la partie : ${pos === 1 ? "1re" : pos + "e"} place sur ${ranking.length}</h2>
   <p>Résultat cumulé : <b>${eur.format(last().cumResult)}</b> · satisfaction moyenne : <b>${Math.round(rs.reduce((a, r) => a + r.satisfaction, 0) / rs.length)}/100</b> · ventes perdues : <b>${num.format(rs.reduce((a, r) => a + r.lostStock + r.lostStaff, 0))}</b>.</p>
-  <p>Pour le débriefing : explique la stratégie suivie en trois phrases, puis ce que tu changerais si tu recommençais.</p>
+  <p>Pour le débriefing : expliquez la stratégie suivie en trois phrases, puis ce que vous changeriez si vous recommenciez.</p>
   <div><button class="btn amber" id="restart">Recommencer une partie</button></div></section>`;
 }
 function cumulative(){
@@ -2466,7 +2578,7 @@ function cumChart(){
   for (let k = 1; k < labels.length; k++) if (labels[k].y - labels[k - 1].y < 13) labels[k].y = labels[k - 1].y + 13;
   const lx = x(played() - 1) + 10;
   labels.forEach(l => s += `<text x="${Math.min(lx, W - pr + 6)}" y="${l.y + 4}" style="fill:${l.c};font-weight:${l.me ? 700 : 400}">${esc(l.name)}</text>`);
-  return s + "</svg></div>" + (played() < 2 ? `<p class="hint">Un seul trimestre joué pour l'instant : chaque magasin n'a qu'un point. Les courbes se dessinent dès que tu valides le T2.</p>` : "");
+  return s + "</svg></div>" + (played() < 2 ? `<p class="hint">Un seul trimestre joué pour l'instant : chaque magasin n'a qu'un point. Les courbes se dessinent dès que vous validez le T2.</p>` : "");
 }
 function niceStep(raw){ const p = Math.pow(10, Math.floor(Math.log10(raw))); const m = raw / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; }
 
@@ -2475,12 +2587,12 @@ function viewPlan(){
   if (finished()) return `<div class="top"><div><h1>Mon plan d'action</h1><p>La partie est terminée : les six trimestres ont été joués.</p></div></div>${finalHtml()}`;
   const n = played();
   if (!G.planTab){
-    return `<div class="top"><div><h1>Mon plan d'action · ${S.periods[n]}</h1><p>${S.periodLabels[n]} · ${S.events[n].title}. Ouvre chaque carte, puis valide avec la dernière.</p></div></div>
+    return `<div class="top"><div><h1>Mon plan d'action · ${S.periods[n]}</h1><p>${S.periodLabels[n]} · ${S.events[n].title}. Ouvrez chaque carte, puis validez avec la dernière.</p></div></div>
     <div class="tiles">${planTiles()}</div>`;
   }
   G.visited.add(G.planTab);
   const body = {ctx:planCtx, offre:planOffre, stocks:planStocks, comm:planComm, equipe:planEquipe, invest:planInvest, synth:planSynth}[G.planTab]();
-  return `<div class="top"><div><h1>Mon plan d'action · ${S.periods[n]}</h1><p>${S.periodLabels[n]} · tes décisions sont enregistrées au fil de la saisie, rien n'est joué avant la validation.</p></div></div>
+  return `<div class="top"><div><h1>Mon plan d'action · ${S.periods[n]}</h1><p>${S.periodLabels[n]} · vos décisions sont enregistrées au fil de la saisie, rien n'est joué avant la validation.</p></div></div>
   <div class="row"><button class="back" data-ptab="__home">← Toutes les étapes</button></div>
   ${tabsHtml(PLAN_TABS, G.planTab, "ptab")}${body}
   ${G.planTab !== "synth" ? `<div class="row"><button class="btn ghost" data-nextplan="1">Étape suivante</button></div>` : ""}`;
@@ -2501,8 +2613,8 @@ function planCtx(){
   return `<div class="event"><b>${ev.title}</b><span>${ev.text}</span></div>
   <div class="grid2">
     <section class="card"><h2>Coûts et prix du trimestre</h2>
-      <p class="hint">Pour un article : ce qu'il te coûte chez le fournisseur, ton prix de vente, ta marge (prix moins coût), et le prix de vente moyen de tes quatre concurrents pour comparer.</p>
-      <div class="tablebox"><table><thead><tr><th>Catégorie</th><th>Coût d'achat</th><th>Ton prix</th><th>Ta marge</th><th>Prix concurrents</th></tr></thead><tbody>${costRows}</tbody></table></div>
+      <p class="hint">Pour un article : ce qu'il vous coûte chez le fournisseur, votre prix de vente, votre marge (prix moins coût), et le prix de vente moyen de vos quatre concurrents pour comparer.</p>
+      <div class="tablebox"><table><thead><tr><th>Catégorie</th><th>Coût d'achat</th><th>Votre prix</th><th>Votre marge</th><th>Prix concurrents</th></tr></thead><tbody>${costRows}</tbody></table></div>
       <div class="tablebox"><table><tbody>
         <tr><td>${S.staff.opt.name} (coût chargé par trimestre)</td><td>${eur.format(S.staff.opt.cost)}</td></tr>
         <tr><td>${S.staff.cons.name} (coût chargé par trimestre)</td><td>${eur.format(S.staff.cons.cost)}</td></tr>
@@ -2513,11 +2625,11 @@ function planCtx(){
         <tr><td>Trésorerie minimale</td><td>${eur.format(S.finance.minCash)}</td></tr>
       </tbody></table></div>
     </section>
-    <section class="card"><h2>Tes concurrents</h2>
+    <section class="card"><h2>Vos concurrents</h2>
       <div class="tablebox"><table><thead><tr><th>Magasin</th><th>Positionnement</th><th>Niveau de prix</th></tr></thead><tbody>
       ${S.competitors.map(k => `<tr><td><b>${k.name}</b></td><td style="white-space:normal">${k.profile}</td><td>${num.format(G.state.compState[k.id].priceIdx * 100)}</td></tr>`).join("")}
       </tbody></table></div>
-      <p class="hint">Niveau de prix : base 100 = prix de référence du marché. Les concurrents ajustent leurs prix selon tes résultats.</p>
+      <p class="hint">Niveau de prix : base 100 = prix de référence du marché. Les concurrents ajustent leurs prix selon vos résultats.</p>
     </section>
   </div>`;
 }
@@ -2530,7 +2642,7 @@ function planOffre(){
   }).join("");
   return `<section class="card"><h2>Prix de vente moyens par catégorie</h2>
   <p class="hint">${S.words.priceHint}</p>
-  <div class="tablebox"><table><thead><tr><th>Catégorie</th><th>Coût d'achat</th><th>Ton prix de vente</th><th>Taux de marque</th><th>Prix moyen concurrents</th><th>Ton prix précédent</th><th>Tes ventes précédentes</th></tr></thead><tbody>${rows}</tbody></table></div></section>
+  <div class="tablebox"><table><thead><tr><th>Catégorie</th><th>Coût d'achat</th><th>Votre prix de vente</th><th>Taux de marque</th><th>Prix moyen concurrents</th><th>Votre prix précédent</th><th>Vos ventes précédentes</th></tr></thead><tbody>${rows}</tbody></table></div></section>
   <section class="card" id="derived"></section>`;
 }
 function derivedOffre(){
@@ -2541,14 +2653,14 @@ function derivedOffre(){
   });
   return `<h2>Effet estimé sur le trimestre</h2><div class="tablebox"><table><thead><tr><th>Catégorie</th><th>Demande estimée</th><th>CA estimé</th><th>Marge estimée</th></tr></thead><tbody>
   ${S.categories.map(c => `<tr><td>${c.name}</td><td>${num.format(f.cats[c.id].demand)}</td><td>${eur.format(f.cats[c.id].ca)}</td><td>${eur.format(f.cats[c.id].margin)}</td></tr>`).join("")}
-  </tbody></table></div><p class="hint">Estimation sans aléa de marché, avec tes autres décisions actuelles.</p>`;
+  </tbody></table></div><p class="hint">Estimation sans aléa de marché, avec vos autres décisions actuelles.</p>`;
 }
 function planStocks(){
   const r = last();
   const rows = STOCK_CATS.map(c => `<tr><td>${c.name}</td><td>${num.format(G.state.stock[c.id].qty)}</td><td>${num.format(r.cats[c.id].sales)}</td>
     <td><input type="number" min="0" step="10" data-order="${c.id}" value="${G.draft.order[c.id]}" aria-label="Commande ${c.name}"></td><td id="av-${c.id}"></td><td id="de-${c.id}"></td><td id="co-${c.id}"></td></tr>`).join("");
   return `<section class="card"><h2>Commandes aux fournisseurs</h2>
-  <p class="hint">Commande ce que tu penses vendre ce trimestre, moins ton stock. Une rupture fait partir le client chez un concurrent. Un surstock immobilise ta trésorerie. Verres et prestations d'atelier sont commandés à la vente : pas de stock à gérer.</p>
+  <p class="hint">Commandez ce que vous pensez vendre ce trimestre, moins votre stock. Une rupture fait partir le client chez un concurrent. Un surstock immobilise votre trésorerie. Verres et prestations d'atelier sont commandés à la vente : pas de stock à gérer.</p>
   <div class="tablebox"><table><thead><tr><th>Catégorie</th><th>Stock actuel</th><th>Ventes précédentes</th><th>Commande</th><th>Disponible</th><th>Demande estimée</th><th>Situation prévue</th></tr></thead><tbody>${rows}</tbody></table></div></section>
   <section class="card" id="derived"></section>`;
 }
@@ -2565,7 +2677,7 @@ function derivedStocks(){
     const gap = avail - dem;
     if ($("co-" + c.id)) $("co-" + c.id).innerHTML = gap < 0 ? `<span class="pill bad">rupture : ${num.format(-gap)}</span>` : (gap > dem * 0.5 ? `<span class="pill warn">surstock : ${num.format(gap)}</span>` : `<span class="pill ok">reste ${num.format(gap)}</span>`);
   });
-  return `<h2>Montant des commandes</h2><p><b>${eur.format(cost)}</b> payés ce trimestre. Trésorerie de départ : ${eur.format(G.state.cash)}.</p><p class="hint">La demande estimée ne tient pas compte de l'aléa de marché : garde une petite marge de sécurité.</p>`;
+  return `<h2>Montant des commandes</h2><p><b>${eur.format(cost)}</b> payés ce trimestre. Trésorerie de départ : ${eur.format(G.state.cash)}.</p><p class="hint">La demande estimée ne tient pas compte de l'aléa de marché : gardez une petite marge de sécurité.</p>`;
 }
 function planComm(){
   const c = G.draft.comm;
@@ -2584,7 +2696,7 @@ function derivedComm(){
   ["local", "digital", "vitrine"].forEach(k => { if ($("o-c" + k)) $("o-c" + k).textContent = pct0(c[k] / tot); });
   if ($("o-cbudget")) $("o-cbudget").textContent = eur.format(c.budget);
   const f = forecast(), base = simulatePeriod(G.state, {...G.draft, comm:{...c, budget:0}}, played(), {forecast:true}).r;
-  return `<h2>Effet estimé</h2><p>Avec ce budget, le chiffre d'affaires estimé passe de <b>${eur.format(base.ca)}</b> (sans communication) à <b>${eur.format(f.ca)}</b>, soit ${eur.format(f.ca - base.ca)} de plus pour ${eur.format(c.budget)} dépensés.</p><p class="hint">Chaque euro supplémentaire rapporte de moins en moins : cherche le point où la marge gagnée ne couvre plus la dépense.</p>`;
+  return `<h2>Effet estimé</h2><p>Avec ce budget, le chiffre d'affaires estimé passe de <b>${eur.format(base.ca)}</b> (sans communication) à <b>${eur.format(f.ca)}</b>, soit ${eur.format(f.ca - base.ca)} de plus pour ${eur.format(c.budget)} dépensés.</p><p class="hint">Chaque euro supplémentaire rapporte de moins en moins : cherchez le point où la marge gagnée ne couvre plus la dépense.</p>`;
 }
 function planEquipe(){
   const s = G.draft.staff;
@@ -2626,16 +2738,25 @@ function derivedInvest(){
   const f = forecast();
   return `<p>Trésorerie prévue en fin de trimestre : <b class="${f.overdraft > 0 ? "down" : ""}">${eur.format(f.cashEnd - f.overdraft)}</b>${f.overdraft > 0 ? ` : un découvert de ${eur.format(f.overdraft)} serait ouvert automatiquement au taux de ${dec1.format(S.finance.overdraftRate * 100)} %.` : "."}</p>`;
 }
+const OVERDRAFT_ALERT = 50000;
+const overdraftText = (od, prevu) => `Découvert ${prevu ? "prévu " : ""}de ${eur.format(od)} : il vous coûte ${dec1.format(S.finance.overdraftRate * 100)} % par trimestre, soit environ ${eur.format(od * S.finance.overdraftRate)} d'intérêts qui réduisent votre résultat. Plus il grossit, plus votre magasin est fragile. Revoyez vos prix, vos achats ou vos charges. Vous pouvez continuer la partie : cette alerte ne bloque rien.`;
+function odBanner(){
+  const m = $("main"); if (!m || ROLE !== "etudiant" || !["dash", "bilan", "plan"].includes(G.view)) return;
+  const od = G.state.overdraft; if (!(od > OVERDRAFT_ALERT) || m.querySelector(".od-alert")) return;
+  const d = document.createElement("div"); d.className = "alert bad od-alert"; d.setAttribute("role", "alert"); d.textContent = typoStr(overdraftText(od, false));
+  m.insertBefore(d, m.firstChild);
+}
 function alertsFor(f){
   const a = [];
   if (f.result < 0) a.push(["bad", `Résultat prévu négatif : ${eur.format(f.result)}.`]);
   const up = (S.events[played()].costUp) || {};
   S.categories.forEach(c => { const p = G.draft.price[c.id], cost = c.cost * (up[c.id] || 1); if (p < cost) a.push(["bad", `${c.name} : vente à perte, le prix (${eur.format(p)}) est sous le coût (${eur.format(cost)}).`]); });
-  if (f.overdraft > 0) a.push(["bad", `Trésorerie insuffisante : découvert prévu de ${eur.format(f.overdraft)}.`]);
+  if (f.overdraft > OVERDRAFT_ALERT) a.push(["bad", overdraftText(f.overdraft, true)]);
+  else if (f.overdraft > 0) a.push(["bad", `Trésorerie insuffisante : découvert prévu de ${eur.format(f.overdraft)}.`]);
   STOCK_CATS.forEach(c => { const x = f.cats[c.id]; if (x.lostStock > 0) a.push(["warn", `${c.name} : rupture probable de ${num.format(x.lostStock)} ${c.unit}.`]); else if (x.stockEnd > x.sales * 0.6 && x.stockEnd > 40) a.push(["warn", `${c.name} : il resterait ${num.format(x.stockEnd)} ${c.unit} en stock : de la trésorerie immobilisée et 3 % de frais de stock par trimestre.`]); });
   if (f.lostStaff > 0) a.push(["warn", `Équipe trop juste : ${num.format(f.lostStaff)} ventes perdues faute de personnel.`]);
-  if (f.needAll / f.staffHours < 0.7) a.push(["warn", `Ton équipe ne serait occupée qu'à ${pct0(f.needAll / f.staffHours)}.`]);
-  if (!a.length) a.push(["ok", "Aucune alerte : ton plan est cohérent sur le papier."]);
+  if (f.needAll / f.staffHours < 0.7) a.push(["warn", `Votre équipe ne serait occupée qu'à ${pct0(f.needAll / f.staffHours)}.`]);
+  if (!a.length) a.push(["ok", "Aucune alerte : votre plan est cohérent sur le papier."]);
   return a;
 }
 function planSynth(){
@@ -2673,7 +2794,7 @@ function viewBilan(){
   const body = G.bilanTab ? {indic:bIndic, marche:bMarche, ventes:bVentes, equipe:bEquipe, comptes:bComptes, classement:bClassement}[G.bilanTab](r, p, h.forecast, i) : `<div class="tiles">${bilanTiles(i)}</div>`;
   return `<div class="top"><div><h1>Bilan du ${S.periods[i]}</h1><p>${S.periodLabels[i]} · ${S.events[i].title}</p></div>
   <label>Trimestre <select id="bilanSel">${G.history.map((x, k) => `<option value="${k}" ${k === i ? "selected" : ""}>${S.periods[k]}</option>`).join("")}</select></label></div>
-  ${G.bilanTab ? `<div class="row"><button class="back" data-btab="__home">← Toutes les analyses</button></div>${tabsHtml(BILAN_TABS, G.bilanTab, "btab")}` : ""}${body}`;
+  ${G.bilanTab ? `<div class="row"><button class="back" data-btab="__home">← Toutes les analyses</button></div>${tabsHtml(BILAN_TABS, G.bilanTab, "btab")}` : ""}${body}${!G.bilanTab || G.bilanTab === "indic" ? iaBox("L'IA vous expliquerait vos chiffres en langage simple. Elle ne prend jamais vos décisions à votre place.") : ""}`;
 }
 function bIndic(r, p, f){
   const k = [
@@ -2692,8 +2813,8 @@ function bIndic(r, p, f){
       .concat(S.categories.map(c => [c.name + " (ventes)", f.cats[c.id].sales, r.cats[c.id].sales, true]));
     gap = `<section class="card"><h2>Prévu et réalisé</h2><div class="tablebox"><table><thead><tr><th>Indicateur</th><th>Prévu</th><th>Réalisé</th><th>Écart</th></tr></thead><tbody>
     ${rows.map(([l, a, b, u]) => `<tr><td>${l}</td><td>${u ? num.format(a) : eur.format(a)}</td><td>${u ? num.format(b) : eur.format(b)}</td><td class="${b - a >= 0 ? "up" : "down"}">${b - a >= 0 ? "+" : "−"}${u ? num.format(Math.abs(b - a)) : eur.format(Math.abs(b - a))}</td></tr>`).join("")}
-    </tbody></table></div><p class="hint">Un écart vient de l'aléa de marché, mais aussi des réactions des concurrents. Demande au coach de t'aider à l'expliquer.</p></section>`;
-  } else gap = `<section class="card"><h2>Prévu et réalisé</h2><p class="hint">Le ${S.periods[0]} a été joué par l'ancien gérant, sans prévisionnel. La comparaison apparaîtra dès ton premier trimestre.</p></section>`;
+    </tbody></table></div><p class="hint">Un écart vient de l'aléa de marché, mais aussi des réactions des concurrents. Demandez au coach de vous aider à l'expliquer.</p></section>`;
+  } else gap = `<section class="card"><h2>Prévu et réalisé</h2><p class="hint">Le ${S.periods[0]} a été joué par l'ancien gérant, sans prévisionnel. La comparaison apparaîtra dès votre premier trimestre.</p></section>`;
   return `<div class="kpis">${k.map(([l, v, d]) => `<div class="kpi"><span>${l}</span><strong>${v}</strong>${d}</div>`).join("")}</div>${gap}`;
 }
 function bMarche(r){
@@ -2777,7 +2898,7 @@ function bClassement(r, p, f, i){
   const rows = rankingRows(i);
   return `<section class="card"><h2>Classement après le ${S.periods[i]}</h2><div class="tablebox"><table><thead><tr><th>Rang</th><th>Magasin</th><th>Résultat cumulé</th><th>Résultat du trimestre</th><th>Chiffre d'affaires</th><th>Part de marché</th></tr></thead><tbody>
   ${rows.map((x, k) => `<tr class="${x.me ? "me" : ""}"><td>${k + 1}</td><td style="text-align:left">${x.name}</td><td>${eur.format(x.cum)}</td><td>${eur.format(x.res)}</td><td>${eur.format(x.ca)}</td><td>${pct(x.share)}</td></tr>`).join("")}
-  </tbody></table></div><p class="hint">Critère de classement : le résultat cumulé, T1 de l'ancien gérant compris. Dans la version complète, chaque ligne est une équipe de ta classe.</p></section>`;
+  </tbody></table></div><p class="hint">Critère de classement : le résultat cumulé, T1 de l'ancien gérant compris. Dans la version complète, chaque ligne est une équipe de votre classe.</p></section>`;
 }
 
 /* ----- Calendrier et ressources ----- */
@@ -2804,14 +2925,14 @@ function viewMsg(){
     if (i === 0) return `<li class="carnet-item"><b>${pp}</b><span class="hint">Trimestre joué par l'ancien gérant.</span></li>`;
     return `<li class="carnet-item"><b>${pp} · résultat ${eur.format(G.history[i].r.result)}</b>${t ? `<span>${esc(t)}</span>` : `<span class="hint">Aucune note pour ce trimestre.</span>`}</li>`;
   }).reverse().join("");
-  return `<div class="top"><div><h1>Messages</h1><p>Les messages de ta formatrice et les bilans de séance de ton équipe.</p></div></div>
+  return `<div class="top"><div><h1>Messages</h1><p>Les messages de votre formatrice et les bilans de séance de votre équipe.</p></div></div>
   <div class="grid2">
-  <section class="card"><h2>Messages de ta formatrice</h2>
+  <section class="card"><h2>Messages de votre formatrice</h2>
     ${list.length ? `<ul class="msglist">${list.map(a => `<li><div class="row" style="justify-content:space-between"><b>${esc(a.title)}</b><span class="pill ${a.live ? "warn" : ""}">${a.when}</span></div><p>${esc(a.text)}</p><span class="hint">Pour : ${esc(a.to)}</span></li>`).join("")}</ul>` : `<p class="hint">Aucun message pour l'instant.</p>`}
 
   </section>
   <section class="card"><h2>Bilans de séance</h2>
-    <p class="hint">À chaque séance, ton équipe note sa stratégie et ses choix en deux ou trois lignes. Le coach compare ce que vous avez annoncé à ce que vous avez obtenu ; ta formatrice les lit pour le débriefing.</p>
+    <p class="hint">À chaque séance, votre équipe note sa stratégie et ses choix en deux ou trois lignes. Le coach compare ce que vous avez annoncé à ce que vous avez obtenu ; votre formatrice les lit pour le débriefing.</p>
     <ul class="carnet">${rows}</ul>
   </section></div>`;
 }
@@ -2820,12 +2941,12 @@ function viewRes(){
   <div class="grid2">
   <section class="card prose"><h2>Mode d'emploi</h2><p>Le guide de l'étudiant : connexion, plan d'action, bilan de séance, coach, avancement et messages. Il existe aussi en version illustrée, en PDF.</p><div class="row"><button class="btn ghost" data-go="guide">Ouvrir le mode d'emploi</button><a class="btn ghost" href="${GUIDE_PDF.etudiant}" target="_blank" rel="noopener">Guide illustré (PDF)</a></div></section>
   <section class="card prose"><h2>Démarrer en cinq minutes</h2>
-    <ol><li>Lis le bilan du ${S.periods[0]} : il montre les forces et les faiblesses laissées par l'ancien gérant.</li>
-    <li>Ouvre « Mon plan d'action » et parcours les étapes dans l'ordre, du contexte à la synthèse.</li>
-    <li>Contrôle le prévisionnel et les points de vigilance avant de valider.</li>
-    <li>Après chaque trimestre, compare le prévu au réalisé et demande au coach d'expliquer les écarts.</li>
-    <li>Garde une ligne stratégique : à quel client t'adresses-tu, et pourquoi viendrait-il chez toi ?</li></ol></section>
-  <section class="card prose"><h2>Comprendre ton marché</h2>
+    <ol><li>Lisez le bilan du ${S.periods[0]} : il montre les forces et les faiblesses laissées par l'ancien gérant.</li>
+    <li>Ouvrez « Mon plan d'action » et parcourez les étapes dans l'ordre, du contexte à la synthèse.</li>
+    <li>Contrôlez le prévisionnel et les points de vigilance avant de valider.</li>
+    <li>Après chaque trimestre, comparez le prévu au réalisé et demandez au coach d'expliquer les écarts.</li>
+    <li>Gardez une ligne stratégique : à quel client vous adressez-vous, et pourquoi viendrait-il chez vous ?</li></ol></section>
+  <section class="card prose"><h2>Comprendre votre marché</h2>
     ${S.words.catDesc.map(t => `<p>${t}</p>`).join("")}</section>
   <section class="card"><h2>Lexique</h2><dl class="lex">
     <dt>Taux de marque</dt><dd>(prix de vente − coût d'achat) ÷ prix de vente.</dd>
@@ -2892,7 +3013,7 @@ function validate(){
   if ((G.notes[i] || "").trim().length < 15){
     const ta = document.querySelector(`[data-note="${i}"]`);
     const err = document.getElementById("noteErr");
-    if (err) err.textContent = "Rédige d'abord le bilan de séance de ton équipe (au moins une phrase) : il est obligatoire pour valider.";
+    if (err) err.textContent = "Rédigez d'abord le bilan de séance de votre équipe (au moins une phrase) : il est obligatoire pour valider.";
     if (ta){ ta.classList.add("invalid"); ta.focus(); }
     toast("Bilan de séance obligatoire avant de valider.");
     return;
@@ -2907,8 +3028,8 @@ function validate(){
   G.planTab = null;
   G.bilanIdx = i; G.bilanTab = null;
   const note = G.notes[i];
-  const noteTxt = note ? `\n\nTon équipe avait annoncé : « ${note} ». Tes résultats confirment-ils cette stratégie, ou faut-il l'ajuster ?` : "";
-  coachSay(`Décisions du ${S.periods[i]} enregistrées. ` + diagnose(i) + noteTxt + (finished() ? "\n\nLa partie est terminée : ton bilan final t'attend sur le tableau de bord." : ""), true);
+  const noteTxt = note ? `\n\nVotre équipe avait annoncé : « ${note} ». Vos résultats confirment-ils cette stratégie, ou faut-il l'ajuster ?` : "";
+  coachSay(`Décisions du ${S.periods[i]} enregistrées. ` + diagnose(i) + noteTxt + (finished() ? "\n\nLa partie est terminée : votre bilan final vous attend sur le tableau de bord." : ""), true);
   go("bilan", "__home");
 }
 
@@ -2916,43 +3037,43 @@ function validate(){
 function diagnose(i){
   const r = G.history[i].r, p = i > 0 ? G.history[i - 1].r : null, f = G.history[i].forecast;
   const notes = [];
-  STOCK_CATS.forEach(c => { const x = r.cats[c.id]; if (x.lostStock > Math.max(15, x.demand * 0.05)) notes.push({w:5, t:`${c.name} : ${num.format(x.lostStock)} clients sont repartis sans produit, faute de stock.`, q:`Qu'est-ce qui, dans tes chiffres ou dans l'événement du trimestre, permettait d'anticiper cette demande de ${c.name.toLowerCase()} ?`}); });
-  if (r.lostStaff > 20) notes.push({w:5, t:`Ton équipe n'a pas pu servir ${num.format(r.lostStaff)} ventes : ${num.format(r.needAll)} heures étaient nécessaires pour ${num.format(r.staffHours)} disponibles.`, q:`Une personne de plus coûte au moins ${eur.format(S.staff.cons.cost)} par trimestre. Les ventes récupérées couvriraient-elles ce coût ?`});
-  if (r.needAll / r.staffHours < 0.7) notes.push({w:4, t:`Ton équipe n'est occupée qu'à ${pct0(r.needAll / r.staffHours)} de son temps.`, q:`Vaut-il mieux réduire l'équipe ou aller chercher plus de clients ? Qu'est-ce qui guide ton choix ?`});
-  STOCK_CATS.forEach(c => { const x = r.cats[c.id]; if (x.stockEnd > Math.max(60, x.sales * 0.7)) notes.push({w:3, t:`${c.name} : il te reste ${num.format(x.stockEnd)} ${c.unit} en stock : de la trésorerie immobilisée et des frais de stock à chaque trimestre.`, q:`Combien de trimestres faudra-t-il pour écouler ce stock au rythme actuel ?`}); });
-  if (r.result < 0) notes.push({w:6, t:`Ton trimestre est en perte (${eur.format(r.result)}). La marge brute (${eur.format(r.grossMargin)}) ne couvre pas tes charges.`, q:`Quelle charge pèse le plus, et laquelle peux-tu réduire sans faire fuir tes clients ?`});
-  if (r.overdraft > 0) notes.push({w:6, t:`Ta trésorerie est passée sous le minimum : un découvert de ${eur.format(r.overdraft)} a été ouvert au taux de ${dec1.format(S.finance.overdraftRate * 100)} %.`, q:`Quelle décision a le plus consommé de trésorerie ce trimestre ?`});
+  STOCK_CATS.forEach(c => { const x = r.cats[c.id]; if (x.lostStock > Math.max(15, x.demand * 0.05)) notes.push({w:5, t:`${c.name} : ${num.format(x.lostStock)} clients sont repartis sans produit, faute de stock.`, q:`Qu'est-ce qui, dans vos chiffres ou dans l'événement du trimestre, permettait d'anticiper cette demande de ${c.name.toLowerCase()} ?`}); });
+  if (r.lostStaff > 20) notes.push({w:5, t:`Votre équipe n'a pas pu servir ${num.format(r.lostStaff)} ventes : ${num.format(r.needAll)} heures étaient nécessaires pour ${num.format(r.staffHours)} disponibles.`, q:`Une personne de plus coûte au moins ${eur.format(S.staff.cons.cost)} par trimestre. Les ventes récupérées couvriraient-elles ce coût ?`});
+  if (r.needAll / r.staffHours < 0.7) notes.push({w:4, t:`Votre équipe n'est occupée qu'à ${pct0(r.needAll / r.staffHours)} de son temps.`, q:`Vaut-il mieux réduire l'équipe ou aller chercher plus de clients ? Qu'est-ce qui guide votre choix ?`});
+  STOCK_CATS.forEach(c => { const x = r.cats[c.id]; if (x.stockEnd > Math.max(60, x.sales * 0.7)) notes.push({w:3, t:`${c.name} : il vous reste ${num.format(x.stockEnd)} ${c.unit} en stock : de la trésorerie immobilisée et des frais de stock à chaque trimestre.`, q:`Combien de trimestres faudra-t-il pour écouler ce stock au rythme actuel ?`}); });
+  if (r.result < 0) notes.push({w:6, t:`Votre trimestre est en perte (${eur.format(r.result)}). La marge brute (${eur.format(r.grossMargin)}) ne couvre pas vos charges.`, q:`Quelle charge pèse le plus, et laquelle pouvez-vous réduire sans faire fuir vos clients ?`});
+  if (r.overdraft > 0) notes.push({w:6, t:`Votre trésorerie est passée sous le minimum : un découvert de ${eur.format(r.overdraft)} a été ouvert au taux de ${dec1.format(S.finance.overdraftRate * 100)} %.`, q:`Quelle décision a le plus consommé de trésorerie ce trimestre ?`});
   if (r.cats.verr.attach < catById("verr").attach * 0.9) notes.push({w:3, t:S.words.attachLow(SCENARIO.id === "mode" ? dec1.format(r.cats.verr.attach) : pct0(r.cats.verr.attach)), q:S.words.attachLowQ});
-  if (f && Math.abs(r.ca - f.ca) / f.ca > 0.06) notes.push({w:2, t:`Ton chiffre d'affaires s'écarte de ${pct0(Math.abs(r.ca - f.ca) / f.ca)} de ta prévision.`, q:`Quelles catégories expliquent l'essentiel de l'écart ?`});
-  if (p && r.marketShare < p.marketShare - 0.02) notes.push({w:3, t:`Ta part de marché recule de ${dec1.format((p.marketShare - r.marketShare) * 100)} points.`, q:`Quel concurrent en profite, et avec quel argument ?`});
+  if (f && Math.abs(r.ca - f.ca) / f.ca > 0.06) notes.push({w:2, t:`Votre chiffre d'affaires s'écarte de ${pct0(Math.abs(r.ca - f.ca) / f.ca)} de votre prévision.`, q:`Quelles catégories expliquent l'essentiel de l'écart ?`});
+  if (p && r.marketShare < p.marketShare - 0.02) notes.push({w:3, t:`Votre part de marché recule de ${dec1.format((p.marketShare - r.marketShare) * 100)} points.`, q:`Quel concurrent en profite, et avec quel argument ?`});
   notes.sort((a, b) => b.w - a.w);
   let strong = "";
-  if (p && r.result > p.result) strong = `Point fort : ton résultat progresse de ${eur.format(r.result - p.result)}.`;
-  else if (r.satisfaction >= 75) strong = `Point fort : tes clients sont satisfaits (${r.satisfaction}/100), c'est ta réputation du trimestre suivant.`;
-  if (!notes.length) return `Trimestre équilibré : ${eur.format(r.result)} de résultat et ${r.satisfaction}/100 de satisfaction. ${strong}\n\nQuestion pour toi : qu'est-ce qui, dans le prochain événement, pourrait déséquilibrer ce que tu as construit ?`;
+  if (p && r.result > p.result) strong = `Point fort : votre résultat progresse de ${eur.format(r.result - p.result)}.`;
+  else if (r.satisfaction >= 75) strong = `Point fort : vos clients sont satisfaits (${r.satisfaction}/100), c'est votre réputation du trimestre suivant.`;
+  if (!notes.length) return `Trimestre équilibré : ${eur.format(r.result)} de résultat et ${r.satisfaction}/100 de satisfaction. ${strong}\n\nQuestion pour vous : qu'est-ce qui, dans le prochain événement, pourrait déséquilibrer ce que vous avez construit ?`;
   let t = notes[0].t;
   if (notes[1]) t += `\n\nAutre signal : ${notes[1].t}`;
   if (strong) t += `\n\n${strong}`;
-  return t + `\n\nQuestion pour toi : ${notes[0].q}`;
+  return t + `\n\nQuestion pour vous : ${notes[0].q}`;
 }
 function reviewPlan(){
-  if (finished()) return "La partie est terminée. Demande-moi plutôt de t'aider à préparer ton débriefing.";
+  if (finished()) return "La partie est terminée. Demandez-moi plutôt de vous aider à préparer votre débriefing.";
   const f = forecast(), i = played(), ev = S.events[i];
   const al = alertsFor(f).filter(([k]) => k !== "ok");
-  let t = `Avis sur ton plan du ${S.periods[i]} : résultat prévu ${eur.format(f.result)}, trésorerie de fin ${eur.format(f.cashEnd - f.overdraft)}.`;
+  let t = `Avis sur votre plan du ${S.periods[i]} : résultat prévu ${eur.format(f.result)}, trésorerie de fin ${eur.format(f.cashEnd - f.overdraft)}.`;
   if (al.length) t += "\n\nCe que je regarderais avant de valider :\n" + al.slice(0, 3).map(([, x]) => "– " + x).join("\n");
-  else t += "\n\nTon plan ne déclenche aucune alerte.";
-  t += `\n\nRappel de l'événement : « ${ev.title} ». Question pour toi : en quoi tes décisions répondent-elles précisément à cet événement ?`;
+  else t += "\n\nVotre plan ne déclenche aucune alerte.";
+  t += `\n\nRappel de l'événement : « ${ev.title} ». Question pour vous : en quoi vos décisions répondent-elles précisément à cet événement ?`;
   return t;
 }
 function canned(q){
   const r = last(), d = G.draft;
   const A = {
-    "Comment lire mon bilan ?": `Commence par trois chiffres : le résultat (${eur.format(r.result)}), les ventes perdues (${num.format(r.lostStock + r.lostStaff)}) et l'écart entre prévu et réalisé. Les ventes perdues montrent ce que tu aurais pu gagner. L'écart montre si tu comprends ton marché.\n\nLequel de ces trois chiffres te surprend le plus ?`,
-    "Comment fixer mes prix ?": `Compare trois repères pour chaque catégorie : ton coût d'achat, le prix moyen des concurrents et ta position voulue. Tes ${S.words.mainMany} sont à ${eur.format(d.price.mont)}, la moyenne des concurrents à ${eur.format(avgCompPrice(catById("mont")))}. Un prix bas attire du volume, mais ton équipe doit pouvoir le servir.\n\nQuel client veux-tu attirer en priorité ?`,
-    "Combien commander ?": `Part de tes ventes du trimestre précédent, corrige avec la saisonnalité et l'événement annoncé, puis retire ton stock actuel. L'onglet « Achats et stocks » affiche la demande estimée et la situation prévue.\n\nQuelle catégorie est la plus saisonnière, et comment l'as-tu prise en compte ?`,
-    "Pourquoi ma trésorerie bouge ?": `Ta trésorerie suit les encaissements et les décaissements, pas le résultat. Ce trimestre, tu as encaissé ${eur.format(r.ca)} et payé ${eur.format(r.purchases)} d'achats. Le stock non vendu a coûté de la trésorerie sans apparaître en charges.\n\nQuelle décision du prochain trimestre pèsera le plus sur ta trésorerie ?`,
-    "Que font mes concurrents ?": `${S.words.compSummary} Regarde l'onglet « Marché et concurrence » pour voir qui gagne des parts, et sur quelle catégorie.\n\nSur quel terrain as-tu une chance de gagner avec ton équipe actuelle ?`
+    "Comment lire mon bilan ?": `Commencez par trois chiffres : le résultat (${eur.format(r.result)}), les ventes perdues (${num.format(r.lostStock + r.lostStaff)}) et l'écart entre prévu et réalisé. Les ventes perdues montrent ce que vous auriez pu gagner. L'écart montre si vous comprenez votre marché.\n\nLequel de ces trois chiffres vous surprend le plus ?`,
+    "Comment fixer mes prix ?": `Comparez trois repères pour chaque catégorie : votre coût d'achat, le prix moyen des concurrents et votre position voulue. Vos ${S.words.mainMany} sont à ${eur.format(d.price.mont)}, la moyenne des concurrents à ${eur.format(avgCompPrice(catById("mont")))}. Un prix bas attire du volume, mais votre équipe doit pouvoir le servir.\n\nQuel client voulez-vous attirer en priorité ?`,
+    "Combien commander ?": `Partez de vos ventes du trimestre précédent, corrigez avec la saisonnalité et l'événement annoncé, puis retirez votre stock actuel. L'onglet « Achats et stocks » affiche la demande estimée et la situation prévue.\n\nQuelle catégorie est la plus saisonnière, et comment l'avez-vous prise en compte ?`,
+    "Pourquoi ma trésorerie bouge ?": `Votre trésorerie suit les encaissements et les décaissements, pas le résultat. Ce trimestre, vous avez encaissé ${eur.format(r.ca)} et payé ${eur.format(r.purchases)} d'achats. Le stock non vendu a coûté de la trésorerie sans apparaître en charges.\n\nQuelle décision du prochain trimestre pèsera le plus sur votre trésorerie ?`,
+    "Que font mes concurrents ?": `${S.words.compSummary} Regardez l'onglet « Marché et concurrence » pour voir qui gagne des parts, et sur quelle catégorie.\n\nSur quel terrain avez-vous une chance de gagner avec votre équipe actuelle ?`
   };
   return A[q];
 }
@@ -2968,7 +3089,7 @@ function updateBadge(){ const b = $("coachBadge"); b.textContent = G.unread; b.c
 function addMsg(role, text, noPush){
   const el = document.createElement("div");
   el.className = "msg " + (role === "assistant" ? "coach" : "me");
-  el.innerHTML = `<span class="who">${role === "assistant" ? "Coach" : "Toi"}</span>`;
+  el.innerHTML = `<span class="who">${role === "assistant" ? "Coach" : "Vous"}</span>`;
   const body = document.createElement("span"); body.textContent = text; el.appendChild(body);
   $("thread").appendChild(el); typoFix(el); $("thread").scrollTop = $("thread").scrollHeight;
   if (!noPush){ G.chat.push({role, content:text}); saveGame(); }
@@ -2997,7 +3118,7 @@ function contextForAI(){
     page_ouverte:G.view + (G.view === "plan" ? "/" + G.planTab : G.view === "bilan" ? "/" + G.bilanTab : "")};
 }
 const sysPrompt = () => `Tu es le coach IA d'une simulation de gestion d'une ${S.words.shopType === "magasin d'optique" ? "boutique d'optique" : S.words.shopType}, utilisée par des étudiants en commerce et distribution. Règles :
-- tutoie l'étudiant, réponds en français simple, 100 mots maximum ;
+- vouvoie l'étudiant, réponds en français simple, 100 mots maximum ;
 - méthode socratique : explique le mécanisme en t'appuyant sur SES chiffres, puis termine par une seule question qui le fait raisonner ;
 - ne donne jamais de valeurs de décision à saisir (prix, quantités, effectifs, budgets) ;
 - si la question sort de la simulation ou de la gestion de magasin, recentre poliment ;
@@ -3005,13 +3126,13 @@ const sysPrompt = () => `Tu es le coach IA d'une simulation de gestion d'une ${S
 async function ask(q){
   if (!q.trim()) return;
   if (qUsed() >= DB.api.capStudent){
-    coachSay(`Tu as posé tes ${DB.api.capStudent} questions de ce trimestre. Le compteur repart à zéro au trimestre suivant. D'ici là, relis ton bilan et note tes questions pour ta formatrice.`);
+    coachSay(`Vous avez posé vos ${DB.api.capStudent} questions de ce trimestre. Le compteur repart à zéro au trimestre suivant. D'ici là, relisez votre bilan et notez vos questions pour votre formatrice.`);
     updateQ(); return;
   }
   G.q[played()] = qUsed() + 1; updateQ();
   addMsg("user", q);
   const c = canned(q);
-  if (!sampleFn){ coachSay(c || "Dans cette maquette, le coach connecté à l'IA répond librement. Ici, il fonctionne en mode démonstration : utilise les questions proposées ou le bouton « Demander l'avis du coach » dans la synthèse."); return; }
+  if (!sampleFn){ coachSay(c || "Dans cette maquette, le coach connecté à l'IA répond librement. Ici, il fonctionne en mode démonstration : utilisez les questions proposées ou le bouton « Demander l'avis du coach » dans la synthèse."); return; }
   const {body, idx} = addMsg("assistant", "Le coach réfléchit…");
   const hist = G.chat.slice(0, -2).slice(-10);
   const msgs = [{role:"user", content:`${sysPrompt()}\n\nDonnées de la partie (JSON) :\n${JSON.stringify(contextForAI())}\n\nRéponds aux questions de l'étudiant qui suivent.`}, {role:"assistant", content:"Compris. Je coache l'étudiant à partir de ses chiffres."}];
@@ -3021,7 +3142,7 @@ async function ask(q){
     const res = await sampleFn(msgs, {cache:false, modelTier:"quick", onText:({text}) => { body.textContent = text; }});
     body.textContent = res.text; G.chat[idx].content = res.text;
   }catch(e){
-    const fb = c || "Le coach IA n'est pas joignable pour le moment. Réessaie dans un instant ou utilise les questions proposées.";
+    const fb = c || "Le coach IA n'est pas joignable pour le moment. Réessayez dans un instant ou utilisez les questions proposées.";
     body.textContent = fb; G.chat[idx].content = fb;
     if (e && e.code === "not_granted"){ sampleFn = null; setMode(false); }
   }
@@ -3032,7 +3153,7 @@ function restoreChat(){
   updateBadge();
 }
 function welcome(){
-  coachSay(`Bienvenue chez ${S.store}. Je t'accompagne pendant les six trimestres. Je ne donne pas les réponses : je t'aide à lire tes chiffres et à justifier tes choix.\n\nPremier constat sur le ${S.periods[0]}, joué par l'ancien gérant : ` + diagnose(0));
+  coachSay(`Bienvenue chez ${S.store}. Je vous accompagne pendant les six trimestres. Je ne donne pas les réponses : je vous aide à lire vos chiffres et à justifier vos choix.\n\nPremier constat sur le ${S.periods[0]}, joué par l'ancien gérant : ` + diagnose(0));
   G.unread = 1; updateBadge();
 }
 
