@@ -27,7 +27,7 @@ function propres(l){return (Array.isArray(l)?l:[]).filter(function(c){return c&&
 function montrerCompte(){
   var st=lire(CLE_COMPTE)||{}, cours=propres(lire(CLE_COURS)), ul=$('liste');
   ul.textContent='';
-  cours.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);li.appendChild(a);ul.appendChild(li);});
+  cours.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);var d=String(c.detail||'').slice(0,120);if(d){var pt=document.createElement('small');pt.textContent=d;pt.style.display='block';a.appendChild(pt);}li.appendChild(a);ul.appendChild(li);});
   $('aucun').hidden=cours.length>0; ul.hidden=!cours.length;
   $('bloc-nom').hidden=!!(st.prenom&&st.nom);
   voir('e-compte');

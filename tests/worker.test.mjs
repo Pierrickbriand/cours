@@ -219,3 +219,10 @@ test("une preuve d'adresse (p1) n'ouvre aucun cours", async () => {
   const res = await get("/cours-test/", `p1.${body}.${sig}`);
   assert.equal(res.status, 401);
 });
+
+test("déconnexion : retour vers /compte seulement si la page le demande, sinon /connexion", async () => {
+  const post = (body) => worker.fetch(new Request(ORIGIN + "/deconnexion", { method: "POST", body, headers: body ? { "Content-Type": "application/x-www-form-urlencoded" } : {} }), env);
+  assert.equal((await post("retour=%2Fcompte")).headers.get("Location"), "/compte");
+  assert.equal((await post("retour=https%3A%2F%2Fexemple.org")).headers.get("Location"), "/connexion");
+  assert.equal((await post()).headers.get("Location"), "/connexion");
+});

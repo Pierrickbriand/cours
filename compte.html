@@ -72,7 +72,7 @@
       </div>
       <button class="bouton bouton-marine bouton-grand" id="ok-ajout" type="submit">Rejoindre ce cours</button>
     </form>
-    <form id="quitter" method="post" action="/deconnexion" style="margin-top:24px"><button class="bouton bouton-doux" type="submit">Me déconnecter</button></form>
+    <form id="quitter" method="post" action="/deconnexion" style="margin-top:24px"><input type="hidden" name="retour" value="/compte"><button class="bouton bouton-doux" type="submit">Me déconnecter</button></form>
   </section>
 
   <p id="etat" role="status" aria-live="polite"></p>

@@ -116,12 +116,14 @@ async function handleLogin(request, env) {
   });
 }
 
-function handleLogout(request) {
+async function handleLogout(request) {
   if (request.method !== "POST") return denied(request, 405, "Méthode non autorisée");
+  let retour = "/connexion";
+  try { if ((await request.formData()).get("retour") === "/compte") retour = "/compte"; } catch { /* corps absent : page de connexion */ }
   return new Response(null, {
     status: 303,
     headers: {
-      Location: "/connexion",
+      Location: retour,
       "Set-Cookie": `${COOKIE}=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0`,
       "Cache-Control": "no-store",
     },
