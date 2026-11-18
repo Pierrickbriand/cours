@@ -4,7 +4,7 @@ var SLUG=/^[a-z0-9-]{1,80}$/i, CLE_COURS='cours-autorises', CLE_COMPTE='compte-e
 var $=function(i){return document.getElementById(i);};
 var etat=$('etat'), adresse='', attente=null;
 function msg(t,err){etat.textContent=t;etat.className=err?'err':'';}
-function voir(id){['e-adresse','e-code','e-compte'].forEach(function(x){$(x).hidden=(x!==id);});msg('',false);}
+function voir(id){['e-adresse','e-code','e-compte'].forEach(function(x){$(x).hidden=(x!==id);});var m=document.querySelector('main');if(m)m.classList.toggle('large',id==='e-compte');msg('',false);}
 function lire(c){try{return JSON.parse(sessionStorage.getItem(c)||'null');}catch(e){return null;}}
 function ecrire(c,v){try{sessionStorage.setItem(c,JSON.stringify(v));}catch(e){}}
 function appareil(){var u=navigator.userAgent||'';if(/iPad|Tablet/i.test(u))return 'tablette';if(/Mobi|Android|iPhone/i.test(u))return 'téléphone';return 'ordinateur';}

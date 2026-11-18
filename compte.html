@@ -55,24 +55,30 @@
     <p class="aide" style="margin-top:16px"><button class="bouton bouton-doux" id="renvoyer" type="button" disabled>Renvoyer le code</button> <button class="bouton bouton-doux" id="changer" type="button">Changer d’adresse</button></p>
   </section>
 
-  <section class="verre verre-clair" id="e-compte" hidden aria-labelledby="t-compte">
-    <h2 id="t-compte">Mes cours</h2>
-    <ul class="liste-cours" id="liste"></ul>
-    <p class="vide" id="aucun" hidden>Vous n’avez encore rejoint aucun cours.</p>
-    <h3 id="t-ajout" style="margin:8px 0 12px">Ajouter un cours</h3>
-    <form id="f-ajout" novalidate autocomplete="off">
-      <div id="bloc-nom">
-        <div class="champ-form"><label for="prenom">Prénom</label><input id="prenom" type="text" autocomplete="given-name" maxlength="60"></div>
-        <div class="champ-form"><label for="nom">Nom</label><input id="nom" type="text" autocomplete="family-name" maxlength="60"></div>
+  <section id="e-compte" hidden aria-labelledby="t-compte">
+    <div class="compte-grille">
+      <div class="compte-cours">
+        <h2 id="t-compte">Mes cours</h2>
+        <ul class="liste-cours" id="liste"></ul>
+        <p class="vide" id="aucun" hidden>Vous n’avez encore rejoint aucun cours. Saisissez le code donné par votre formateur.</p>
       </div>
-      <div class="champ-form">
-        <label for="classe">Code de classe</label>
-        <input id="classe" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="10">
-        <p class="aide">Le code de ce cours, donné par votre formateur. Vous ne le saisissez qu’une fois par cours.</p>
-      </div>
-      <button class="bouton bouton-marine bouton-grand" id="ok-ajout" type="submit">Rejoindre ce cours</button>
-    </form>
-    <form id="quitter" method="post" action="/deconnexion" style="margin-top:24px"><input type="hidden" name="retour" value="/compte"><button class="bouton bouton-doux" type="submit">Me déconnecter</button></form>
+      <aside class="verre verre-clair compte-ajout" aria-labelledby="t-ajout">
+        <h3 id="t-ajout">Ajouter un cours</h3>
+        <form id="f-ajout" novalidate autocomplete="off">
+          <div id="bloc-nom">
+            <div class="champ-form"><label for="prenom">Prénom</label><input id="prenom" type="text" autocomplete="given-name" maxlength="60"></div>
+            <div class="champ-form"><label for="nom">Nom</label><input id="nom" type="text" autocomplete="family-name" maxlength="60"></div>
+          </div>
+          <div class="champ-form">
+            <label for="classe">Code de classe</label>
+            <input id="classe" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="10">
+            <p class="aide">Le code de ce cours, donné par votre formateur. Vous ne le saisissez qu’une fois par cours.</p>
+          </div>
+          <button class="bouton bouton-marine bouton-grand" id="ok-ajout" type="submit">Rejoindre ce cours</button>
+        </form>
+      </aside>
+    </div>
+    <form id="quitter" method="post" action="/deconnexion" style="margin-top:8px"><input type="hidden" name="retour" value="/compte"><button class="bouton bouton-doux" type="submit">Me déconnecter</button></form>
   </section>
 
   <p id="etat" role="status" aria-live="polite"></p>
