@@ -29,6 +29,10 @@ function montrerCompte(){
   var st=lire(CLE_COMPTE)||{}, cours=propres(lire(CLE_COURS)), ul=$('liste');
   ul.textContent='';
   cours.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);var d=String(c.detail||'').slice(0,120);if(d){var pt=document.createElement('small');pt.textContent=d;pt.style.display='block';a.appendChild(pt);}li.appendChild(a);ul.appendChild(li);});
+  var lv=$('liste-livrables'); lv.textContent='';
+  cours.forEach(function(c){var x=c.livrable;if(!x||!x.intitule)return;var li=document.createElement('li'),t=document.createElement('strong'),e=document.createElement('span');
+    t.textContent=String(c.titre||c.slug).slice(0,120);e.textContent=(x.envoye?'✓ ':'')+String(x.intitule).slice(0,120)+' : '+(x.envoye?'envoyé au formateur':'pas encore finalisé');e.className=x.envoye?'ok':'';li.appendChild(t);li.appendChild(e);lv.appendChild(li);});
+  $('b-livrables').hidden=!lv.children.length;
   $('aucun').hidden=cours.length>0; ul.hidden=!cours.length;
   $('bloc-nom').hidden=!!(st.prenom&&st.nom);
   voir('e-compte');
