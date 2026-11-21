@@ -990,7 +990,7 @@ const GUIDES = {
       {t:"Données et archives", sub:"Vous fixez les règles, l'application les applique", shot:"a-data", p:[
         "À la date de clôture de chaque cohorte, les accès des étudiants se ferment et la cohorte passe en archive, en lecture seule. En septembre, vous repartez d'une base neuve, sans rien supprimer à la main.",
         "Choisissez la durée de conservation des archives et le sort des messages, bilans et échanges avec le coach. Vous pouvez exporter les données de l'année en CSV.",
-        "Le journal du support liste chaque intervention technique sur un compte, avec sa raison : c'est la contrepartie de l'accès prévu au contrat de traitement des données."],
+        "Le journal du support liste chaque intervention technique sur un compte, avec sa raison."],
         tip:"Pour signaler un problème au support, indiquez l'identifiant du compte concerné (par exemple E-0007) et ce qui ne fonctionne pas."}
     ]
   }
@@ -1400,7 +1400,7 @@ function defaultDB(){
     ]
   };
 }
-const VERSION = "0.17";
+const VERSION = "0.17.1";
 const MEM = {};
 const store = {
   get(k){ for (const f of [() => localStorage, () => sessionStorage]){ try{ const v = f().getItem(k); if (v != null) return v; }catch(e){} } return MEM[k] != null ? MEM[k] : null; },
@@ -1735,7 +1735,7 @@ function vAData(){
   <section class="card"><h2>Archives</h2><div class="tablebox"><table><thead><tr><th>Année</th><th style="text-align:left">Cohortes</th><th>Étudiants</th><th>Clôturée le</th><th></th></tr></thead><tbody>
     ${DB.archives.map(a => `<tr><td><b>${a.year}</b></td><td>${a.cohorts}</td><td>${a.students}</td><td>${a.closed}</td><td><button class="back" data-act="open-archive" data-year="${a.year}">Consulter</button></td></tr>`).join("")}
   </tbody></table></div><p class="hint">Une archive se consulte (résultats, livrables, classements) mais ne se modifie plus. Les comptes des étudiants archivés ne peuvent plus se connecter.</p></section></div>
-  <section class="card"><h2>Journal des interventions</h2><p class="hint">Chaque intervention sur un compte, par l'administration ou par le service technique, est inscrite ici, avec sa raison. C'est la contrepartie de l'accès prévu au contrat de traitement des données.</p>
+  <section class="card"><h2>Journal des interventions</h2><p class="hint">Chaque intervention sur un compte, par l'administration ou par le service technique, est inscrite ici, avec sa raison.</p>
   <div class="tablebox"><table><thead><tr><th>Date</th><th>Intervenant</th><th style="text-align:left">Action</th><th style="text-align:left">Compte</th><th style="text-align:left">Motif</th></tr></thead><tbody>
   ${DB.support.map(s => `<tr><td>${s.t}</td><td>${esc(s.who)}</td><td style="text-align:left">${esc(s.act)}</td><td style="text-align:left">${esc(s.target)}</td><td style="text-align:left;white-space:normal">${esc(s.why)}</td></tr>`).join("")}
   </tbody></table></div></section>`;
@@ -1835,7 +1835,7 @@ function vFHome(){
   ${coh.map(c => { const gs = DB.groups.filter(g => g.cohort === c.id); return `<section class="card"><div class="row" style="justify-content:space-between"><h2>${c.classe} · ${c.campus}</h2><div class="row" style="gap:8px"><span class="pill">${etu(cohortCount(c))} · clôture ${c.close}</span>${gs.length ? `<button class="btn ghost sm2" data-act="export-cohort" data-c="${c.id}">Exporter (tableur)</button><button class="btn ghost sm2" data-act="debrief" data-c="${c.id}">Fiche de débriefing</button>` : ""}</div></div>
     ${gs.length ? `<div class="tablebox"><table><thead><tr><th style="text-align:left">Groupe</th><th style="text-align:left">Membres</th><th>Trimestres joués</th><th>Décisions du T${curQ()}</th>${DELIVS().map(d => `<th>${d.label.split(" · ")[0]}</th>`).join("")}<th>Dernière activité</th><th></th></tr></thead><tbody>
     ${gs.map(g => { const p = groupStats(g); return `<tr><td style="text-align:left"><b>${esc(g.name)}</b></td><td style="text-align:left;white-space:normal">${g.members.map(id => studentById(id).prenom).join(", ")}</td><td>${p.played}/6</td><td>${decisionPill(p)}</td>
-      ${DELIVS().map(d => `<td>${p.steps[d.id] === "déposé" ? `<button class="btn sm" data-act="eval-step" data-g="${g.id}" data-s="${d.id}" title="Le groupe a déposé ce livrable : clique pour l'évaluer avec la grille">Évaluer le dépôt</button>` : stepPill(p.steps[d.id]) + (evalScore(g.id, d.id) ? `<br><span class="hint">${note20(evalScore(g.id, d.id).note)}</span>` : "")}</td>`).join("")}
+      ${DELIVS().map(d => `<td>${p.steps[d.id] === "déposé" ? `<button class="btn sm" data-act="eval-step" data-g="${g.id}" data-s="${d.id}" title="Le groupe a déposé ce livrable : cliquez pour l'évaluer avec la grille">Évaluer le dépôt</button>` : stepPill(p.steps[d.id]) + (evalScore(g.id, d.id) ? `<br><span class="hint">${note20(evalScore(g.id, d.id).note)}</span>` : "")}</td>`).join("")}
       <td>${p.last}</td><td><button class="back" data-act="write-group" data-g="${g.id}">Écrire au groupe</button></td></tr>`; }).join("")}</tbody></table></div>` : `<p class="hint">Pas encore de groupes. <button class="back" data-go="f-groups">Constituer les groupes</button></p>`}</section>`; }).join("")}
   ${indivCard()}${iaBox("L'IA résumerait la séance et signalerait les groupes en difficulté, à partir des chiffres calculés par l'application. Vous gardez la main : elle prépare, vous décidez.")}`;
 }
@@ -2213,7 +2213,7 @@ function bindAdmin(m){
     const f = inp.files[0]; if (!f) return; const g = groupOf(ME_STUDENT), did = inp.dataset.deposit;
     if (!g) return toast("Vous n'avez pas encore de groupe.");
     if (f.size === 0) return toast("Ce fichier est vide : choisissez-en un autre.");
-    if (f.size > 1048576) return toast("Ce fichier dépasse 1 Mo : réduis-le avant de le déposer.");
+    if (f.size > 1048576) return toast("Ce fichier dépasse 1 Mo : réduisez-le avant de le déposer.");
     const rd = new FileReader();
     rd.onload = () => { (DB.deposits[g.id] = DB.deposits[g.id] || {})[did] = {name:f.name, size:f.size, when:stamp(), data:String(rd.result)};
       saveDB(); render(); toast(`Livrable déposé : ${f.name} (${fileKo(f.size)}). Votre formatrice le voit dans son espace.`); };
@@ -2813,7 +2813,7 @@ function bIndic(r, p, f){
       .concat(S.categories.map(c => [c.name + " (ventes)", f.cats[c.id].sales, r.cats[c.id].sales, true]));
     gap = `<section class="card"><h2>Prévu et réalisé</h2><div class="tablebox"><table><thead><tr><th>Indicateur</th><th>Prévu</th><th>Réalisé</th><th>Écart</th></tr></thead><tbody>
     ${rows.map(([l, a, b, u]) => `<tr><td>${l}</td><td>${u ? num.format(a) : eur.format(a)}</td><td>${u ? num.format(b) : eur.format(b)}</td><td class="${b - a >= 0 ? "up" : "down"}">${b - a >= 0 ? "+" : "−"}${u ? num.format(Math.abs(b - a)) : eur.format(Math.abs(b - a))}</td></tr>`).join("")}
-    </tbody></table></div><p class="hint">Un écart vient de l'aléa de marché, mais aussi des réactions des concurrents. Demandez au coach de vous aider à l'expliquer.</p></section>`;
+    </tbody></table></div><p class="hint">Un écart vient de l'aléa de marché, que le prévisionnel ignore. Demandez au coach de vous aider à l'expliquer.</p></section>`;
   } else gap = `<section class="card"><h2>Prévu et réalisé</h2><p class="hint">Le ${S.periods[0]} a été joué par l'ancien gérant, sans prévisionnel. La comparaison apparaîtra dès votre premier trimestre.</p></section>`;
   return `<div class="kpis">${k.map(([l, v, d]) => `<div class="kpi"><span>${l}</span><strong>${v}</strong>${d}</div>`).join("")}</div>${gap}`;
 }
@@ -2964,7 +2964,7 @@ function viewRes(){
     <ul><li>plusieurs équipes d'une même classe en concurrence réelle, avec décisions individuelles puis validation collective ;</li>
     <li>un tableau de bord formateur : décisions, résultats et questions posées au coach, équipe par équipe ;</li>
     <li>des scénarios adossés aux cours et à l'ECF, dans plusieurs secteurs du commerce ;</li>
-    <li>un coach IA inclus dans la licence, avec usage plafonné et données encadrées.</li></ul></section>
+    <li>un coach relié à une IA. Dans cette démonstration, le coach est préprogrammé, sans appel à une IA réelle.</li></ul></section>
   </div>`;
 }
 
