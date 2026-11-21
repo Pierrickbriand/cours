@@ -1,0 +1,165 @@
+/* ==========================================================================
+   Charte pierrickbriand.fr, version 1.0 (21 novembre 2026)
+   Source : feuille de style du site en production (style.css du 21 novembre 2026).
+   Règles :
+   – aucune classe n'agit seule : tout est préfixé « ch- » et s'active par classe ;
+   – Poppins 400 (texte) et 500 (titres, boutons) uniquement ;
+   – seuls sept effets existent : verre dépoli, taches animées, zoom lent,
+     apparition au défilement, inclinaison au survol, appui sur les boutons,
+     empilement des étapes ;
+   – « mouvement réduit » coupe tout ce qui bouge ;
+   – version 1 figée : 1.1 compatible, 2 peut casser (nouveau dossier /charte/v2/).
+   Variables propres à chaque client : --client-nom, --client-accent, --client-logo.
+   ========================================================================== */
+
+@font-face{font-family:"Poppins";font-style:normal;font-weight:400;font-display:swap;src:url("/assets/fonts/poppins-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Poppins";font-style:normal;font-weight:500;font-display:swap;src:url("/assets/fonts/poppins-latin-500-normal.woff2") format("woff2")}
+
+/* ---------- Variables ---------- */
+:root{
+  --marine:#1F3D66;
+  --turquoise:#1D6F69;
+  --rose:#A8425A;
+  --encre:#1B2740;
+  --nuit:#14213B;
+  --accent:#2E2A6B;
+  --rose-clair:#F6B8C6;
+  --fond:#EEF0F4;
+  --fond-bas:#D7DFEB;
+  --texte:#3F4C66;
+  --trait:rgba(31,61,102,.14);
+  --ch-gouttiere:24px;
+  --ch-largeur:1184px; /* 1 120 px de contenu + 2 x 32 px de marge */
+  --client-accent:var(--marine);
+}
+
+/* ---------- Page de base (à poser sur <body class="ch-page">) ---------- */
+.ch-page{margin:0;font-family:"Poppins","Helvetica Neue",Arial,sans-serif;font-weight:400;font-size:1rem;line-height:1.5;color:var(--encre);background:var(--fond);-webkit-font-smoothing:antialiased}
+.ch-page *,.ch-page *::before,.ch-page *::after{box-sizing:border-box}
+:where(.ch-page) a{color:var(--turquoise)}
+:where(.ch-page) a:hover{color:var(--marine)}
+:where(.ch-page) :is(h1,h2,h3){margin:0;font-weight:500;color:var(--marine)}
+:where(.ch-page) :is(h1,h2){line-height:1.1}
+:where(.ch-page) h1{font-size:clamp(2rem,1.2rem + 3vw,2.75rem)}
+:where(.ch-page) h2{font-size:clamp(1.5rem,1.1rem + 1.6vw,1.875rem)}
+:where(.ch-page) h3{font-size:1.1875rem;line-height:1.3}
+:where(.ch-page) p{margin:0}
+.ch-page :focus-visible{outline:3px solid var(--marine);outline-offset:3px}
+.ch-sombre :focus-visible{outline-color:#fff}
+
+.ch-conteneur{width:100%;max-width:var(--ch-largeur);margin-inline:auto;padding-inline:32px}
+.ch-section{padding-top:56px}
+.ch-etiquette{margin-bottom:8px;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--rose)}
+.ch-sombre .ch-etiquette{color:var(--rose-clair)}
+.ch-chapeau{max-width:680px;margin-top:12px;color:var(--texte)}
+.ch-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Lien d'évitement ---------- */
+.ch-evitement{position:absolute;left:16px;top:-64px;z-index:100;padding:8px 16px;border-radius:999px;background:#fff;color:var(--marine);text-decoration:none}
+.ch-evitement:focus{top:16px}
+
+/* ---------- Boutons (effet : appui) ---------- */
+.ch-bouton{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;border:1px solid transparent;border-radius:999px;padding:12px 24px;font-family:inherit;font-weight:500;font-size:.9375rem;line-height:1.2;text-align:center;text-decoration:none;cursor:pointer;transition:transform .15s ease-out,filter .15s ease-out}
+.ch-bouton:active{transform:scale(.96);filter:brightness(.92);transition:none}
+.ch-bouton-clair{background:#fff;color:var(--marine)}
+.ch-bouton-marine{background:var(--marine);color:#fff}
+.ch-bouton-turquoise{background:var(--turquoise);color:#fff}
+.ch-bouton-fantome{background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4)}
+.ch-bouton-doux{background:#EEEAFB;color:var(--accent)}
+.ch-bouton-grand{padding:14px 28px;font-size:1rem}
+.ch-bouton-clair:hover{color:var(--marine)}
+.ch-bouton-marine:hover,.ch-bouton-turquoise:hover,.ch-bouton-fantome:hover{color:#fff}
+
+/* ---------- Champs (16 px ; pilule seulement si le champ est en ligne avec son bouton) ---------- */
+.ch-champ{margin:0 0 24px}
+.ch-champ label{display:block;margin-bottom:8px;font-weight:500;color:var(--marine)}
+.ch-champ input,.ch-champ select,.ch-champ textarea{width:100%;border:1px solid #AEB9CF;border-radius:16px;padding:12px 20px;background:#fff;font-family:inherit;font-size:1rem;color:var(--encre)}
+.ch-champ-aide{margin:8px 0 0;font-size:.875rem;color:var(--texte)}
+.ch-champ-ligne{display:flex;flex-wrap:wrap;gap:8px}
+.ch-champ-ligne input{flex:1 1 220px;min-width:0;border:1px solid #AEB9CF;border-radius:999px;padding:12px 20px;background:#fff;font-family:inherit;font-size:.9375rem;color:var(--encre)}
+.ch-erreur{margin:16px 0 0;padding:8px 16px;border-left:4px solid var(--rose);border-radius:8px;background:#F7E1E2;color:var(--encre)}
+
+/* ---------- Verre dépoli (effet) ---------- */
+.ch-verre{position:relative;background:rgba(255,255,255,.08);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-radius:24px;box-shadow:0 8px 32px rgba(27,39,64,.18),inset 0 1px 0 rgba(255,255,255,.35)}
+.ch-verre::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.2) 40%,rgba(255,255,255,0) 75%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude}
+.ch-verre-clair{background:rgba(255,255,255,.5);box-shadow:0 8px 32px rgba(31,61,102,.1),inset 0 1px 0 rgba(255,255,255,.95)}
+.ch-verre-clair::before{background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.3) 45%,rgba(255,255,255,0) 80%)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .ch-verre{background:rgba(31,61,102,.85)}
+  .ch-verre-clair{background:rgba(255,255,255,.92)}
+}
+
+/* ---------- Cartes ---------- */
+.ch-carte{padding:24px;border-radius:24px}
+.ch-carte h3{margin-bottom:8px}
+.ch-carte p{font-size:.9375rem;color:var(--texte)}
+.ch-grille{display:grid;gap:var(--ch-gouttiere);grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+
+/* ---------- Inclinaison au survol (effet : classe ch-incline) ---------- */
+.ch-incline{transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.ch-incline:hover{transform:perspective(900px) rotateX(1.5deg) rotateY(-1.5deg) scale(1.01)}
+@media (hover:none){.ch-incline:hover{transform:none}}
+
+/* ---------- En-tête : pilule flottante ---------- */
+.ch-entete{position:fixed;top:24px;left:50%;z-index:50;width:calc(100% - 64px);max-width:1120px;transform:translateX(-50%);border-radius:999px;background:rgba(20,33,59,.6);color:#fff}
+.ch-entete-interieur{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px}
+.ch-marque{display:flex;align-items:center;gap:12px;white-space:nowrap;color:#fff;font-weight:500;font-size:1.125rem;text-decoration:none}
+.ch-marque:hover{color:#fff}
+.ch-marque svg,.ch-marque img{display:block;height:28px;width:auto}
+.ch-nav{display:flex;align-items:center;gap:24px;font-size:.9375rem}
+.ch-nav a:not(.ch-bouton){color:rgba(255,255,255,.88);text-decoration:none}
+.ch-nav a:not(.ch-bouton):hover{color:#fff}
+.ch-nav .ch-bouton{padding:11px 20px}
+
+/* Navigation dense (applications) : pilules à contour sur fond clair, sous l'en-tête */
+.ch-nav-pilules{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.ch-nav-pilules a,.ch-nav-pilules button{display:inline-flex;align-items:center;gap:8px;border:1px solid #AEB9CF;border-radius:999px;padding:8px 16px;background:transparent;color:var(--marine);font-family:inherit;font-size:.9375rem;text-decoration:none;cursor:pointer;transition:transform .15s ease-out}
+.ch-nav-pilules a:active,.ch-nav-pilules button:active{transform:scale(.96)}
+.ch-nav-pilules [aria-current=page],.ch-nav-pilules [aria-pressed=true]{background:var(--marine);border-color:var(--marine);color:#fff}
+
+/* ---------- Fond de page et taches animées (effet) ---------- */
+.ch-fond{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--fond) 0,var(--fond-bas) 100%)}
+.ch-taches{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.ch-tache{position:absolute;width:440px;height:440px;border-radius:50%;filter:blur(70px);opacity:.45;animation:ch-flotte 36s ease-in-out infinite alternate;will-change:transform}
+.ch-tache:nth-child(1){right:-100px;top:1%;background:#AEB9E6}
+.ch-tache:nth-child(2){left:-140px;top:12%;background:#7FC1C2;animation-duration:32s;animation-direction:alternate-reverse}
+.ch-tache:nth-child(3){right:-120px;top:26%;background:#D9A0B0;animation-duration:40s}
+.ch-tache:nth-child(4){left:-140px;top:42%;background:#9FB6D6;animation-duration:34s;animation-direction:alternate-reverse}
+.ch-tache:nth-child(5){right:-100px;top:58%;background:#AEB9E6;animation-duration:38s}
+.ch-tache:nth-child(6){left:-120px;top:76%;background:#D9A0B0;animation-duration:35s;animation-direction:alternate-reverse}
+@keyframes ch-flotte{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(36px,-28px,0) scale(1.1)}}
+.ch-fond>*:not(.ch-taches){position:relative;z-index:1}
+
+/* ---------- Image qui respire (effet : zoom lent, sur une image de fond) ---------- */
+.ch-image-fond{position:absolute;inset:0;overflow:hidden;background:var(--nuit)}
+.ch-image-fond img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:70% 45%;will-change:transform;animation:ch-respire 40s ease-in-out infinite alternate}
+@keyframes ch-respire{from{transform:scale(1)}to{transform:scale(1.08)}}
+
+/* ---------- Apparition au défilement (effet : classe ch-reveal + script) ---------- */
+.ch-js .ch-reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease-out,transform .8s ease-out}
+.ch-js .ch-reveal.ch-vu{opacity:1;transform:none}
+
+/* ---------- Empilement des étapes (effet : classe ch-empile) ---------- */
+.ch-etapes{display:flex;flex-direction:column}
+.ch-empile{position:sticky;top:112px;display:flex;flex-wrap:wrap;align-items:center;gap:16px 32px;margin-bottom:24px;padding:24px 32px;background:rgba(255,255,255,.95)}
+.ch-etape-numero{min-width:84px;font-size:3.5rem;line-height:1;font-weight:500;color:var(--rose)}
+
+/* ---------- Pied de page ---------- */
+.ch-pied{margin-top:56px;border-top:1px solid #D8DCE6;background:rgba(255,255,255,.75);font-size:.875rem;color:var(--texte)}
+.ch-pied .ch-conteneur{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;padding-block:24px}
+.ch-pied a{color:var(--marine)}
+
+/* ---------- Mouvement réduit : tout s'arrête ---------- */
+@media (prefers-reduced-motion:reduce){
+  .ch-page *,.ch-page *::before,.ch-page *::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+  .ch-js .ch-reveal{opacity:1;transform:none}
+  .ch-incline:hover{transform:none}
+}
+
+/* ---------- Petits écrans ---------- */
+@media (max-width:640px){
+  .ch-conteneur{padding-inline:20px}
+  .ch-entete{top:12px;width:calc(100% - 24px)}
+  .ch-entete-interieur{padding:10px 16px}
+  .ch-empile{position:static;padding:24px}
+}

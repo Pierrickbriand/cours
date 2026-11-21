@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Charte v1 : page de référence</title>
+<link rel="stylesheet" href="v1/charte.css">
+<style>
+/* Mise en page de cette page de référence seulement : elle ne fait pas partie de la charte. */
+.demo-bloc{margin-top:24px}
+.demo-ligne{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.demo-sombre{padding:24px;border-radius:24px;background:var(--nuit);color:#fff}
+.demo-sombre .ch-verre{padding:24px;color:#fff}
+.demo-pastille{width:72px;height:72px;border-radius:16px;display:flex;align-items:flex-end;padding:6px;font-size:.6875rem;color:#fff}
+code{font-size:.875rem}
+</style>
+</head>
+<body class="ch-page ch-js">
+<a class="ch-evitement" href="#contenu">Aller au contenu</a>
+
+<header class="ch-entete ch-verre">
+  <div class="ch-entete-interieur">
+    <a class="ch-marque" href="#">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" role="img" aria-label="Marque"><path d="M6 80V44a28 28 0 0 1 56 0v36z" fill="#fff"/><circle cx="64" cy="30" r="26" fill="#C9E2F7"/><rect x="48" y="26" width="32" height="8" rx="4" fill="#A8425A"/><path d="M82 50l30-3 8 33H80z" fill="#5BC2B4"/></svg>
+      Pierrick Briand
+    </a>
+    <nav class="ch-nav" aria-label="Navigation">
+      <a href="#boutons">Boutons</a>
+      <a href="#verre">Verre</a>
+      <a href="#champs">Champs</a>
+      <a class="ch-bouton ch-bouton-clair" href="#effets">Effets</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu" class="ch-fond" style="padding-top:128px">
+  <div class="ch-taches" aria-hidden="true">
+    <span class="ch-tache"></span><span class="ch-tache"></span><span class="ch-tache"></span>
+    <span class="ch-tache"></span><span class="ch-tache"></span><span class="ch-tache"></span>
+  </div>
+
+  <div class="ch-conteneur">
+    <p class="ch-etiquette">Charte commune</p>
+    <h1>Page de référence, version 1</h1>
+    <p class="ch-chapeau">Chaque composant ci-dessous existe dans la feuille de style du site. Une page de cours ou un coach les active par des classes <code>ch-</code>.</p>
+
+    <section class="ch-section" id="boutons">
+      <h2>Boutons</h2>
+      <div class="demo-bloc demo-ligne">
+        <a class="ch-bouton ch-bouton-marine" href="#">Marine</a>
+        <a class="ch-bouton ch-bouton-turquoise" href="#">Turquoise</a>
+        <a class="ch-bouton ch-bouton-doux" href="#">Doux</a>
+        <a class="ch-bouton ch-bouton-clair" href="#" style="border-color:var(--trait)">Clair</a>
+        <a class="ch-bouton ch-bouton-marine ch-bouton-grand" href="#">Grand</a>
+      </div>
+      <div class="demo-bloc demo-sombre demo-ligne ch-sombre">
+        <a class="ch-bouton ch-bouton-clair" href="#">Clair</a>
+        <a class="ch-bouton ch-bouton-fantome" href="#">Fantôme</a>
+      </div>
+      <p class="ch-chapeau">Appuyez sur un bouton : il se réduit légèrement (effet « appui »).</p>
+    </section>
+
+    <section class="ch-section" id="verre">
+      <h2>Verre dépoli et cartes</h2>
+      <p class="ch-chapeau">Le verre ne se voit que s'il passe quelque chose de coloré derrière : ici, les taches de fond.</p>
+      <div class="demo-bloc ch-grille">
+        <article class="ch-carte ch-verre ch-verre-clair ch-incline ch-reveal">
+          <h3>Carte en verre clair</h3>
+          <p>Survolez-la : elle s'incline très légèrement (effet « inclinaison »).</p>
+        </article>
+        <article class="ch-carte ch-verre ch-verre-clair ch-reveal">
+          <h3>Carte sans inclinaison</h3>
+          <p>Elle apparaît au défilement (effet « apparition »).</p>
+        </article>
+        <article class="ch-carte ch-verre ch-verre-clair ch-reveal">
+          <h3>Carte de tableau</h3>
+          <p>Pour les tableaux denses, on n'utilise pas le verre : on prend une carte blanche.</p>
+        </article>
+      </div>
+      <div class="demo-bloc demo-sombre ch-sombre">
+        <div class="ch-verre">
+          <p class="ch-etiquette">Verre sur fond sombre</p>
+          <p>Même composant, version translucide.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ch-section" id="champs">
+      <h2>Champs</h2>
+      <form class="demo-bloc ch-carte ch-verre ch-verre-clair" style="max-width:640px" onsubmit="return false">
+        <div class="ch-champ">
+          <label for="e">Adresse e-mail</label>
+          <input id="e" type="email">
+          <p class="ch-champ-aide">Rayon de 16 px partout.</p>
+        </div>
+        <div class="ch-champ">
+          <label for="c">Code</label>
+          <input id="c" type="text">
+        </div>
+        <div class="ch-champ-ligne" style="margin-bottom:16px">
+          <input type="email" aria-label="Adresse e-mail en ligne">
+          <button class="ch-bouton ch-bouton-marine" type="button">Envoyer</button>
+        </div>
+        <p class="ch-champ-aide">Seul un champ placé sur la même ligne que son bouton prend la forme d'une pilule.</p>
+        <p class="ch-erreur">Exemple de message d'erreur.</p>
+      </form>
+    </section>
+
+    <section class="ch-section" id="navigation">
+      <h2>Navigation d'une application</h2>
+      <ul class="demo-bloc ch-nav-pilules">
+        <li><a href="#navigation">Tableau de bord</a></li>
+        <li><a href="#navigation" aria-current="page">Bilan des trimestres</a></li>
+        <li><a href="#navigation">Calendrier</a></li>
+        <li><a href="#navigation">Messages</a></li>
+      </ul>
+    </section>
+
+    <section class="ch-section" id="effets">
+      <h2>Étapes empilées</h2>
+      <p class="ch-chapeau">Pour faire défiler des étapes qui se superposent (effet « empilement »).</p>
+      <div class="demo-bloc ch-etapes">
+        <article class="ch-empile ch-verre"><span class="ch-etape-numero">1</span><div><h3>Première étape</h3><p>Texte de l'étape.</p></div></article>
+        <article class="ch-empile ch-verre"><span class="ch-etape-numero">2</span><div><h3>Deuxième étape</h3><p>Texte de l'étape.</p></div></article>
+        <article class="ch-empile ch-verre"><span class="ch-etape-numero">3</span><div><h3>Troisième étape</h3><p>Texte de l'étape.</p></div></article>
+      </div>
+    </section>
+
+    <section class="ch-section">
+      <h2>Couleurs</h2>
+      <div class="demo-bloc demo-ligne">
+        <div class="demo-pastille" style="background:#1F3D66">marine</div>
+        <div class="demo-pastille" style="background:#1D6F69">turquoise</div>
+        <div class="demo-pastille" style="background:#A8425A">rose</div>
+        <div class="demo-pastille" style="background:#1B2740">encre</div>
+        <div class="demo-pastille" style="background:#14213B">nuit</div>
+        <div class="demo-pastille" style="background:#2E2A6B">accent</div>
+        <div class="demo-pastille" style="background:#F6B8C6;color:#1B2740">rose clair</div>
+        <div class="demo-pastille" style="background:#3F4C66">texte</div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="ch-pied">
+    <div class="ch-conteneur">
+      <span>© 2026 Pierrick Briand. Tous droits réservés.</span>
+      <a href="#contenu">Retour en haut</a>
+    </div>
+  </footer>
+</main>
+
+<script>
+(function(){
+  var els=document.querySelectorAll('.ch-reveal');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('ch-vu')});return}
+  var io=new IntersectionObserver(function(l){l.forEach(function(x){if(x.isIntersecting){x.target.classList.add('ch-vu');io.unobserve(x.target)}})},{threshold:.15});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>
