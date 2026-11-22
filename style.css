@@ -352,7 +352,7 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .connexion #etat{margin:16px 0 0;min-height:1.5em}
 .connexion #etat.err{background:#F7E1E2;border-left:4px solid var(--rose);border-radius:8px;padding:8px 16px;color:var(--encre)}
 .connexion #ok[aria-busy=true]{opacity:.7;cursor:progress}
-.connexion #mes[hidden]{display:none}
+.connexion #mes[hidden],.connexion #bloc-connexion[hidden]{display:none}
 .connexion .liste-cours{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:0 0 24px;padding:0;list-style:none}
 .connexion .liste-cours a{display:block;background:#fff;border-left:4px solid var(--turquoise);border-radius:16px;padding:16px;color:var(--marine);font-weight:500;text-decoration:none}
 .connexion .liste-cours a:hover{background:#F5F6FA}
@@ -374,6 +374,12 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .connexion .compte-cours .liste-cours a{min-height:128px;padding:24px;background:rgba(255,255,255,.78);border-radius:20px;box-shadow:0 8px 32px rgba(31,61,102,.12),inset 0 1px 0 rgba(255,255,255,.95);font-size:1.125rem;transition:transform .2s ease,box-shadow .2s ease}
 .connexion .compte-cours .liste-cours a small{margin-top:6px;font-size:.875rem;font-weight:400;color:var(--texte)}
 .connexion .compte-cours .liste-cours a::after{content:"Ouvrir \2192";display:block;margin-top:14px;font-size:.9375rem;font-weight:600;color:var(--marine)}
+/* Cartes de même taille : une rangée = une hauteur, et « Ouvrir » toujours au même niveau en bas de la carte */
+.connexion .liste-cours{grid-auto-rows:1fr}
+.connexion .liste-cours li{display:flex}
+.connexion .liste-cours li>a{flex:1}
+.connexion .compte-cours .liste-cours a{display:flex;flex-direction:column}
+.connexion .compte-cours .liste-cours a::after{margin-top:auto;padding-top:14px}
 .connexion .compte-cours .liste-cours a:hover{background:#fff;transform:translateY(-3px);box-shadow:0 14px 36px rgba(31,61,102,.18)}
 @media (prefers-reduced-motion:reduce){.connexion .compte-cours .liste-cours a{transition:none}.connexion .compte-cours .liste-cours a:hover{transform:none}}
 @media (max-width:860px){.compte-grille{grid-template-columns:1fr}.compte-cote{position:static}}

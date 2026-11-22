@@ -9,6 +9,16 @@ function montrer(){
   ul.textContent='';
   l.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);li.appendChild(a);ul.appendChild(li);});
   bloc.hidden=!l.length;
+  // Une fois connecté : on n'affiche que « Mes cours », comme une page à part. Un bouton rouvre le formulaire pour un autre code.
+  var form=document.getElementById('bloc-connexion'), expire=/(^|[?&])acces=requis(&|$)/.test(location.search);
+  if(l.length&&!expire){
+    form.hidden=true;
+    if(!document.getElementById('autre-code')){
+      var b=document.createElement('button');b.type='button';b.id='autre-code';b.className='bouton bouton-doux';b.textContent='Saisir un autre code';b.style.marginRight='8px';
+      b.addEventListener('click',function(){form.hidden=false;b.style.display='none';try{document.getElementById('code').focus();}catch(e){}});
+      var q=document.getElementById('quitter');q.parentNode.insertBefore(b,q);q.style.display='inline';
+    }
+  }
 }
 document.getElementById('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(CLE);localStorage.removeItem('compte-session');}catch(e){}});
 montrer();
