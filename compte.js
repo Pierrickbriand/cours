@@ -51,7 +51,7 @@ function messages(cours){
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
   cours.forEach(function(c){
     var L=Array.isArray(c.messages)?c.messages:[];if(!L.length)return;
-    var li=el('li'); li.appendChild(el('strong','',String(c.titre||c.slug).slice(0,120)));
+    var li=el('li'); li.dataset.slug=c.slug; li.appendChild(el('strong','',String(c.titre||c.slug).slice(0,120)));
     L.slice(0,10).forEach(function(m){
       var d=el('details','message'+(m.lu?'':' non-lu')),s=el('summary','',(String(m.objet||'Message').slice(0,120))+(m.le?' ('+String(m.le).slice(8,10)+'/'+String(m.le).slice(5,7)+')':''));
       d.appendChild(s);d.appendChild(el('p','com',String(m.texte||'').slice(0,3000)));
@@ -60,13 +60,27 @@ function messages(cours){
     ul.appendChild(li);});
   b.hidden=!ul.children.length;
 }
+// Pastille de messages non lus : un clic ouvre le message dans le bloc « Messages » au lieu d'ouvrir le cours.
+function pastille(c){
+  var nl=+c.non_lus||0;if(nl<1)return null;
+  var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);
+  pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu')+' : lire');pa.title='Lire '+(nl>1?'les messages':'le message');
+  pa.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();versMessages(c.slug);});
+  return pa;
+}
+function versMessages(slug){
+  var li=document.querySelector('#liste-messages li[data-slug="'+slug+'"]'),b=$('b-messages');
+  var d=li&&(li.querySelector('details.non-lu')||li.querySelector('details'));if(!d||!b)return;
+  try{b.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){b.scrollIntoView();}
+  d.open=true;
+}
 function montrerCompteSansMessages(cours){ // met à jour les pastilles sans refermer les messages ouverts
-  cours.forEach(function(c){var a=document.querySelector('#liste li a[data-slug="'+c.slug+'"],#liste-coachs li a[data-slug="'+c.slug+'"]');if(!a)return;var p=a.querySelector('.pastille');if(p)p.remove();var nl=+c.non_lus||0;if(nl>0){var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(pa);}});
+  cours.forEach(function(c){var a=document.querySelector('#liste li a[data-slug="'+c.slug+'"],#liste-coachs li a[data-slug="'+c.slug+'"]');if(!a)return;var p=a.querySelector('.pastille');if(p)p.remove();var pa=pastille(c);if(pa)a.appendChild(pa);});
 }
 function montrerCompte(){
   var st=lire(CLE_COMPTE)||{}, cours=propres(lire(CLE_COURS)), ul=$('liste');
   ul.textContent='';
-  function carte(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.dataset.slug=c.slug;a.textContent=String(c.titre||c.slug).slice(0,120);var d=String(c.detail||'').slice(0,120);if(d){var pt=document.createElement('small');pt.textContent=d;pt.style.display='block';a.appendChild(pt);}var av=barre(c.avancement);if(av)a.appendChild(av);var nl=+c.non_lus||0;if(nl>0){var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(pa);}li.appendChild(a);return li;}
+  function carte(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.dataset.slug=c.slug;a.textContent=String(c.titre||c.slug).slice(0,120);var d=String(c.detail||'').slice(0,120);if(d){var pt=document.createElement('small');pt.textContent=d;pt.style.display='block';a.appendChild(pt);}var av=barre(c.avancement);if(av)a.appendChild(av);var pa=pastille(c);if(pa)a.appendChild(pa);li.appendChild(a);return li;}
   var vrais=cours.filter(function(c){return c.type!=='coach';}),coachs=cours.filter(function(c){return c.type==='coach';}),ul2=$('liste-coachs'),sep=$('sep-coachs');
   vrais.forEach(function(c){ul.appendChild(carte(c));});
   if(ul2){ul2.textContent='';coachs.forEach(function(c){ul2.appendChild(carte(c));});ul2.hidden=!coachs.length;sep.hidden=!(vrais.length&&coachs.length);}

@@ -417,3 +417,5 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .separateur[hidden]{display:none}
 .separateur::before,.separateur::after{content:"";flex:1;height:1px;background:rgba(31,61,102,.22)}
 .connexion .liste-cours[hidden]{display:none}
+.pastille{cursor:pointer}
+.compte-messages li[data-slug]{scroll-margin-top:24px}
