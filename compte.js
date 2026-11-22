@@ -24,15 +24,51 @@ function ouvrir(token,cours,suite){
   document.body.appendChild(g);g.submit();
 }
 var CLE_PERSO='compte-session', DUREE_PERSO=8*3600*1000; // même durée que l'accès aux cours (8 h)
-function garder(st,cours){try{localStorage.setItem(CLE_PERSO,JSON.stringify({prenom:st.prenom||'',nom:st.nom||'',e:adresse||st.e||'',cours:cours,t:Date.now()}));}catch(e){}}
+function garder(st,cours){try{var avant=reprendre()||{};localStorage.setItem(CLE_PERSO,JSON.stringify({prenom:st.prenom||'',nom:st.nom||'',e:adresse||st.e||'',l:st.lecture||avant.l||'',cours:cours,t:st.t||Date.now()}));}catch(e){}}
 function reprendre(){try{var o=JSON.parse(localStorage.getItem(CLE_PERSO)||'null');if(o&&Date.now()-(+o.t||0)<DUREE_PERSO)return o;}catch(e){}return null;}
 function nb(x){return String(x).replace('.',',');}
 function memoriser(r){try{if(r&&/^[A-Z0-9]{6,12}$/.test(String(r.code||'')))localStorage.setItem('suivi-compte',JSON.stringify({c:String(r.code),t:Date.now()}));}catch(e){}}
 function propres(l){return (Array.isArray(l)?l:[]).filter(function(c){return c&&SLUG.test(String(c.slug||''));});}
+// Barre d'avancement : même aspect que celle de l'Atelier (8 px, fond gris clair, remplissage turquoise) et pourcentage dessous.
+function barre(v){
+  if(v===null||v===undefined||v===''||isNaN(+v))return null;
+  var n=Math.max(0,Math.min(100,Math.round(+v))),w=document.createElement('span');w.className='avancement';
+  var b=document.createElement('span');b.className='barre';b.setAttribute('role','progressbar');b.setAttribute('aria-valuemin','0');b.setAttribute('aria-valuemax','100');b.setAttribute('aria-valuenow',String(n));b.setAttribute('aria-label','Avancement dans le module');
+  var i=document.createElement('i');i.style.width=n+'%';b.appendChild(i);w.appendChild(b);
+  var t=document.createElement('small');t.textContent=n+'\u00a0% du module';w.appendChild(t);return w;
+}
+// Messages du formateur : un bloc dans la colonne de droite, les non lus en gras ; l'ouverture d'un message le marque comme lu.
+function lectureJeton(){var p=reprendre();return p&&p.l?p.l:'';}
+function majCache(cours){ecrire(CLE_COURS,cours);var p=reprendre();if(p)garder({prenom:p.prenom,nom:p.nom,t:p.t},cours);}
+function marquerLu(cours,c,m,li){
+  if(m.lu)return; m.lu=true; li.classList.remove('non-lu');
+  c.non_lus=Math.max(0,(+c.non_lus||0)-1);majCache(cours);montrerCompteSansMessages(cours);
+  var st=lire(CLE_COMPTE)||{}, corps={action:'compte_lire',ids:[m.id]};if(lectureJeton())corps.lecture=lectureJeton();else if(st.preuve)corps.preuve=st.preuve;else return;
+  appel(corps).catch(function(){});
+}
+function messages(cours){
+  var b=$('b-messages'),ul=$('liste-messages');if(!b||!ul)return; ul.textContent='';
+  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
+  cours.forEach(function(c){
+    var L=Array.isArray(c.messages)?c.messages:[];if(!L.length)return;
+    var li=el('li'); li.appendChild(el('strong','',String(c.titre||c.slug).slice(0,120)));
+    L.slice(0,10).forEach(function(m){
+      var d=el('details','message'+(m.lu?'':' non-lu')),s=el('summary','',(String(m.objet||'Message').slice(0,120))+(m.le?' ('+String(m.le).slice(8,10)+'/'+String(m.le).slice(5,7)+')':''));
+      d.appendChild(s);d.appendChild(el('p','com',String(m.texte||'').slice(0,3000)));
+      d.addEventListener('toggle',function(){if(d.open)marquerLu(cours,c,m,d);});
+      li.appendChild(d);});
+    ul.appendChild(li);});
+  b.hidden=!ul.children.length;
+}
+function montrerCompteSansMessages(cours){ // met à jour les pastilles sans refermer les messages ouverts
+  var cartes=document.querySelectorAll('#liste li a');
+  cours.forEach(function(c,i){var a=cartes[i];if(!a)return;var p=a.querySelector('.pastille');if(p)p.remove();var nl=+c.non_lus||0;if(nl>0){var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(pa);}});
+}
 function montrerCompte(){
   var st=lire(CLE_COMPTE)||{}, cours=propres(lire(CLE_COURS)), ul=$('liste');
   ul.textContent='';
-  cours.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);var d=String(c.detail||'').slice(0,120);if(d){var pt=document.createElement('small');pt.textContent=d;pt.style.display='block';a.appendChild(pt);}li.appendChild(a);ul.appendChild(li);});
+  cours.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);var d=String(c.detail||'').slice(0,120);if(d){var pt=document.createElement('small');pt.textContent=d;pt.style.display='block';a.appendChild(pt);}var av=barre(c.avancement);if(av)a.appendChild(av);var nl=+c.non_lus||0;if(nl>0){var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(pa);}li.appendChild(a);ul.appendChild(li);});
+  messages(cours);
   var lv=$('liste-livrables'); lv.textContent='';
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
   cours.forEach(function(c){var x=c.livrable,ns=Array.isArray(c.notes)?c.notes:[];if(!(x&&x.intitule)&&!ns.length)return;
@@ -77,7 +113,7 @@ $('f-code').addEventListener('submit',function(e){
     occupe('ok-code',false);
     if(r&&r.ok&&r.preuve){
       ecrire(CLE_COMPTE,{preuve:r.preuve,prenom:r.prenom||'',nom:r.nom||'',t:Date.now()});memoriser(r);
-      var cours=propres(r.cours);garder({prenom:r.prenom,nom:r.nom},cours);
+      var cours=propres(r.cours);garder({prenom:r.prenom,nom:r.nom,lecture:r.lecture},cours);
       if(r.token&&cours.length) ouvrir(String(r.token),cours,'/compte'); else {ecrire(CLE_COURS,[]);montrerCompte();}
       return;
     }
@@ -100,7 +136,7 @@ $('f-ajout').addEventListener('submit',function(e){
     occupe('ok-ajout',false);
     if(r&&r.ok&&r.token&&r.ajoute&&SLUG.test(String(r.ajoute))){
       ecrire(CLE_COMPTE,{preuve:r.preuve||st.preuve,prenom:r.prenom||prenom,nom:r.nom||nom,t:st.t});memoriser(r);
-      garder({prenom:r.prenom||prenom,nom:r.nom||nom},propres(r.cours));
+      garder({prenom:r.prenom||prenom,nom:r.nom||nom,lecture:r.lecture},propres(r.cours));
       ouvrir(String(r.token),propres(r.cours),'/'+r.ajoute+'/');return;
     }
     msg((r&&ERR[r.err])||'L’inscription a échoué. Réessayez.',true);
@@ -114,4 +150,8 @@ try{var ca=sessionStorage.getItem('classe-attente');if(ca&&!q){$('classe').value
 if(st0&&st0.preuve&&Date.now()-(st0.t||0)<25*60*1000) montrerCompte();
 else if(p0){ecrire(CLE_COURS,propres(p0.cours));ecrire(CLE_COMPTE,{preuve:'',prenom:p0.prenom,nom:p0.nom,t:0});adresse=p0.e||'';montrerCompte();} // 8 h : le compte reste affiché ; un nouveau code n'est demandé que pour ajouter un cours
 else voir('e-adresse');
+// Une session gardée sur l'appareil peut dater de plusieurs heures : on relit l'avancement et les messages (preuve de lecture de 8 h).
+(function(){var l=lectureJeton();if(!l||$('e-compte').hidden)return;
+  appel({action:'compte_lire',lecture:l,ids:[]}).then(function(r){if(r&&r.ok&&Array.isArray(r.cours)){var c=propres(r.cours);majCache(c);montrerCompte();}}).catch(function(){});
+})();
 })();

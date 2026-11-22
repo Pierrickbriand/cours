@@ -7,7 +7,7 @@ function lire(){try{var v=JSON.parse(sessionStorage.getItem(CLE)||'[]');return A
 function montrer(){
   var l=lire(), ul=document.getElementById('liste'), bloc=document.getElementById('mes');
   ul.textContent='';
-  l.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);li.appendChild(a);ul.appendChild(li);});
+  l.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);if(c.avancement!=null&&c.avancement!==''&&!isNaN(+c.avancement)){var n=Math.max(0,Math.min(100,Math.round(+c.avancement))),w=document.createElement('span'),b=document.createElement('span'),i=document.createElement('i'),t=document.createElement('small');w.className='avancement';b.className='barre';b.setAttribute('role','progressbar');b.setAttribute('aria-valuenow',String(n));b.setAttribute('aria-valuemin','0');b.setAttribute('aria-valuemax','100');b.setAttribute('aria-label','Avancement dans le module');i.style.width=n+'%';b.appendChild(i);t.textContent=n+'\u00a0% du module';w.appendChild(b);w.appendChild(t);a.appendChild(w);}var nl=+c.non_lus||0;if(nl>0){var p=document.createElement('span');p.className='pastille';p.textContent=nl>9?'9+':String(nl);p.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(p);}li.appendChild(a);ul.appendChild(li);});
   bloc.hidden=!l.length;
   // Une fois connecté : on n'affiche que « Mes cours », comme une page à part. Un bouton rouvre le formulaire pour un autre code.
   var form=document.getElementById('bloc-connexion'), expire=/(^|[?&])acces=requis(&|$)/.test(location.search);
