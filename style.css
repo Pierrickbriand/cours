@@ -421,3 +421,7 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .compte-messages li[data-slug]{scroll-margin-top:24px}
 .compte-messages .archive>details>summary{font-weight:500;color:var(--texte);cursor:pointer}
 .compte-messages .archive ul{margin-top:8px}
+/* Cours qui vient d'être rejoint : on reste sur la liste, la carte est mise en avant (graisses 400 et 500 seulement) */
+.connexion .compte-cours .annonce{margin:0 0 16px;padding:8px 16px;background:#E3F3EF;border-left:4px solid var(--turquoise);border-radius:8px;color:var(--encre);font-weight:500}
+.connexion .compte-cours .annonce[hidden]{display:none}
+.connexion .compte-cours .liste-cours a.nouveau{outline:3px solid var(--turquoise);outline-offset:3px}

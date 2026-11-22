@@ -3,6 +3,7 @@ var HUB='https://script.google.com/macros/s/AKfycbwvyFm2CsUrDzXGqqItVq8fx3NA-278
 var SLUG=/^[a-z0-9-]{1,80}$/i, CLE_COURS='cours-autorises', CLE_COMPTE='compte-etat', MAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 var $=function(i){return document.getElementById(i);};
 var etat=$('etat'), adresse='', attente=null;
+var AJOUTE=''; try{AJOUTE=String(sessionStorage.getItem('cours-ajoute')||'');sessionStorage.removeItem('cours-ajoute');}catch(e){} if(!SLUG.test(AJOUTE))AJOUTE=''; // cours rejoint à l'instant : on reste sur la liste, l'étudiant clique lui-même sur sa carte
 function msg(t,err){etat.textContent=t;etat.className=err?'err':'';}
 function voir(id){['e-adresse','e-code','e-compte'].forEach(function(x){$(x).hidden=(x!==id);});var m=document.querySelector('main');if(m)m.classList.toggle('large',id==='e-compte');msg('',false);}
 function lire(c){try{return JSON.parse(sessionStorage.getItem(c)||'null');}catch(e){return null;}}
@@ -111,6 +112,14 @@ function montrerCompte(){
   $('bloc-nom').hidden=!!(st.prenom&&st.nom);
   voir('e-compte');
   $('intro').textContent=st.prenom?('Bonjour '+st.prenom+'.'):'Dernière étape : votre nom, puis le code de classe de votre cours.';
+  annoncerAjout(cours);
+}
+function annoncerAjout(cours){ // « Cours ajouté » : la carte est mise en avant, l'étudiant l'ouvre lui-même
+  var z=$('annonce'); if(!z)return; z.hidden=true; if(!AJOUTE)return;
+  var c=cours.filter(function(x){return x.slug===AJOUTE;})[0], a=document.querySelector('#liste li a[data-slug="'+AJOUTE+'"],#liste-coachs li a[data-slug="'+AJOUTE+'"]'); if(!c||!a)return;
+  a.classList.add('nouveau');
+  z.textContent='Cours ajouté\u00a0: «\u00a0'+String(c.titre||c.slug).slice(0,120)+'\u00a0». Cliquez sur sa carte pour l’ouvrir.'; z.hidden=false;
+  if(!annoncerAjout.vu){annoncerAjout.vu=true;try{a.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}}
 }
 function demarrerRenvoi(){
   var b=$('renvoyer'), reste=30; b.disabled=true; clearInterval(attente);
@@ -163,7 +172,8 @@ $('f-ajout').addEventListener('submit',function(e){
     if(r&&r.ok&&r.token&&r.ajoute&&SLUG.test(String(r.ajoute))){
       ecrire(CLE_COMPTE,{preuve:r.preuve||st.preuve,prenom:r.prenom||prenom,nom:r.nom||nom,t:st.t});memoriser(r);
       garder({prenom:r.prenom||prenom,nom:r.nom||nom,lecture:r.lecture},propres(r.cours));
-      ouvrir(String(r.token),propres(r.cours),'/'+r.ajoute+'/');return;
+      try{sessionStorage.setItem('cours-ajoute',String(r.ajoute));}catch(x){}
+      ouvrir(String(r.token),propres(r.cours),'/compte');return; // le jeton est posé (/auth) pour que la carte s'ouvre, mais on reste sur la liste
     }
     msg((r&&ERR[r.err])||'L’inscription a échoué. Réessayez.',true);
   }).catch(function(){occupe('ok-ajout',false);msg('Le service ne répond pas. Réessayez dans un instant.',true);});
