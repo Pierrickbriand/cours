@@ -61,13 +61,15 @@ function messages(cours){
   b.hidden=!ul.children.length;
 }
 function montrerCompteSansMessages(cours){ // met à jour les pastilles sans refermer les messages ouverts
-  var cartes=document.querySelectorAll('#liste li a');
-  cours.forEach(function(c,i){var a=cartes[i];if(!a)return;var p=a.querySelector('.pastille');if(p)p.remove();var nl=+c.non_lus||0;if(nl>0){var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(pa);}});
+  cours.forEach(function(c){var a=document.querySelector('#liste li a[data-slug="'+c.slug+'"],#liste-coachs li a[data-slug="'+c.slug+'"]');if(!a)return;var p=a.querySelector('.pastille');if(p)p.remove();var nl=+c.non_lus||0;if(nl>0){var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(pa);}});
 }
 function montrerCompte(){
   var st=lire(CLE_COMPTE)||{}, cours=propres(lire(CLE_COURS)), ul=$('liste');
   ul.textContent='';
-  cours.forEach(function(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.textContent=String(c.titre||c.slug).slice(0,120);var d=String(c.detail||'').slice(0,120);if(d){var pt=document.createElement('small');pt.textContent=d;pt.style.display='block';a.appendChild(pt);}var av=barre(c.avancement);if(av)a.appendChild(av);var nl=+c.non_lus||0;if(nl>0){var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(pa);}li.appendChild(a);ul.appendChild(li);});
+  function carte(c){var li=document.createElement('li'),a=document.createElement('a');a.href='/'+c.slug+'/';a.dataset.slug=c.slug;a.textContent=String(c.titre||c.slug).slice(0,120);var d=String(c.detail||'').slice(0,120);if(d){var pt=document.createElement('small');pt.textContent=d;pt.style.display='block';a.appendChild(pt);}var av=barre(c.avancement);if(av)a.appendChild(av);var nl=+c.non_lus||0;if(nl>0){var pa=document.createElement('span');pa.className='pastille';pa.textContent=nl>9?'9+':String(nl);pa.setAttribute('aria-label',nl+(nl>1?' messages non lus':' message non lu'));a.appendChild(pa);}li.appendChild(a);return li;}
+  var vrais=cours.filter(function(c){return c.type!=='coach';}),coachs=cours.filter(function(c){return c.type==='coach';}),ul2=$('liste-coachs'),sep=$('sep-coachs');
+  vrais.forEach(function(c){ul.appendChild(carte(c));});
+  if(ul2){ul2.textContent='';coachs.forEach(function(c){ul2.appendChild(carte(c));});ul2.hidden=!coachs.length;sep.hidden=!(vrais.length&&coachs.length);}
   messages(cours);
   var lv=$('liste-livrables'); lv.textContent='';
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
@@ -81,7 +83,7 @@ function montrerCompte(){
       li.appendChild(d);});
     lv.appendChild(li);});
   $('b-livrables').hidden=!lv.children.length;
-  $('aucun').hidden=cours.length>0; ul.hidden=!cours.length;
+  $('aucun').hidden=cours.length>0; ul.hidden=!vrais.length;
   $('bloc-nom').hidden=!!(st.prenom&&st.nom);
   voir('e-compte');
   $('intro').textContent=st.prenom?('Bonjour '+st.prenom+'.'):'Dernière étape : votre nom, puis le code de classe de votre cours.';
