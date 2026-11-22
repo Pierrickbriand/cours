@@ -49,16 +49,26 @@ function marquerLu(cours,c,m,li){
 function messages(cours){
   var b=$('b-messages'),ul=$('liste-messages');if(!b||!ul)return; ul.textContent='';
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
-  cours.forEach(function(c){
-    var L=Array.isArray(c.messages)?c.messages:[];if(!L.length)return;
-    var li=el('li'); li.dataset.slug=c.slug; li.appendChild(el('strong','',String(c.titre||c.slug).slice(0,120)));
-    L.slice(0,10).forEach(function(m){
-      var d=el('details','message'+(m.lu?'':' non-lu')),s=el('summary','',(String(m.objet||'Message').slice(0,120))+(m.le?' ('+String(m.le).slice(8,10)+'/'+String(m.le).slice(5,7)+')':''));
-      d.appendChild(s);d.appendChild(el('p','com',String(m.texte||'').slice(0,3000)));
-      d.addEventListener('toggle',function(){if(d.open)marquerLu(cours,c,m,d);});
-      li.appendChild(d);});
-    ul.appendChild(li);});
-  b.hidden=!ul.children.length;
+  function ligne(c,m){
+    var d=el('details','message'+(m.lu?'':' non-lu')),s=el('summary','',(String(m.objet||'Message').slice(0,120))+(m.le?' ('+String(m.le).slice(8,10)+'/'+String(m.le).slice(5,7)+')':''));
+    d.appendChild(s);d.appendChild(el('p','com',String(m.texte||'').slice(0,3000)));
+    d.addEventListener('toggle',function(){if(d.open)marquerLu(cours,c,m,d);});return d;
+  }
+  function groupe(parent,lus){ // un bloc par cours : les non lus d'abord, les lus ensuite
+    var n=0;
+    cours.forEach(function(c){
+      var L=(Array.isArray(c.messages)?c.messages:[]).filter(function(m){return !!m.lu===lus;});if(!L.length)return;
+      var li=el('li'); li.dataset.slug=c.slug; li.appendChild(el('strong','',String(c.titre||c.slug).slice(0,120)));
+      L.slice(0,10).forEach(function(m){li.appendChild(ligne(c,m));n++;});
+      parent.appendChild(li);});
+    return n;
+  }
+  var nonLus=groupe(ul,false);
+  var arch=el('li','archive'),det=el('details'),sm=el('summary'),interne=el('ul','liste-livrables');
+  var lus=groupe(interne,true);
+  if(lus){sm.textContent='Messages lus ('+lus+')';det.appendChild(sm);det.appendChild(interne);arch.appendChild(det);ul.appendChild(arch);}
+  if(!nonLus&&lus){var v=el('li','vide','Aucun message non lu.');ul.insertBefore(v,arch);}
+  b.hidden=!(nonLus||lus);
 }
 // Pastille de messages non lus : un clic ouvre le message dans le bloc « Messages » au lieu d'ouvrir le cours.
 function pastille(c){

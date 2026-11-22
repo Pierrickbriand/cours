@@ -419,3 +419,5 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .connexion .liste-cours[hidden]{display:none}
 .pastille{cursor:pointer}
 .compte-messages li[data-slug]{scroll-margin-top:24px}
+.compte-messages .archive>details>summary{font-weight:500;color:var(--texte);cursor:pointer}
+.compte-messages .archive ul{margin-top:8px}
