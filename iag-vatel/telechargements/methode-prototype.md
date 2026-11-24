@@ -1,4 +1,4 @@
-# Méthode du prototype – cours IAG, Vatel M5ALT
+# Méthode du prototype – cours IAG, Vatel M4ALT
 
 Fichier de départ du projet Assistant Claude. Claude le relit à chaque conversation.
 
