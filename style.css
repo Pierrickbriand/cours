@@ -353,6 +353,13 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .connexion #etat.err{background:#F7E1E2;border-left:4px solid var(--rose);border-radius:8px;padding:8px 16px;color:var(--encre)}
 .connexion #ok[aria-busy=true]{opacity:.7;cursor:progress}
 .connexion #mes[hidden],.connexion #bloc-connexion[hidden],.connexion #bloc-premiere[hidden]{display:none}
+.connexion .avec-code{margin:0 0 24px;padding:0 8px}
+.connexion .avec-code>summary{cursor:pointer;padding:8px 0;font-size:.9375rem;font-weight:500;color:var(--marine);text-decoration:underline;text-underline-offset:3px;list-style:none}
+.connexion .avec-code>summary::-webkit-details-marker{display:none}
+.connexion .avec-code[open]{padding:24px 32px;border-radius:24px;background:rgba(255,255,255,.5);box-shadow:0 8px 32px rgba(31,61,102,.1),inset 0 1px 0 rgba(255,255,255,.95)}
+.connexion .avec-code[open]>summary{margin-bottom:16px;text-decoration:none;font-size:1.125rem}
+.connexion #etat-compte{margin:16px 0 0;min-height:1.5em}
+.connexion #etat-compte.err{background:#F7E1E2;border-left:4px solid var(--rose);border-radius:8px;padding:8px 16px;color:var(--encre)}
 .connexion .liste-cours{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:0 0 24px;padding:0;list-style:none}
 .connexion .liste-cours a{display:block;background:#fff;border-left:4px solid var(--turquoise);border-radius:16px;padding:16px;color:var(--marine);font-weight:500;text-decoration:none}
 .connexion .liste-cours a:hover{background:#F5F6FA}

@@ -28,16 +28,22 @@
 <main class="legal connexion">
   <p class="etiquette">Cours interactifs</p>
   <h1>Connexion</h1>
-  <p class="maj">Ouvrez vos cours et vos simulations.</p>
+  <p class="maj">Saisissez votre adresse e-mail. Vous recevez un code à 6&nbsp;chiffres, sans mot de passe à retenir.</p>
 
-  <section class="verre verre-clair" id="bloc-premiere" aria-labelledby="t-premiere">
-    <h2 id="t-premiere">Avec votre adresse e-mail</h2>
-    <p>Première connexion&nbsp;? Créez votre compte. Déjà inscrit&nbsp;? Rouvrez-le de la même façon&nbsp;: vous recevez un code à 6&nbsp;chiffres par e-mail.</p>
-    <p><a class="bouton bouton-marine bouton-grand" href="/compte">Créer ou ouvrir mon compte</a></p>
+  <section class="verre verre-clair" id="bloc-premiere" aria-label="Connexion par adresse e-mail">
+    <form id="f-compte" novalidate>
+      <div class="champ-form">
+        <label for="mail-compte">Adresse e-mail</label>
+        <input id="mail-compte" type="email" inputmode="email" autocomplete="email" spellcheck="false" required>
+        <p class="aide">Première fois&nbsp;? La même adresse crée votre compte.</p>
+      </div>
+      <button class="bouton bouton-marine bouton-grand" type="submit">Recevoir mon code</button>
+      <p id="etat-compte" role="status" aria-live="polite"></p>
+    </form>
   </section>
 
-  <section class="verre verre-clair" id="bloc-connexion" aria-labelledby="t-connexion">
-    <h2 id="t-connexion">Avec un code</h2>
+  <details class="avec-code" id="bloc-connexion">
+    <summary>J’ai un code personnel ou un code de classe</summary>
     <form id="f" novalidate autocomplete="off">
       <div class="champ-form">
         <label for="email">Adresse e-mail</label>
@@ -52,8 +58,8 @@
       <button class="bouton bouton-doux bouton-grand" id="ok" type="submit">Ouvrir mes cours</button>
       <p id="etat" role="status" aria-live="polite"></p>
     </form>
-    <p class="aide" style="margin-top:16px">Code oublié&nbsp;? <a href="/compte">Recevoir un code par e-mail</a>. Sans adresse e-mail enregistrée, demandez-le à votre formateur.</p>
-  </section>
+    <p class="aide" style="margin-top:16px">Code oublié&nbsp;? Utilisez votre adresse e-mail, en haut de cette page. Sans adresse enregistrée, demandez-le à votre formateur.</p>
+  </details>
 
   <section class="verre verre-clair" id="mes" hidden aria-labelledby="titre-mes">
     <h2 id="titre-mes">Mes cours</h2>

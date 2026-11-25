@@ -19,7 +19,7 @@ function montrer(){
     form.hidden=true; if(prem)prem.hidden=true;
     if(!document.getElementById('autre-code')){
       var b=document.createElement('button');b.type='button';b.id='autre-code';b.className='bouton bouton-doux';b.textContent='Saisir un autre code';b.style.marginRight='8px';
-      b.addEventListener('click',function(){form.hidden=false;if(prem)prem.hidden=false;b.style.display='none';try{document.getElementById('code').focus();}catch(e){}});
+      b.addEventListener('click',function(){form.hidden=false;form.open=true;if(prem)prem.hidden=false;b.style.display='none';try{document.getElementById('code').focus();}catch(e){}});
       var q=document.getElementById('quitter');q.parentNode.insertBefore(b,q);q.style.display='inline';
     }
   }
@@ -27,8 +27,16 @@ function montrer(){
 document.getElementById('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(CLE);localStorage.removeItem('compte-session');}catch(e){}});
 montrer();
 try{var cs=JSON.parse(localStorage.getItem('compte-session')||'null');if(cs&&Date.now()-(+cs.t||0)<8*3600*1000&&!/(^|[?&])acces=requis(&|$)/.test(location.search))location.replace('/compte');}catch(e){} // compte par e-mail déjà ouvert : « Mon compte »
+// Adresse e-mail : la page « Mon compte » envoie le code tout de suite, sans seconde saisie.
+(function(){var fc=document.getElementById('f-compte');if(!fc)return;fc.addEventListener('submit',function(e){e.preventDefault();
+  var m=document.getElementById('mail-compte').value.trim().toLowerCase(),z=document.getElementById('etat-compte');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)){z.textContent=ERR['e-mail invalide'];z.className='err';return;}
+  try{sessionStorage.setItem('compte-email',m);sessionStorage.setItem('compte-auto','1');}catch(x){}
+  location.href='/compte';});})();
+function ouvrirCode(){var d=document.getElementById('bloc-connexion');if(d&&'open' in d)d.open=true;}
+if(/(^|[?&])acces=requis(&|$)/.test(location.search)){ouvrirCode();} 
 if(/(^|[?&])acces=requis(&|$)/.test(location.search)) msg('Votre accès a expiré ou ne couvre pas ce cours. Saisissez à nouveau votre code.',true);
-var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','e-mail requis':'Pour ce cours, saisissez aussi votre adresse e-mail : celle que votre école a transmise.','e-mail inconnu':'Cette adresse ne figure pas dans la liste de ce cours. Saisissez celle que votre école a transmise, ou prévenez votre formateur.','compte requis':'Ce cours utilise un compte par e-mail. Cliquez sur « Créer ou ouvrir mon compte », en haut de cette page.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
+var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','e-mail requis':'Pour ce cours, saisissez aussi votre adresse e-mail : celle que votre école a transmise.','e-mail inconnu':'Cette adresse ne figure pas dans la liste de ce cours. Saisissez celle que votre école a transmise, ou prévenez votre formateur.','compte requis':'Ce cours utilise un compte par e-mail. Saisissez votre adresse e-mail, en haut de cette page.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
 function ouvrir(token,cours){
   try{sessionStorage.setItem(CLE,JSON.stringify(cours));}catch(e){}
   var g=document.createElement('form');g.method='post';g.action='/auth';g.style.display='none';
