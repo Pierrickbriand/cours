@@ -1,11 +1,11 @@
-# Contexte du cours IAG – Vatel Nantes, M4ALT, 2026-2027
+# Contexte du cours IAG – Vatel Nantes, M5ALT, 2026-2027
 
 Fichier de départ du projet Assistant Claude. Il présente le cours ; il ne contient aucune donnée personnelle.
 
 ## Le cours
 
 - Intitulé : IAG (syllabus IA 502 « Hôtellerie, tourisme et IA »), 21 heures, 2 ECTS.
-- Public : Mastère en alternance (M4ALT), Vatel Nantes. Travail en groupe de quatre au plus.
+- Public : Mastère en alternance (M5ALT), Vatel Nantes. Travail en groupe de quatre au plus.
 - Formateur : Pierrick Briand.
 
 ## Les objectifs
