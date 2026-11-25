@@ -353,6 +353,10 @@ input[type=email]{min-width:0;border:1px solid #AEB9CF;border-radius:999px;paddi
 .connexion #etat.err{background:#F7E1E2;border-left:4px solid var(--rose);border-radius:8px;padding:8px 16px;color:var(--encre)}
 .connexion #ok[aria-busy=true]{opacity:.7;cursor:progress}
 .connexion #mes[hidden],.connexion #bloc-connexion[hidden],.connexion #bloc-premiere[hidden]{display:none}
+.connexion #etat-ajout{margin:0 0 12px;font-size:.9375rem}
+.connexion #etat-ajout:empty{display:none}
+.connexion #etat-ajout.err{background:#F7E1E2;border-left:4px solid var(--rose);border-radius:8px;padding:8px 12px;color:var(--encre)}
+.connexion button[aria-busy=true]{opacity:.7;cursor:progress}
 .connexion #etat-compte{margin:16px 0 0;min-height:1.5em}
 .connexion #etat-compte.err{background:#F7E1E2;border-left:4px solid var(--rose);border-radius:8px;padding:8px 16px;color:var(--encre)}
 .connexion .liste-cours{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin:0 0 24px;padding:0;list-style:none}
