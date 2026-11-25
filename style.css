@@ -131,6 +131,12 @@ h3{font-size:1.1875rem;line-height:1.3}
 .tache:nth-child(6){left:-120px;top:76%;background:#D9A0B0;animation-duration:35s;animation-direction:alternate-reverse}
 @keyframes flotte{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(36px,-28px,0) scale(1.1)}}
 .fond-page>*:not(.taches){position:relative;z-index:1}
+/* Pages « Connexion » et « Mon compte » : mêmes halos que l'accueil, fixes derrière le contenu (quatre, répartis sur la hauteur de l'écran). */
+.taches-fixe{position:fixed;z-index:-1}
+.taches-fixe .tache:nth-child(1){top:-8%}
+.taches-fixe .tache:nth-child(2){top:18%}
+.taches-fixe .tache:nth-child(3){top:48%}
+.taches-fixe .tache:nth-child(4){top:70%}
 
 /* ---------- Apparition au défilement ---------- */
 .js-reveal .reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease-out,transform .8s ease-out}
