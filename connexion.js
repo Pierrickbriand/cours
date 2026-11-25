@@ -14,12 +14,12 @@ function montrer(){
   ul.hidden=!vrais.length;
   bloc.hidden=!l.length;
   // Une fois connecté : on n'affiche que « Mes cours », comme une page à part. Un bouton rouvre le formulaire pour un autre code.
-  var form=document.getElementById('bloc-connexion'), expire=/(^|[?&])acces=requis(&|$)/.test(location.search);
+  var form=document.getElementById('bloc-connexion'), prem=document.getElementById('bloc-premiere'), expire=/(^|[?&])acces=requis(&|$)/.test(location.search);
   if(l.length&&!expire){
-    form.hidden=true;
+    form.hidden=true; if(prem)prem.hidden=true;
     if(!document.getElementById('autre-code')){
       var b=document.createElement('button');b.type='button';b.id='autre-code';b.className='bouton bouton-doux';b.textContent='Saisir un autre code';b.style.marginRight='8px';
-      b.addEventListener('click',function(){form.hidden=false;b.style.display='none';try{document.getElementById('code').focus();}catch(e){}});
+      b.addEventListener('click',function(){form.hidden=false;if(prem)prem.hidden=false;b.style.display='none';try{document.getElementById('code').focus();}catch(e){}});
       var q=document.getElementById('quitter');q.parentNode.insertBefore(b,q);q.style.display='inline';
     }
   }
@@ -28,7 +28,7 @@ document.getElementById('quitter').addEventListener('submit',function(){try{sess
 montrer();
 try{var cs=JSON.parse(localStorage.getItem('compte-session')||'null');if(cs&&Date.now()-(+cs.t||0)<8*3600*1000&&!/(^|[?&])acces=requis(&|$)/.test(location.search))location.replace('/compte');}catch(e){} // compte par e-mail déjà ouvert : « Mon compte »
 if(/(^|[?&])acces=requis(&|$)/.test(location.search)) msg('Votre accès a expiré ou ne couvre pas ce cours. Saisissez à nouveau votre code.',true);
-var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','e-mail requis':'Pour ce cours, saisissez aussi votre adresse e-mail : celle que votre école a transmise.','e-mail inconnu':'Cette adresse ne figure pas dans la liste de ce cours. Saisissez celle que votre école a transmise, ou prévenez votre formateur.','compte requis':'Ce cours utilise un compte par e-mail. Ouvrez « Mon compte » (lien ci-dessous), saisissez votre adresse et suivez les étapes.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
+var ERR={'code inconnu':'Ce code n’est pas reconnu. Vérifiez-le ou demandez-le à votre formateur.','patienter':'Trop d’essais. Réessayez dans quelques minutes.','e-mail invalide':'Cette adresse e-mail n’est pas valide.','e-mail requis':'Pour ce cours, saisissez aussi votre adresse e-mail : celle que votre école a transmise.','e-mail inconnu':'Cette adresse ne figure pas dans la liste de ce cours. Saisissez celle que votre école a transmise, ou prévenez votre formateur.','compte requis':'Ce cours utilise un compte par e-mail. Cliquez sur « Créer ou ouvrir mon compte », en haut de cette page.','aucun cours':'Ce code est reconnu, mais aucun cours n’est ouvert pour le moment.'};
 function ouvrir(token,cours){
   try{sessionStorage.setItem(CLE,JSON.stringify(cours));}catch(e){}
   var g=document.createElement('form');g.method='post';g.action='/auth';g.style.display='none';
@@ -52,6 +52,8 @@ f.addEventListener('submit',function(e){
   envoyer(0).then(function(r){
     ok.removeAttribute('aria-busy');
     if(r&&r.ok&&r.token&&Array.isArray(r.cours)&&r.cours.length){ouvrir(String(r.token),r.cours.filter(function(c){return c&&SLUG.test(String(c.slug||''));}));return;}
+    // Code de classe d'un cours à compte par e-mail : l'étudiant est conduit sur « Mon compte », son code de classe et son adresse déjà remplis.
+    if(r&&r.err==='compte requis'){try{sessionStorage.setItem('classe-attente',code);if(mail)sessionStorage.setItem('compte-email',mail.toLowerCase());sessionStorage.setItem('compte-venu','1');}catch(x){}location.href='/compte';return;}
     if(r&&(r.err==='e-mail requis'||r.err==='e-mail inconnu')){try{document.getElementById('email').focus();}catch(e){}}
     msg((r&&ERR[r.err])||'La connexion a échoué. Réessayez dans un instant.',true);
   }).catch(function(){ok.removeAttribute('aria-busy');msg('Le service ne répond pas. Réessayez dans un instant.',true);});
