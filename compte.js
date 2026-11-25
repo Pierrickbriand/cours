@@ -183,12 +183,12 @@ $('quitter').addEventListener('submit',function(){try{sessionStorage.removeItem(
 var q=/[?&]classe=([A-Za-z0-9]{6,10})/.exec(location.search); if(q)$('classe').value=q[1].toUpperCase();
 var st0=lire(CLE_COMPTE), p0=reprendre();
 try{var ca=sessionStorage.getItem('classe-attente');if(ca&&!q){$('classe').value=ca;}sessionStorage.removeItem('classe-attente');}catch(e){}
-if(st0&&st0.preuve&&Date.now()-(st0.t||0)<25*60*1000) montrerCompte();
+// Arrivée depuis la page « Connexion » : l'adresse y a été saisie, le code part tout de suite (même si une ancienne session traîne sur l'appareil).
+var venu='', autoEnvoi=false; try{venu=String(sessionStorage.getItem('compte-email')||'').toLowerCase();autoEnvoi=!!sessionStorage.getItem('compte-auto');sessionStorage.removeItem('compte-email');sessionStorage.removeItem('compte-auto');}catch(e){}
+if(autoEnvoi&&MAIL.test(venu)){voir('e-adresse');$('email').value=venu;$('ok-adresse').click();}
+else if(st0&&st0.preuve&&Date.now()-(st0.t||0)<25*60*1000) montrerCompte();
 else if(p0){ecrire(CLE_COURS,propres(p0.cours));ecrire(CLE_COMPTE,{preuve:'',prenom:p0.prenom,nom:p0.nom,t:0});adresse=p0.e||'';montrerCompte();} // 8 h : le compte reste affiché ; un nouveau code n'est demandé que pour ajouter un cours
-else{voir('e-adresse');
-  // Arrivée depuis « Connexion » avec le code de classe d'un cours à compte : adresse déjà remplie, et une phrase dit quoi faire.
-  try{var ce=sessionStorage.getItem('compte-email')||'';if(MAIL.test(ce))$('email').value=ce;if(sessionStorage.getItem('compte-venu'))msg('Ce cours utilise un compte par e-mail. Saisissez votre adresse pour recevoir votre code : votre code de classe est gardé pour la suite.',false);var auto=sessionStorage.getItem('compte-auto');sessionStorage.removeItem('compte-email');sessionStorage.removeItem('compte-venu');sessionStorage.removeItem('compte-auto');if(auto&&MAIL.test(ce))$('ok-adresse').click();}catch(e){}
-}
+else voir('e-adresse');
 // Une session gardée sur l'appareil peut dater de plusieurs heures : on relit l'avancement et les messages (preuve de lecture de 8 h).
 (function(){var l=lectureJeton();if(!l||$('e-compte').hidden)return;
   appel({action:'compte_lire',lecture:l,ids:[]}).then(function(r){if(r&&r.ok&&Array.isArray(r.cours)){var c=propres(r.cours);majCache(c);montrerCompte();}}).catch(function(){});
