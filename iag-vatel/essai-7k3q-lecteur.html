@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Essai – lecteur de cours par séance | Pierrick Briand</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+/* Essai du lecteur de cours par séance (27 novembre 2026). Page à part : elle ne modifie pas le cours en ligne. */
+html,body{height:100%}
+body.lecteur{margin:0;min-height:100vh;height:100vh;background:linear-gradient(180deg,var(--fond) 0,var(--fond-bas) 100%);display:flex;flex-direction:column;color:var(--encre);font-family:"Poppins","Helvetica Neue",Arial,sans-serif}
+.lec-tete{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:16px 20px 0;padding:10px 16px 10px 24px;border-radius:999px;background:var(--marine);color:#fff}
+.lec-tete b{font-weight:600;font-size:1.0625rem}
+.lec-fil{flex:1 1 260px;font-size:.9375rem;color:#DCE4F0}
+.lec-fil strong{color:#fff;font-weight:600}
+.lec-tete a{background:#fff;color:var(--marine);text-decoration:none;font-weight:600;font-size:.9375rem;padding:10px 18px;border-radius:999px}
+.lec-essai{margin:10px 20px 0;padding:8px 16px;border-radius:12px;background:#FBF1E3;color:#6B4A12;font-size:.875rem}
+.lec-corps{flex:1 1 auto;display:flex;gap:16px;padding:14px 20px 18px;min-height:0}
+.lec-g,.lec-d{flex:1 1 0;min-width:0;display:flex;flex-direction:column;background:#fff;border-radius:22px;box-shadow:0 8px 32px rgba(31,61,102,.10);overflow:hidden}
+.lec-barre{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 16px;border-bottom:1px solid #DDE3EC}
+.lec-titre{flex:1 1 160px;min-width:0}
+.lec-titre small{display:block;font-size:.75rem;font-weight:600;letter-spacing:.09em;color:var(--rose)}
+.lec-titre span{font-size:1rem;font-weight:600}
+.lec-b{font:inherit;font-size:.875rem;font-weight:600;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--marine);background:#fff;color:var(--marine);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.lec-b.plein{background:var(--marine);color:#fff}
+.lec-b.rond{width:44px;padding:0;justify-content:center;font-size:1.125rem;border-color:#B9C3D3}
+.lec-b[disabled]{opacity:.45;cursor:default}
+.lec-page{font-size:.9375rem;font-weight:600;min-width:112px;text-align:center}
+.lec-info{padding:8px 16px;font-size:.875rem;font-weight:500;background:#E3F1EF;color:#14524D;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.lec-info.libre{background:#FBF1E3;color:#6B4A12}
+.lec-info button{font:inherit;font-weight:600;border:0;background:none;color:inherit;text-decoration:underline;cursor:pointer;min-height:36px}
+.lec-pdf{flex:1 1 auto;min-height:0;overflow:auto;background:#E9EDF3;padding:16px;display:flex;justify-content:center;align-items:flex-start}
+.lec-pdf canvas{max-width:100%;height:auto;background:#fff;box-shadow:0 4px 16px rgba(27,39,64,.12)}
+.lec-pdf p{margin:40px 16px;color:var(--texte);font-size:.9375rem}
+.lec-cadre{flex:1 1 auto;min-height:0;border:0;width:100%;display:block;background:#EEF0F4}
+.lec-notes{border-top:1px solid #DDE3EC;padding:10px 16px 14px}
+.lec-notes summary{cursor:pointer;font-weight:600;font-size:.9375rem;min-height:36px;display:flex;align-items:center;gap:10px}
+.lec-notes summary span{font-weight:400;font-size:.8125rem;color:var(--texte)}
+.lec-notes textarea{width:100%;box-sizing:border-box;margin-top:8px;font:inherit;font-size:.9375rem;line-height:1.55;padding:12px 14px;border:1px solid #B9C3D3;border-radius:14px;resize:vertical;min-height:96px}
+.lec-notes .lec-b{margin-top:8px}
+.lec-rail{display:none;flex:0 0 auto;flex-direction:column;gap:10px;align-items:flex-start;max-width:230px}
+.lec-rail p{margin:0;font-size:.875rem;line-height:1.5;color:var(--texte)}
+body.replie .lec-g{display:none}
+body.replie .lec-rail{display:flex}
+body.replie .lec-d{flex:0 1 620px}
+.lec-onglets{display:none}
+@media (max-width:860px){
+  .lec-corps{flex-direction:column;padding:10px 10px 12px}
+  .lec-onglets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:10px 10px 0;border-radius:14px;overflow:hidden;border:1px solid #B9C3D3}
+  .lec-onglets button{font:inherit;font-weight:600;min-height:48px;border:0;background:#fff;color:var(--texte)}
+  .lec-onglets button[aria-selected=true]{background:var(--marine);color:#fff}
+  body:not(.vue-cours) .lec-g{display:none}
+  body.vue-cours .lec-d{display:none}
+  .lec-rail,[data-a=replier]{display:none!important}
+  .lec-tete{margin:10px 10px 0;border-radius:20px}
+  .lec-essai{margin:8px 10px 0}
+}
+</style>
+</head>
+<body class="lecteur">
+<div class="taches taches-fixe" aria-hidden="true"><div class="tache"></div><div class="tache"></div><div class="tache"></div><div class="tache"></div></div>
+
+<header class="lec-tete">
+  <b>Pierrick Briand</b>
+  <nav class="lec-fil" aria-label="Fil d’Ariane">Mes cours &nbsp;›&nbsp; IAG · Vatel M5ALT &nbsp;›&nbsp; <strong>Séance 3 · Construire</strong></nav>
+  <a href="/compte">← Mes cours</a>
+</header>
+<p class="lec-essai">Essai du lecteur de cours. Copie de la séance 3 : ce que vous saisissez ici reste sur cet appareil et n’est pas envoyé au formateur.</p>
+
+<div class="lec-onglets" role="tablist">
+  <button type="button" role="tab" id="o-act" aria-selected="true">Activités</button>
+  <button type="button" role="tab" id="o-cours" aria-selected="false">Cours</button>
+</div>
+
+<main class="lec-corps">
+  <div class="lec-rail">
+    <button type="button" class="lec-b" data-a="deplier">Afficher le support · page <span id="rail-page">–</span></button>
+    <p>Support replié : placez cette colonne à côté de Claude ou de votre feuille de calcul.</p>
+  </div>
+
+  <section class="lec-g" aria-label="Support de la séance">
+    <div class="lec-barre">
+      <div class="lec-titre"><small>SUPPORT DE LA SÉANCE 3</small><span>Carnet technique</span></div>
+      <button type="button" class="lec-b rond" data-a="prec" aria-label="Page précédente du support">‹</button>
+      <div class="lec-page" id="lec-page" aria-live="polite">Page – sur –</div>
+      <button type="button" class="lec-b rond" data-a="suiv" aria-label="Page suivante du support">›</button>
+      <a class="lec-b" href="fiches/carnet-technique.pdf" download>PDF</a>
+      <button type="button" class="lec-b plein" data-a="replier">Replier le support</button>
+    </div>
+    <div class="lec-info" id="lec-info" hidden></div>
+    <div class="lec-pdf" id="lec-pdf"><p>Chargement du support…</p></div>
+  </section>
+
+  <section class="lec-d" aria-label="Activités de la séance">
+    <iframe class="lec-cadre" id="lec-cadre" title="Activités de la séance 3" src="essai-7k3q-cours#s32"></iframe>
+    <details class="lec-notes" id="lec-notes">
+      <summary>Mes notes de la séance <span>visibles par vous seul · <i id="notes-etat">enregistrées sur cet appareil</i></span></summary>
+      <label for="notes" class="sr-only" style="position:absolute;left:-9999px">Mes notes de la séance</label>
+      <textarea id="notes" rows="4" placeholder="Vos notes personnelles sur cette séance."></textarea>
+      <button type="button" class="lec-b" data-a="notes-md">Télécharger mes notes (.md)</button>
+    </details>
+  </section>
+</main>
+
+<script type="module">
+import * as pdfjs from '/assets/pdfjs/pdf.min.mjs';
+pdfjs.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.min.mjs';
+
+const PDF_URL = 'fiches/carnet-technique.pdf', PREMIER = 32, DERNIER = 43; // écrans de la séance 3 dans la copie d'essai, comptés à partir de 1
+const $ = (id) => document.getElementById(id);
+const cadre = $('lec-cadre'), zone = $('lec-pdf'), info = $('lec-info');
+let doc = null, total = 0, page = 1, liee = 0, rendu = 0, ecran = PREMIER;
+
+// ---------- le support, affiché page par page ----------
+async function afficher(n) {
+  if (!doc) return;
+  page = Math.max(1, Math.min(total, n));
+  $('lec-page').textContent = 'Page ' + page + ' sur ' + total;
+  $('rail-page').textContent = liee || page;
+  document.querySelector('[data-a=prec]').disabled = page <= 1;
+  document.querySelector('[data-a=suiv]').disabled = page >= total;
+  const moi = ++rendu, p = await doc.getPage(page);
+  const large = Math.max(280, zone.clientWidth - 32), base = p.getViewport({ scale: 1 });
+  const ratio = Math.min(2, window.devicePixelRatio || 1), vp = p.getViewport({ scale: (large / base.width) * ratio });
+  const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height; c.style.width = large + 'px';
+  c.setAttribute('role', 'img'); c.setAttribute('aria-label', 'Carnet technique, page ' + page);
+  await p.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+  if (moi !== rendu) return; // une page plus récente a été demandée entre-temps
+  zone.replaceChildren(c); zone.scrollTop = 0;
+  bandeau();
+}
+function bandeau() {
+  info.hidden = false; info.className = 'lec-info';
+  if (!liee) { info.textContent = 'Cet écran ne renvoie à aucune page du support. Feuilletez librement.'; return; }
+  if (page === liee) { info.textContent = 'Le support s’est placé sur la page de votre activité.'; return; }
+  info.className = 'lec-info libre';
+  info.innerHTML = '<span>Vous feuilletez librement le support.</span><button type="button" data-a="revenir">Revenir à la page de l’activité (page ' + liee + ')</button>';
+}
+pdfjs.getDocument(PDF_URL).promise.then((d) => { doc = d; total = d.numPages; afficher(liee || 1); })
+  .catch(() => { zone.innerHTML = '<p>Le support n’a pas pu être chargé. Rechargez la page.</p>'; });
+
+// ---------- les activités : la page du cours existante, dans un cadre ----------
+function numeroEcran(d) { const l = Array.from(d.querySelectorAll('.slide')), i = l.findIndex((x) => x.classList.contains('on')); return i + 1; }
+function pageDeLEcran(d) {
+  const s = d.querySelector('.slide.on'); if (!s) return 0;
+  const a = s.querySelector('a[href*="carnet-technique.pdf#page="]'); if (!a) return 0;
+  const m = /#page=(\d+)/.exec(a.getAttribute('href')); return m ? +m[1] : 0;
+}
+function suivre() {
+  let w, d; try { w = cadre.contentWindow; d = cadre.contentDocument; } catch (e) { return; }
+  if (!w || !d || !d.body) return;
+  // Essai : l'écran « Votre groupe » de la copie est passé d'office (dans le vrai lecteur, le compte du site donne déjà le nom).
+  const go = d.getElementById('bt-go');
+  if (go && go.offsetParent !== null && !d.querySelector('.slide.on')) {
+    const ch = Array.from(d.querySelectorAll('input[type=text],input:not([type])')).filter((i) => i.offsetParent !== null)[0];
+    if (ch && !ch.value) { ch.value = 'ESSAI Formateur'; ch.dispatchEvent(new Event('input', { bubbles: true })); ch.dispatchEvent(new Event('change', { bubbles: true })); }
+    if (ch && ch.value && !go.dataset.lec) { go.dataset.lec = '1'; go.click(); }
+    return;
+  }
+  const n = numeroEcran(d);
+  if (n && (n < PREMIER || n > DERNIER)) { // l'essai reste dans la séance 3 : on revient d'un écran avec le bouton du cours
+    const bt = d.getElementById(n < PREMIER ? 'bNext' : 'bPrev');
+    if (bt) bt.click();
+    return;
+  }
+  const p = pageDeLEcran(d);
+  if (n === ecran && p === liee) return;
+  ecran = n || ecran; liee = p;
+  if (liee) afficher(liee); else { $('rail-page').textContent = page; bandeau(); }
+}
+function habiller() {
+  let d; try { d = cadre.contentDocument; } catch (e) { return; }
+  if (!d || !d.head || d.getElementById('lec-style')) return;
+  const st = d.createElement('style'); st.id = 'lec-style';
+  // dans le lecteur, le retour « Mes cours » et la mention de droits sont portés par la page qui entoure le cadre
+  st.textContent = '.suivi-compte,#droits,.droits,footer.droits{display:none!important}';
+  d.head.appendChild(st);
+  // un lien « Carnet technique, page n » place le support de gauche au lieu d'ouvrir un onglet
+  d.addEventListener('click', (e) => {
+    const a = e.target.closest && e.target.closest('a[href*="carnet-technique.pdf#page="]'); if (!a) return;
+    const m = /#page=(\d+)/.exec(a.getAttribute('href')); if (!m) return;
+    e.preventDefault(); document.body.classList.remove('replie'); document.body.classList.add('vue-cours'); onglets();
+    afficher(+m[1]);
+  }, true);
+}
+cadre.addEventListener('load', () => { habiller(); suivre(); });
+setInterval(() => { habiller(); suivre(); }, 400);
+
+// ---------- boutons ----------
+function onglets() { const c = document.body.classList.contains('vue-cours'); $('o-cours').setAttribute('aria-selected', c); $('o-act').setAttribute('aria-selected', !c); if (c) afficher(page); }
+$('o-cours').onclick = () => { document.body.classList.add('vue-cours'); onglets(); };
+$('o-act').onclick = () => { document.body.classList.remove('vue-cours'); onglets(); };
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('[data-a]'); if (!a) return;
+  const k = a.getAttribute('data-a');
+  if (k === 'prec') afficher(page - 1);
+  if (k === 'suiv') afficher(page + 1);
+  if (k === 'revenir') afficher(liee);
+  if (k === 'replier') document.body.classList.add('replie');
+  if (k === 'deplier') { document.body.classList.remove('replie'); afficher(liee || page); }
+  if (k === 'notes-md') {
+    const t = '# Mes notes – IAG, séance 3\n\n' + $('notes').value + '\n';
+    const u = URL.createObjectURL(new Blob([t], { type: 'text/markdown;charset=utf-8' })), l = document.createElement('a');
+    l.href = u; l.download = 'mes-notes-iag-seance-3.md'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+  }
+});
+let tr = 0; window.addEventListener('resize', () => { clearTimeout(tr); tr = setTimeout(() => afficher(page), 200); });
+
+// ---------- notes personnelles, gardées sur l'appareil ----------
+const CLE_NOTES = 'essai-lecteur-notes-iag-s3';
+try { $('notes').value = localStorage.getItem(CLE_NOTES) || ''; if ($('notes').value) $('lec-notes').open = true; } catch (e) {}
+let tn = 0; $('notes').addEventListener('input', () => { $('notes-etat').textContent = 'enregistrement…'; clearTimeout(tn); tn = setTimeout(() => { try { localStorage.setItem(CLE_NOTES, $('notes').value); $('notes-etat').textContent = 'enregistrées sur cet appareil'; } catch (e) { $('notes-etat').textContent = 'non enregistrées (stockage indisponible)'; } }, 500); });
+</script>
+</body>
+</html>
