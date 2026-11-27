@@ -81,11 +81,11 @@ body.replie .lec-d{flex:0 1 620px}
 
   <section class="lec-g" aria-label="Support de la séance">
     <div class="lec-barre">
-      <div class="lec-titre"><small>SUPPORT DE LA SÉANCE 3</small><span>Carnet technique</span></div>
+      <div class="lec-titre"><small>SUPPORT DE LA SÉANCE 3</small><span>Fiches de la séance</span></div>
       <button type="button" class="lec-b rond" data-a="prec" aria-label="Page précédente du support">‹</button>
       <div class="lec-page" id="lec-page" aria-live="polite">Page – sur –</div>
       <button type="button" class="lec-b rond" data-a="suiv" aria-label="Page suivante du support">›</button>
-      <a class="lec-b" href="fiches/carnet-technique.pdf" download>PDF</a>
+      <a class="lec-b" href="fiches/essai-7k3q-support-seance-3.pdf" download="support-seance-3.pdf">PDF</a>
       <button type="button" class="lec-b plein" data-a="replier">Replier le support</button>
     </div>
     <div class="lec-info" id="lec-info" hidden></div>
@@ -107,7 +107,9 @@ body.replie .lec-d{flex:0 1 620px}
 import * as pdfjs from '/assets/pdfjs/pdf.min.mjs';
 pdfjs.GlobalWorkerOptions.workerSrc = '/assets/pdfjs/pdf.worker.min.mjs';
 
-const PDF_URL = 'fiches/carnet-technique.pdf', PREMIER = 32, DERNIER = 43; // écrans de la séance 3 dans la copie d'essai, comptés à partir de 1
+// le support ne contient que les pages utiles à la séance 3 : page 27 du carnet, puis la fiche VA3 (pages 30 à 45)
+const versSupport = (n) => (n === 27 ? 1 : n >= 30 && n <= 45 ? n - 28 : 0);
+const PDF_URL = 'fiches/essai-7k3q-support-seance-3.pdf', PREMIER = 32, DERNIER = 43; // écrans de la séance 3 dans la copie d'essai, comptés à partir de 1
 const $ = (id) => document.getElementById(id);
 const cadre = $('lec-cadre'), zone = $('lec-pdf'), info = $('lec-info');
 let doc = null, total = 0, page = 1, liee = 0, rendu = 0, ecran = PREMIER;
@@ -145,7 +147,7 @@ function numeroEcran(d) { const l = Array.from(d.querySelectorAll('.slide')), i 
 function pageDeLEcran(d) {
   const s = d.querySelector('.slide.on'); if (!s) return 0;
   const a = s.querySelector('a[href*="carnet-technique.pdf#page="]'); if (!a) return 0;
-  const m = /#page=(\d+)/.exec(a.getAttribute('href')); return m ? +m[1] : 0;
+  const m = /#page=(\d+)/.exec(a.getAttribute('href')); return m ? versSupport(+m[1]) : 0;
 }
 function suivre() {
   let w, d; try { w = cadre.contentWindow; d = cadre.contentDocument; } catch (e) { return; }
@@ -174,14 +176,15 @@ function habiller() {
   if (!d || !d.head || d.getElementById('lec-style')) return;
   const st = d.createElement('style'); st.id = 'lec-style';
   // dans le lecteur, le retour « Mes cours » et la mention de droits sont portés par la page qui entoure le cadre
-  st.textContent = '.suivi-compte,#droits,.droits,footer.droits{display:none!important}';
+  // le support est déjà affiché à gauche : le rappel « Document de travail : Carnet technique page n » ferait croire à un autre document
+  st.textContent = '.suivi-compte,#droits,.droits,footer.droits,p.ftl{display:none!important}';
   d.head.appendChild(st);
   // un lien « Carnet technique, page n » place le support de gauche au lieu d'ouvrir un onglet
   d.addEventListener('click', (e) => {
     const a = e.target.closest && e.target.closest('a[href*="carnet-technique.pdf#page="]'); if (!a) return;
     const m = /#page=(\d+)/.exec(a.getAttribute('href')); if (!m) return;
     e.preventDefault(); document.body.classList.remove('replie'); document.body.classList.add('vue-cours'); onglets();
-    afficher(+m[1]);
+    if (versSupport(+m[1])) afficher(versSupport(+m[1]));
   }, true);
 }
 cadre.addEventListener('load', () => { habiller(); suivre(); });
