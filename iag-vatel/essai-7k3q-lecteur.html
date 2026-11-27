@@ -177,7 +177,9 @@ function habiller() {
   const st = d.createElement('style'); st.id = 'lec-style';
   // dans le lecteur, le retour « Mes cours » et la mention de droits sont portés par la page qui entoure le cadre
   // le support est déjà affiché à gauche : le rappel « Document de travail : Carnet technique page n » ferait croire à un autre document
-  st.textContent = '.suivi-compte,#droits,.droits,footer.droits,p.ftl{display:none!important}';
+  st.textContent = '.suivi-compte,#droits,.droits,footer.droits,p.ftl{display:none!important}'
+    // le cadre est étroit : les halos du cours s'y concentrent et chargent la page ; fond uni, comme une carte de la page « Mes cours »
+    + '.taches{display:none!important}html,body{background:#F6F7FA!important}';
   d.head.appendChild(st);
   // un lien « Carnet technique, page n » place le support de gauche au lieu d'ouvrir un onglet
   d.addEventListener('click', (e) => {
